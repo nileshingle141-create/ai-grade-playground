@@ -14,7 +14,204 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      lessons: {
+        Row: {
+          created_at: string
+          duration_minutes: number
+          grade: number
+          id: string
+          key_points: string[] | null
+          lesson_content: string
+          story: string | null
+          subject: string
+          topic: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number
+          grade: number
+          id?: string
+          key_points?: string[] | null
+          lesson_content: string
+          story?: string | null
+          subject: string
+          topic: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number
+          grade?: number
+          id?: string
+          key_points?: string[] | null
+          lesson_content?: string
+          story?: string | null
+          subject?: string
+          topic?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          grade: number
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          grade: number
+          id: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          grade?: number
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      quizzes: {
+        Row: {
+          correct_answer: string
+          id: string
+          lesson_id: string
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question: string
+        }
+        Insert: {
+          correct_answer: string
+          id?: string
+          lesson_id: string
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question: string
+        }
+        Update: {
+          correct_answer?: string
+          id?: string
+          lesson_id?: string
+          option_a?: string
+          option_b?: string
+          option_c?: string
+          option_d?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quizzes_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_progress: {
+        Row: {
+          completed: boolean
+          id: string
+          lesson_id: string
+          score: number | null
+          student_id: string
+          time_spent_minutes: number | null
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean
+          id?: string
+          lesson_id: string
+          score?: number | null
+          student_id: string
+          time_spent_minutes?: number | null
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean
+          id?: string
+          lesson_id?: string
+          score?: number | null
+          student_id?: string
+          time_spent_minutes?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subjects: {
+        Row: {
+          created_at: string
+          grade: number
+          icon_name: string
+          id: string
+          subject_color: string
+          subject_name: string
+        }
+        Insert: {
+          created_at?: string
+          grade: number
+          icon_name?: string
+          id?: string
+          subject_color: string
+          subject_name: string
+        }
+        Update: {
+          created_at?: string
+          grade?: number
+          icon_name?: string
+          id?: string
+          subject_color?: string
+          subject_name?: string
+        }
+        Relationships: []
+      }
+      worksheets: {
+        Row: {
+          answer_key: string
+          created_at: string
+          id: string
+          lesson_id: string
+          worksheet_content: string
+        }
+        Insert: {
+          answer_key: string
+          created_at?: string
+          id?: string
+          lesson_id: string
+          worksheet_content: string
+        }
+        Update: {
+          answer_key?: string
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          worksheet_content?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worksheets_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
