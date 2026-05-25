@@ -9,38 +9,168 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as _authenticatedRouteImport } from './routes/__authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as _authenticatedDashboardRouteImport } from './routes/__authenticated/dashboard'
+import { Route as _authenticatedSubjectSubjectIdRouteImport } from './routes/__authenticated/subject.$subjectId'
+import { Route as _authenticatedLessonLessonIdRouteImport } from './routes/__authenticated/lesson.$lessonId'
+import { Route as _authenticatedLessonLessonIdQuizRouteImport } from './routes/__authenticated/lesson.$lessonId.quiz'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const _authenticatedRoute = _authenticatedRouteImport.update({
+  id: '/__authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const _authenticatedDashboardRoute = _authenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => _authenticatedRoute,
+} as any)
+const _authenticatedSubjectSubjectIdRoute =
+  _authenticatedSubjectSubjectIdRouteImport.update({
+    id: '/subject/$subjectId',
+    path: '/subject/$subjectId',
+    getParentRoute: () => _authenticatedRoute,
+  } as any)
+const _authenticatedLessonLessonIdRoute =
+  _authenticatedLessonLessonIdRouteImport.update({
+    id: '/lesson/$lessonId',
+    path: '/lesson/$lessonId',
+    getParentRoute: () => _authenticatedRoute,
+  } as any)
+const _authenticatedLessonLessonIdQuizRoute =
+  _authenticatedLessonLessonIdQuizRouteImport.update({
+    id: '/quiz',
+    path: '/quiz',
+    getParentRoute: () => _authenticatedLessonLessonIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/dashboard': typeof _authenticatedDashboardRoute
+  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
+  '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
+  '/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/dashboard': typeof _authenticatedDashboardRoute
+  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
+  '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
+  '/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/__authenticated': typeof _authenticatedRouteWithChildren
+  '/admin': typeof AdminRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/__authenticated/dashboard': typeof _authenticatedDashboardRoute
+  '/__authenticated/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
+  '/__authenticated/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
+  '/__authenticated/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/login'
+    | '/signup'
+    | '/dashboard'
+    | '/lesson/$lessonId'
+    | '/subject/$subjectId'
+    | '/lesson/$lessonId/quiz'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/login'
+    | '/signup'
+    | '/dashboard'
+    | '/lesson/$lessonId'
+    | '/subject/$subjectId'
+    | '/lesson/$lessonId/quiz'
+  id:
+    | '__root__'
+    | '/'
+    | '/__authenticated'
+    | '/admin'
+    | '/login'
+    | '/signup'
+    | '/__authenticated/dashboard'
+    | '/__authenticated/lesson/$lessonId'
+    | '/__authenticated/subject/$subjectId'
+    | '/__authenticated/lesson/$lessonId/quiz'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  _authenticatedRoute: typeof _authenticatedRouteWithChildren
+  AdminRoute: typeof AdminRoute
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/__authenticated': {
+      id: '/__authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof _authenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +178,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/__authenticated/dashboard': {
+      id: '/__authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof _authenticatedDashboardRouteImport
+      parentRoute: typeof _authenticatedRoute
+    }
+    '/__authenticated/subject/$subjectId': {
+      id: '/__authenticated/subject/$subjectId'
+      path: '/subject/$subjectId'
+      fullPath: '/subject/$subjectId'
+      preLoaderRoute: typeof _authenticatedSubjectSubjectIdRouteImport
+      parentRoute: typeof _authenticatedRoute
+    }
+    '/__authenticated/lesson/$lessonId': {
+      id: '/__authenticated/lesson/$lessonId'
+      path: '/lesson/$lessonId'
+      fullPath: '/lesson/$lessonId'
+      preLoaderRoute: typeof _authenticatedLessonLessonIdRouteImport
+      parentRoute: typeof _authenticatedRoute
+    }
+    '/__authenticated/lesson/$lessonId/quiz': {
+      id: '/__authenticated/lesson/$lessonId/quiz'
+      path: '/quiz'
+      fullPath: '/lesson/$lessonId/quiz'
+      preLoaderRoute: typeof _authenticatedLessonLessonIdQuizRouteImport
+      parentRoute: typeof _authenticatedLessonLessonIdRoute
+    }
   }
 }
 
+interface _authenticatedLessonLessonIdRouteChildren {
+  _authenticatedLessonLessonIdQuizRoute: typeof _authenticatedLessonLessonIdQuizRoute
+}
+
+const _authenticatedLessonLessonIdRouteChildren: _authenticatedLessonLessonIdRouteChildren =
+  {
+    _authenticatedLessonLessonIdQuizRoute:
+      _authenticatedLessonLessonIdQuizRoute,
+  }
+
+const _authenticatedLessonLessonIdRouteWithChildren =
+  _authenticatedLessonLessonIdRoute._addFileChildren(
+    _authenticatedLessonLessonIdRouteChildren,
+  )
+
+interface _authenticatedRouteChildren {
+  _authenticatedDashboardRoute: typeof _authenticatedDashboardRoute
+  _authenticatedLessonLessonIdRoute: typeof _authenticatedLessonLessonIdRouteWithChildren
+  _authenticatedSubjectSubjectIdRoute: typeof _authenticatedSubjectSubjectIdRoute
+}
+
+const _authenticatedRouteChildren: _authenticatedRouteChildren = {
+  _authenticatedDashboardRoute: _authenticatedDashboardRoute,
+  _authenticatedLessonLessonIdRoute:
+    _authenticatedLessonLessonIdRouteWithChildren,
+  _authenticatedSubjectSubjectIdRoute: _authenticatedSubjectSubjectIdRoute,
+}
+
+const _authenticatedRouteWithChildren = _authenticatedRoute._addFileChildren(
+  _authenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  _authenticatedRoute: _authenticatedRouteWithChildren,
+  AdminRoute: AdminRoute,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
