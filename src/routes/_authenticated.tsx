@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate, Link } from "@tanstack/react-router";
-import { createFileRoute } from "@tanstack/react-router";
+import { Outlet, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AppSidebar } from "@/components/AppSidebar";
 import { MobileNav } from "@/components/MobileNav";

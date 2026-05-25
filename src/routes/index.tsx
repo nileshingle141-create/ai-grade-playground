@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { BookOpen, Brain, Gamepad2, Trophy, Sparkles, ArrowRight, Star, Zap, Heart } from "lucide-react";
