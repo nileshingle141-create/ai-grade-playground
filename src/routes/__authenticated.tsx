@@ -5,7 +5,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { MobileNav } from "@/components/MobileNav";
 import { Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated")({
+export const Route = createFileRoute("/__authenticated")({
   component: AuthenticatedLayout,
 });
 
