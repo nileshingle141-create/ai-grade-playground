@@ -2,28 +2,33 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Clock, CheckCircle2, XCircle, Trophy, Star, Loader2 } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle2, XCircle, Trophy, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getQuizzes, saveProgress } from "@/lib/lessons.functions";
+import { getQuizzes, submitQuiz } from "@/lib/lessons.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/__authenticated/lesson/$lessonId/quiz")({
   component: QuizPage,
 });
 
+type QuizResult = { id: string; correctAnswer: string; userAnswer: string | null; isCorrect: boolean };
+
 function QuizPage() {
   const { lessonId } = Route.useParams();
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(600);
   const [startTime] = useState(Date.now());
+  const [results, setResults] = useState<QuizResult[]>([]);
+  const [score, setScore] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
 
   const fetchQuizzes = useServerFn(getQuizzes);
-  const saveQuizProgress = useServerFn(saveProgress);
+  const submitQuizFn = useServerFn(submitQuiz);
 
   const { data, isLoading } = useQuery({
     queryKey: ["quizzes", lessonId],
@@ -37,11 +42,12 @@ function QuizPage() {
     if (submitted) return;
     const timer = setInterval(() => {
       setTimeLeft((t) => {
-        if (t <= 1) { clearInterval(timer); setSubmitted(true); return 0; }
+        if (t <= 1) { clearInterval(timer); handleSubmit(); return 0; }
         return t - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitted]);
 
   const currentQuiz = quizzes[currentQ];
@@ -49,24 +55,25 @@ function QuizPage() {
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   function handleSelect(opt: string) {
-    if (submitted) return;
+    if (submitted || !currentQuiz) return;
     setSelected(opt);
-    setAnswers((prev) => ({ ...prev, [currentQ]: opt }));
+    setAnswers((prev) => ({ ...prev, [currentQuiz.id]: opt }));
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
+    if (submitted) return;
     setSubmitted(true);
-    const correct = Object.entries(answers).filter(([i, ans]) => ans === quizzes[Number(i)]?.correct_answer).length;
-    const score = Math.round((correct / total) * 100);
     const timeSpent = Math.round((Date.now() - startTime) / 60000);
-
-    saveQuizProgress({ data: { lessonId, score, timeSpent } })
-      .then(() => toast.success(`Quiz completed! Score: ${score}%`))
-      .catch(() => toast.error("Failed to save progress"));
+    try {
+      const res = await submitQuizFn({ data: { lessonId, answers, timeSpent } });
+      setResults(res.results);
+      setScore(res.score);
+      setCorrectCount(res.correct);
+      toast.success(`Quiz completed! Score: ${res.score}%`);
+    } catch {
+      toast.error("Failed to submit quiz");
+    }
   }
-
-  const correctCount = Object.entries(answers).filter(([i, ans]) => ans === quizzes[Number(i)]?.correct_answer).length;
-  const score = total > 0 ? Math.round((correctCount / total) * 100) : 0;
 
   if (isLoading) {
     return (
@@ -83,7 +90,6 @@ function QuizPage() {
           <ArrowLeft className="h-4 w-4" /> Back to Lesson
         </Link>
 
-        {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <h1 className="font-heading text-xl font-bold text-foreground">Quiz</h1>
           <span className="flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm font-bold text-muted-foreground">
@@ -91,7 +97,6 @@ function QuizPage() {
           </span>
         </div>
 
-        {/* Progress dots */}
         <div className="mb-6 flex gap-1.5">
           {quizzes.map((_: any, i: number) => (
             <div key={i} className={`h-2 flex-1 rounded-full transition-colors ${
@@ -133,11 +138,11 @@ function QuizPage() {
             </div>
 
             <div className="mt-4 flex justify-between">
-              <Button variant="outline" disabled={currentQ === 0} onClick={() => { setCurrentQ((q) => q - 1); setSelected(answers[currentQ - 1] || null); }} className="rounded-xl font-bold">
+              <Button variant="outline" disabled={currentQ === 0} onClick={() => { const prev = quizzes[currentQ - 1]; setCurrentQ((q) => q - 1); setSelected(prev ? answers[prev.id] || null : null); }} className="rounded-xl font-bold">
                 Previous
               </Button>
               {currentQ < total - 1 ? (
-                <Button onClick={() => { setCurrentQ((q) => q + 1); setSelected(answers[currentQ + 1] || null); }} className="rounded-xl font-bold">
+                <Button onClick={() => { const next = quizzes[currentQ + 1]; setCurrentQ((q) => q + 1); setSelected(next ? answers[next.id] || null : null); }} className="rounded-xl font-bold">
                   Next
                 </Button>
               ) : (
@@ -167,18 +172,16 @@ function QuizPage() {
                 </Link>
               </div>
 
-              {/* Review answers */}
               <div className="mt-8 space-y-3 text-left">
-                {quizzes.map((q: any, i: number) => {
-                  const userAns = answers[i];
-                  const isCorrect = userAns === q.correct_answer;
+                {results.map((r, i) => {
+                  const q = quizzes.find((qq: any) => qq.id === r.id);
                   return (
-                    <div key={q.id} className={`rounded-xl border p-3 ${isCorrect ? "border-science/30 bg-science/5" : "border-destructive/30 bg-destructive/5"}`}>
+                    <div key={r.id} className={`rounded-xl border p-3 ${r.isCorrect ? "border-science/30 bg-science/5" : "border-destructive/30 bg-destructive/5"}`}>
                       <div className="flex items-start gap-2">
-                        {isCorrect ? <CheckCircle2 className="mt-0.5 h-4 w-4 text-science" /> : <XCircle className="mt-0.5 h-4 w-4 text-destructive" />}
+                        {r.isCorrect ? <CheckCircle2 className="mt-0.5 h-4 w-4 text-science" /> : <XCircle className="mt-0.5 h-4 w-4 text-destructive" />}
                         <div>
-                          <p className="text-sm font-bold text-foreground">{q.question}</p>
-                          <p className="text-xs text-muted-foreground">Your answer: {userAns || "-"} • Correct: {q.correct_answer}</p>
+                          <p className="text-sm font-bold text-foreground">{i + 1}. {q?.question}</p>
+                          <p className="text-xs text-muted-foreground">Your answer: {r.userAnswer || "-"} • Correct: {r.correctAnswer}</p>
                         </div>
                       </div>
                     </div>
