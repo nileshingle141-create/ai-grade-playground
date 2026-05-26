@@ -58,17 +58,60 @@ export const getLesson = createServerFn({ method: "GET" })
     return { lesson };
   });
 
+// Returns quiz questions WITHOUT correct_answer — never leak answers to the client.
 export const getQuizzes = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: { lessonId: string }) =>
     z.object({ lessonId: z.string().uuid() }).parse(input)
   )
   .handler(async ({ data }) => {
     const { data: quizzes, error } = await supabaseAdmin
       .from("quizzes")
-      .select("*")
+      .select("id, lesson_id, question, option_a, option_b, option_c, option_d")
       .eq("lesson_id", data.lessonId);
     if (error) throw new Error(error.message);
     return { quizzes: quizzes ?? [] };
+  });
+
+// Server-side quiz grading: takes user answers, returns score + per-question correctness + correct answers.
+export const submitQuiz = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { lessonId: string; answers: Record<string, string>; timeSpent: number }) =>
+    z.object({
+      lessonId: z.string().uuid(),
+      answers: z.record(z.string().uuid(), z.enum(["A", "B", "C", "D"])),
+      timeSpent: z.number().min(0).max(10000),
+    }).parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    const { data: quizzes, error } = await supabaseAdmin
+      .from("quizzes")
+      .select("id, correct_answer")
+      .eq("lesson_id", data.lessonId);
+    if (error) throw new Error(error.message);
+    const list = quizzes ?? [];
+    const results = list.map((q) => ({
+      id: q.id,
+      correctAnswer: q.correct_answer,
+      userAnswer: data.answers[q.id] ?? null,
+      isCorrect: data.answers[q.id] === q.correct_answer,
+    }));
+    const correct = results.filter((r) => r.isCorrect).length;
+    const total = list.length;
+    const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+    const { error: progErr } = await context.supabase
+      .from("student_progress")
+      .upsert({
+        student_id: context.userId,
+        lesson_id: data.lessonId,
+        completed: true,
+        score,
+        time_spent_minutes: data.timeSpent,
+      }, { onConflict: "student_id,lesson_id" });
+    if (progErr) throw new Error(progErr.message);
+
+    return { score, correct, total, results };
   });
 
 export const getStudentProgress = createServerFn({ method: "GET" })
@@ -106,11 +149,18 @@ export const saveProgress = createServerFn({ method: "POST" })
     return { success: true };
   });
 
+// Admin-only: worksheets contain answer keys.
 export const getWorksheet = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: { lessonId: string }) =>
     z.object({ lessonId: z.string().uuid() }).parse(input)
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden: admin role required");
     const { data: worksheet, error } = await supabaseAdmin
       .from("worksheets")
       .select("*")
