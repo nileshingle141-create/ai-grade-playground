@@ -132,9 +132,35 @@ function AdminPage() {
     }
   }
 
+  if (authChecking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-6">
+        <div className="max-w-md rounded-2xl border border-border bg-card p-6 text-center shadow-sm">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+            <ShieldAlert className="h-6 w-6 text-destructive" />
+          </div>
+          <h1 className="font-heading text-xl font-bold">Admin access required</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Your account does not have admin privileges. Ask an existing admin to grant you the <code>admin</code> role.
+          </p>
+          <Button className="mt-4 rounded-xl" onClick={() => navigate({ to: "/dashboard" })}>Back to Dashboard</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-4xl">
+
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
