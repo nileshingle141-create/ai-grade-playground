@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Send, Save, BookOpen, PenLine, FileText, KeyRound, Loader2 } from "lucide-react";
+import { Sparkles, Save, BookOpen, PenLine, FileText, KeyRound, Loader2, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
-import { generateContent, saveLesson, saveQuizzes, saveWorksheet } from "@/lib/admin.functions";
+import { generateContent, saveLesson, saveQuizzes, saveWorksheet, checkAdmin } from "@/lib/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -23,6 +24,9 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
+  const navigate = useNavigate();
+  const [authChecking, setAuthChecking] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [grade, setGrade] = useState("");
   const [subject, setSubject] = useState("");
   const [topic, setTopic] = useState("");
@@ -35,6 +39,27 @@ function AdminPage() {
   const saveLessonFn = useServerFn(saveLesson);
   const saveQuizzesFn = useServerFn(saveQuizzes);
   const saveWorksheetFn = useServerFn(saveWorksheet);
+  const checkAdminFn = useServerFn(checkAdmin);
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        navigate({ to: "/login" });
+        return;
+      }
+      try {
+        const res = await checkAdminFn();
+        setIsAdmin(res.isAdmin);
+      } catch {
+        setIsAdmin(false);
+      } finally {
+        setAuthChecking(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
@@ -107,9 +132,35 @@ function AdminPage() {
     }
   }
 
+  if (authChecking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-6">
+        <div className="max-w-md rounded-2xl border border-border bg-card p-6 text-center shadow-sm">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+            <ShieldAlert className="h-6 w-6 text-destructive" />
+          </div>
+          <h1 className="font-heading text-xl font-bold">Admin access required</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Your account does not have admin privileges. Ask an existing admin to grant you the <code>admin</code> role.
+          </p>
+          <Button className="mt-4 rounded-xl" onClick={() => navigate({ to: "/dashboard" })}>Back to Dashboard</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-4xl">
+
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
