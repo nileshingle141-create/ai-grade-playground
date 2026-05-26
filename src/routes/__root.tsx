@@ -84,6 +84,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "AI Teaching Studio - Smart Learning for Kids" },
       { name: "twitter:description", content: "AI-powered CBSE education platform for Grade 1-4 students. Interactive lessons, quizzes, and worksheets." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6d0bd21f-5dd5-49ad-9d1e-c7c139244a0d/id-preview-78e368bf--a0c65e48-8248-4390-a3e1-a201601f626a.lovable.app-1779775031551.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6d0bd21f-5dd5-49ad-9d1e-c7c139244a0d/id-preview-78e368bf--a0c65e48-8248-4390-a3e1-a201601f626a.lovable.app-1779775031551.png" },
     ],
     links: [
       {
