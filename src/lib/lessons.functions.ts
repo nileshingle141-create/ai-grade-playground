@@ -126,28 +126,6 @@ export const getStudentProgress = createServerFn({ method: "GET" })
     return { progress: data ?? [] };
   });
 
-export const saveProgress = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: { lessonId: string; score: number; timeSpent: number }) =>
-    z.object({
-      lessonId: z.string().uuid(),
-      score: z.number().min(0).max(100),
-      timeSpent: z.number().min(0),
-    }).parse(input)
-  )
-  .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("student_progress")
-      .upsert({
-        student_id: context.userId,
-        lesson_id: data.lessonId,
-        completed: true,
-        score: data.score,
-        time_spent_minutes: data.timeSpent,
-      }, { onConflict: "student_id,lesson_id" });
-    if (error) throw new Error(error.message);
-    return { success: true };
-  });
 
 // Admin-only: worksheets contain answer keys.
 export const getWorksheet = createServerFn({ method: "GET" })
