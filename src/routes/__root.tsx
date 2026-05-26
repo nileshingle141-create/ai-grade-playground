@@ -79,9 +79,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "AI-powered CBSE education platform for Grade 1-4 students. Interactive lessons, quizzes, and worksheets." },
       { name: "author", content: "AI Teaching Studio" },
       { property: "og:title", content: "AI Teaching Studio - Smart Learning for Kids" },
-      { property: "og:description", content: "AI-powered CBSE education platform for Grade 1-4 students" },
+      { property: "og:description", content: "AI-powered CBSE education platform for Grade 1-4 students. Interactive lessons, quizzes, and worksheets." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "AI Teaching Studio - Smart Learning for Kids" },
+      { name: "twitter:description", content: "AI-powered CBSE education platform for Grade 1-4 students. Interactive lessons, quizzes, and worksheets." },
     ],
     links: [
       {
