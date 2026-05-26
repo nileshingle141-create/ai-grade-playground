@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Send, Save, BookOpen, PenLine, FileText, KeyRound, Loader2 } from "lucide-react";
+import { Sparkles, Save, BookOpen, PenLine, FileText, KeyRound, Loader2, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
-import { generateContent, saveLesson, saveQuizzes, saveWorksheet } from "@/lib/admin.functions";
+import { generateContent, saveLesson, saveQuizzes, saveWorksheet, checkAdmin } from "@/lib/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
