@@ -24,6 +24,9 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
+  const navigate = useNavigate();
+  const [authChecking, setAuthChecking] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [grade, setGrade] = useState("");
   const [subject, setSubject] = useState("");
   const [topic, setTopic] = useState("");
@@ -36,6 +39,27 @@ function AdminPage() {
   const saveLessonFn = useServerFn(saveLesson);
   const saveQuizzesFn = useServerFn(saveQuizzes);
   const saveWorksheetFn = useServerFn(saveWorksheet);
+  const checkAdminFn = useServerFn(checkAdmin);
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        navigate({ to: "/login" });
+        return;
+      }
+      try {
+        const res = await checkAdminFn();
+        setIsAdmin(res.isAdmin);
+      } catch {
+        setIsAdmin(false);
+      } finally {
+        setAuthChecking(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
