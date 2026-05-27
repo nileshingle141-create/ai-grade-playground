@@ -3,7 +3,8 @@ import { LayoutDashboard, BookOpen, BarChart3, Settings } from "lucide-react";
 
 const items = [
   { title: "Home", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Progress", url: "/dashboard", icon: BarChart3 },
+  { title: "Subjects", url: "/subjects", icon: BookOpen },
+  { title: "Progress", url: "/progress", icon: BarChart3 },
   { title: "Admin", url: "/admin", icon: Settings },
 ];
 

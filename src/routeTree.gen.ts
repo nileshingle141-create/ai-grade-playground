@@ -14,6 +14,8 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as _authenticatedRouteImport } from './routes/__authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as _authenticatedSubjectsRouteImport } from './routes/__authenticated/subjects'
+import { Route as _authenticatedProgressRouteImport } from './routes/__authenticated/progress'
 import { Route as _authenticatedDashboardRouteImport } from './routes/__authenticated/dashboard'
 import { Route as _authenticatedSubjectSubjectIdRouteImport } from './routes/__authenticated/subject.$subjectId'
 import { Route as _authenticatedLessonLessonIdRouteImport } from './routes/__authenticated/lesson.$lessonId'
@@ -42,6 +44,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const _authenticatedSubjectsRoute = _authenticatedSubjectsRouteImport.update({
+  id: '/subjects',
+  path: '/subjects',
+  getParentRoute: () => _authenticatedRoute,
+} as any)
+const _authenticatedProgressRoute = _authenticatedProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => _authenticatedRoute,
 } as any)
 const _authenticatedDashboardRoute = _authenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -73,6 +85,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof _authenticatedDashboardRoute
+  '/progress': typeof _authenticatedProgressRoute
+  '/subjects': typeof _authenticatedSubjectsRoute
   '/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
   '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
   '/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
@@ -83,6 +97,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof _authenticatedDashboardRoute
+  '/progress': typeof _authenticatedProgressRoute
+  '/subjects': typeof _authenticatedSubjectsRoute
   '/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
   '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
   '/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
@@ -95,6 +111,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/__authenticated/dashboard': typeof _authenticatedDashboardRoute
+  '/__authenticated/progress': typeof _authenticatedProgressRoute
+  '/__authenticated/subjects': typeof _authenticatedSubjectsRoute
   '/__authenticated/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
   '/__authenticated/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
   '/__authenticated/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
@@ -107,6 +125,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/dashboard'
+    | '/progress'
+    | '/subjects'
     | '/lesson/$lessonId'
     | '/subject/$subjectId'
     | '/lesson/$lessonId/quiz'
@@ -117,6 +137,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/dashboard'
+    | '/progress'
+    | '/subjects'
     | '/lesson/$lessonId'
     | '/subject/$subjectId'
     | '/lesson/$lessonId/quiz'
@@ -128,6 +150,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/__authenticated/dashboard'
+    | '/__authenticated/progress'
+    | '/__authenticated/subjects'
     | '/__authenticated/lesson/$lessonId'
     | '/__authenticated/subject/$subjectId'
     | '/__authenticated/lesson/$lessonId/quiz'
@@ -178,6 +202,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/__authenticated/subjects': {
+      id: '/__authenticated/subjects'
+      path: '/subjects'
+      fullPath: '/subjects'
+      preLoaderRoute: typeof _authenticatedSubjectsRouteImport
+      parentRoute: typeof _authenticatedRoute
+    }
+    '/__authenticated/progress': {
+      id: '/__authenticated/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof _authenticatedProgressRouteImport
+      parentRoute: typeof _authenticatedRoute
+    }
     '/__authenticated/dashboard': {
       id: '/__authenticated/dashboard'
       path: '/dashboard'
@@ -226,12 +264,16 @@ const _authenticatedLessonLessonIdRouteWithChildren =
 
 interface _authenticatedRouteChildren {
   _authenticatedDashboardRoute: typeof _authenticatedDashboardRoute
+  _authenticatedProgressRoute: typeof _authenticatedProgressRoute
+  _authenticatedSubjectsRoute: typeof _authenticatedSubjectsRoute
   _authenticatedLessonLessonIdRoute: typeof _authenticatedLessonLessonIdRouteWithChildren
   _authenticatedSubjectSubjectIdRoute: typeof _authenticatedSubjectSubjectIdRoute
 }
 
 const _authenticatedRouteChildren: _authenticatedRouteChildren = {
   _authenticatedDashboardRoute: _authenticatedDashboardRoute,
+  _authenticatedProgressRoute: _authenticatedProgressRoute,
+  _authenticatedSubjectsRoute: _authenticatedSubjectsRoute,
   _authenticatedLessonLessonIdRoute:
     _authenticatedLessonLessonIdRouteWithChildren,
   _authenticatedSubjectSubjectIdRoute: _authenticatedSubjectSubjectIdRoute,
