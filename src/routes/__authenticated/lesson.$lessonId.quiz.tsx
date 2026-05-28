@@ -70,6 +70,7 @@ function QuizPage() {
       setResults(res.results);
       setScore(res.score);
       setCorrectCount(res.correct);
+      queryClient.invalidateQueries({ queryKey: ["progress"] });
       toast.success(`Quiz completed! Score: ${res.score}%`);
     } catch {
       toast.error("Failed to submit quiz");
