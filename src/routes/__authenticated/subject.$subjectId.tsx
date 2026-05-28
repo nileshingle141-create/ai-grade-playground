@@ -51,7 +51,7 @@ function SubjectPage() {
           <div className="mt-6 space-y-3">
             {lessons.map((lesson: any, i: number) => (
               <motion.div key={lesson.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
-                <Link to={`/lesson/${lesson.id}`} className="block">
+                <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }} className="block">
                   <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                       <Play className="h-5 w-5 text-primary" />
