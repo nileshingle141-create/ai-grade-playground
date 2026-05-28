@@ -1,11 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, Clock, BookOpen, Lightbulb, Sparkles, Download, Loader2, PenLine } from "lucide-react";
+import { ArrowLeft, Clock, Lightbulb, Sparkles, Download, Loader2, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getLesson, getWorksheet } from "@/lib/lessons.functions";
+import { getLesson, getWorksheet, markLessonViewed } from "@/lib/lessons.functions";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/__authenticated/lesson/$lessonId")({
   component: LessonPage,
@@ -13,9 +14,12 @@ export const Route = createFileRoute("/__authenticated/lesson/$lessonId")({
 
 function LessonPage() {
   const { lessonId } = Route.useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const fetchLesson = useServerFn(getLesson);
   const fetchWorksheet = useServerFn(getWorksheet);
+  const markViewed = useServerFn(markLessonViewed);
 
   const { data: lessonData, isLoading } = useQuery({
     queryKey: ["lesson", lessonId],
@@ -27,7 +31,15 @@ function LessonPage() {
     queryKey: ["worksheet", lessonId],
     queryFn: () => fetchWorksheet({ data: { lessonId } }),
     enabled: !!lessonId,
+    retry: false,
   });
+
+  useEffect(() => {
+    if (!lessonId) return;
+    markViewed({ data: { lessonId } })
+      .then(() => queryClient.invalidateQueries({ queryKey: ["progress"] }))
+      .catch(() => {});
+  }, [lessonId, markViewed, queryClient]);
 
   const lesson = lessonData?.lesson;
   const worksheet = worksheetData?.worksheet;
