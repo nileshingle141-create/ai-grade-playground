@@ -166,7 +166,7 @@ function QuizPage() {
               <p className="mt-2 text-sm text-muted-foreground">{correctCount} out of {total} correct</p>
 
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <Link to={`/lesson/${lessonId}`} className="inline-flex">
+                <Link to="/lesson/$lessonId" params={{ lessonId }} className="inline-flex">
                   <Button variant="outline" className="rounded-xl font-bold">Review Lesson</Button>
                 </Link>
                 <Link to="/dashboard" className="inline-flex">
