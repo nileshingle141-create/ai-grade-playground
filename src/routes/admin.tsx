@@ -67,31 +67,29 @@ function AdminPage() {
       return;
     }
     setLoading(true);
+    setGenerated(null);
     try {
-      // For demo, generate mock content if webhook not configured
-      const mockResult = {
-        lesson: {
+      const res = await fetch(MAKE_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           grade: parseInt(grade),
           subject,
           topic,
-          lessonContent: `Welcome to ${topic}! This is an AI-generated lesson for Grade ${grade} ${subject}. In this lesson, we will explore the wonderful world of ${topic} through fun activities and stories.`,
-          keyPoints: [`Key point 1 about ${topic}`, `Key point 2 about ${topic}`, `Key point 3 about ${topic}`],
-          story: `Once upon a time, there was a curious student who loved learning about ${topic}. One day, they discovered something amazing...`,
           duration: parseInt(duration),
-        },
-        quizzes: Array.from({ length: 5 }, (_, i) => ({
-          question: `Question ${i + 1} about ${topic}?`,
-          optionA: "Option A",
-          optionB: "Option B",
-          optionC: "Option C",
-          optionD: "Option D",
-          correctAnswer: ["A", "B", "C", "D"][i % 4] as "A" | "B" | "C" | "D",
-        })),
-        worksheet: `Worksheet for ${topic}\n\n1. Describe what you learned about ${topic}.\n2. Draw a picture related to ${topic}.\n3. Write three new things you discovered.`,
-        answerKey: `1. Students should describe key concepts.\n2. Drawing should reflect the topic.\n3. Any three valid discoveries.`,
-      };
-      setGenerated(mockResult);
-      toast.success("Content generated! (Demo mode - configure webhook for real AI)");
+        }),
+      });
+      if (!res.ok) throw new Error(`Webhook returned ${res.status}`);
+      const result = await res.json();
+      if (!result?.lesson_id) throw new Error("Webhook response missing lesson_id");
+      setGenerated({
+        lesson: result.lesson ?? "",
+        quiz: Array.isArray(result.quiz) ? result.quiz : [],
+        worksheet: result.worksheet ?? "",
+        answer_key: result.answer_key ?? "",
+        lesson_id: result.lesson_id,
+      });
+      toast.success("Content generated!");
     } catch (err: any) {
       toast.error(err.message || "Generation failed");
     } finally {
@@ -103,26 +101,18 @@ function AdminPage() {
     if (!generated) return;
     setSaving(true);
     try {
-      const lesson = await saveLessonFn({ data: {
-        grade: generated.lesson.grade,
-        subject: generated.lesson.subject,
-        topic: generated.lesson.topic,
-        lessonContent: generated.lesson.lessonContent,
-        keyPoints: generated.lesson.keyPoints,
-        story: generated.lesson.story,
-        duration: generated.lesson.duration,
-      }});
-
-      if (lesson.lesson) {
-        await saveQuizzesFn({ data: { lessonId: lesson.lesson.id, quizzes: generated.quizzes }});
-        await saveWorksheetFn({ data: {
-          lessonId: lesson.lesson.id,
-          worksheetContent: generated.worksheet,
-          answerKey: generated.answerKey,
-        }});
+      const quizzes = generated.quiz.map((q: any) => ({
+        question: q.question ?? q.q ?? "",
+        optionA: q.option_a ?? q.optionA ?? q.a ?? "",
+        optionB: q.option_b ?? q.optionB ?? q.b ?? "",
+        optionC: q.option_c ?? q.optionC ?? q.c ?? "",
+        optionD: q.option_d ?? q.optionD ?? q.d ?? "",
+        correctAnswer: String(q.correct_answer ?? q.correctAnswer ?? "A").toUpperCase(),
+      }));
+      if (quizzes.length > 0) {
+        await saveQuizzesFn({ data: { lessonId: generated.lesson_id, quizzes } });
       }
-
-      toast.success("Saved to database!");
+      toast.success("Lesson saved!");
       setGenerated(null);
     } catch (err: any) {
       toast.error(err.message || "Save failed");
