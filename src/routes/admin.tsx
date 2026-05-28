@@ -224,38 +224,41 @@ function AdminPage() {
                   <TabsTrigger value="answers" className="flex-1 rounded-xl font-bold"><KeyRound className="mr-2 h-4 w-4" />Answer Key</TabsTrigger>
                 </TabsList>
                 <TabsContent value="lesson" className="p-5">
-                  <h3 className="font-heading text-lg font-bold">{generated.lesson.topic}</h3>
-                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">{generated.lesson.lessonContent}</p>
-                  <div className="mt-4">
-                    <h4 className="font-bold text-sm">Key Points:</h4>
-                    <ul className="mt-1 list-disc pl-5 text-sm">
-                      {generated.lesson.keyPoints.map((p: string, i: number) => <li key={i}>{p}</li>)}
-                    </ul>
-                  </div>
-                  <div className="mt-4 rounded-xl bg-primary/5 p-3">
-                    <h4 className="font-bold text-sm">Story:</h4>
-                    <p className="mt-1 text-sm italic">{generated.lesson.story}</p>
-                  </div>
+                  <h3 className="font-heading text-lg font-bold">{topic}</h3>
+                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">{generated.lesson}</p>
                 </TabsContent>
                 <TabsContent value="quiz" className="p-5 space-y-3">
-                  {generated.quizzes.map((q: any, i: number) => (
-                    <div key={i} className="rounded-xl border border-border p-3">
-                      <p className="font-bold text-sm">{i + 1}. {q.question}</p>
-                      <div className="mt-2 grid grid-cols-2 gap-2">
-                        {["A", "B", "C", "D"].map((opt) => (
-                          <div key={opt} className={`rounded-lg px-3 py-2 text-xs font-bold ${q.correctAnswer === opt ? "bg-science/10 text-science" : "bg-muted"}`}>
-                            {opt}. {q[`option${opt}` as keyof typeof q]}
-                          </div>
-                        ))}
+                  {generated.quiz.length === 0 && (
+                    <p className="text-sm text-muted-foreground">No quiz questions returned.</p>
+                  )}
+                  {generated.quiz.map((q: any, i: number) => {
+                    const correct = String(q.correct_answer ?? q.correctAnswer ?? "").toUpperCase();
+                    const opts: Record<string, string> = {
+                      A: q.option_a ?? q.optionA ?? q.a ?? "",
+                      B: q.option_b ?? q.optionB ?? q.b ?? "",
+                      C: q.option_c ?? q.optionC ?? q.c ?? "",
+                      D: q.option_d ?? q.optionD ?? q.d ?? "",
+                    };
+                    return (
+                      <div key={i} className="rounded-xl border border-border p-3">
+                        <p className="font-bold text-sm">{i + 1}. {q.question ?? q.q}</p>
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          {(["A", "B", "C", "D"] as const).map((opt) => (
+                            <div key={opt} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold ${correct === opt ? "bg-science/10 text-science" : "bg-muted"}`}>
+                              <span className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] ${correct === opt ? "bg-science text-white" : "bg-background border border-border"}`}>{opt}</span>
+                              <span>{opts[opt]}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </TabsContent>
                 <TabsContent value="worksheet" className="p-5">
                   <Textarea value={generated.worksheet} readOnly className="min-h-[200px] rounded-xl font-mono text-sm" />
                 </TabsContent>
                 <TabsContent value="answers" className="p-5">
-                  <Textarea value={generated.answerKey} readOnly className="min-h-[200px] rounded-xl font-mono text-sm" />
+                  <Textarea value={generated.answer_key} readOnly className="min-h-[200px] rounded-xl font-mono text-sm" />
                 </TabsContent>
               </Tabs>
 
