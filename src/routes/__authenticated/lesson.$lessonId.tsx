@@ -104,11 +104,12 @@ function LessonPage() {
 
             {/* Actions */}
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Link to={`/lesson/${lessonId}/quiz`} className="flex-1">
-                <Button className="w-full rounded-xl py-5 font-bold">
-                  <PenLine className="mr-2 h-4 w-4" /> Take Quiz
-                </Button>
-              </Link>
+              <Button
+                className="flex-1 w-full rounded-xl py-5 font-bold"
+                onClick={() => navigate({ to: "/lesson/$lessonId/quiz", params: { lessonId } })}
+              >
+                <PenLine className="mr-2 h-4 w-4" /> Take Quiz
+              </Button>
               {worksheet && (
                 <Button variant="outline" className="flex-1 rounded-xl py-5 font-bold" onClick={() => {
                   const blob = new Blob([worksheet.worksheet_content], { type: "text/plain" });
