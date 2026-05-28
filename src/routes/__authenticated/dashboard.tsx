@@ -113,7 +113,7 @@ function DashboardPage() {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {subjects.map((subject: any, i: number) => (
                 <motion.div key={subject.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * i }}>
-                  <Link to={`/subject/${encodeURIComponent(subject.subject_name)}`} className="block">
+                  <Link to="/subject/$subjectId" params={{ subjectId: subject.subject_name }} className="block">
                     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
                       <div className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl ${subjectColors[subject.subject_name] || "bg-muted"}`}>
                         {subjectIcons[subject.subject_name] || <BookOpen className="h-5 w-5" />}
