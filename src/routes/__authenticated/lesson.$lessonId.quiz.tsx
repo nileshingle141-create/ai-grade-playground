@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Clock, CheckCircle2, XCircle, Trophy, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getQuizzes, submitQuiz } from "@/lib/lessons.functions";
 import { toast } from "sonner";
@@ -29,6 +29,7 @@ function QuizPage() {
 
   const fetchQuizzes = useServerFn(getQuizzes);
   const submitQuizFn = useServerFn(submitQuiz);
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ["quizzes", lessonId],
@@ -69,6 +70,7 @@ function QuizPage() {
       setResults(res.results);
       setScore(res.score);
       setCorrectCount(res.correct);
+      queryClient.invalidateQueries({ queryKey: ["progress"] });
       toast.success(`Quiz completed! Score: ${res.score}%`);
     } catch {
       toast.error("Failed to submit quiz");
@@ -86,7 +88,7 @@ function QuizPage() {
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-2xl">
-        <Link to={`/lesson/${lessonId}`} className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-muted-foreground hover:text-foreground">
+        <Link to="/lesson/$lessonId" params={{ lessonId }} className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back to Lesson
         </Link>
 
@@ -164,7 +166,7 @@ function QuizPage() {
               <p className="mt-2 text-sm text-muted-foreground">{correctCount} out of {total} correct</p>
 
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <Link to={`/lesson/${lessonId}`} className="inline-flex">
+                <Link to="/lesson/$lessonId" params={{ lessonId }} className="inline-flex">
                   <Button variant="outline" className="rounded-xl font-bold">Review Lesson</Button>
                 </Link>
                 <Link to="/dashboard" className="inline-flex">

@@ -126,6 +126,33 @@ export const getStudentProgress = createServerFn({ method: "GET" })
     return { progress: data ?? [] };
   });
 
+// Records that the student opened/viewed a lesson (does not mark complete on its own).
+export const markLessonViewed = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { lessonId: string }) =>
+    z.object({ lessonId: z.string().uuid() }).parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    const { data: existing } = await context.supabase
+      .from("student_progress")
+      .select("id, completed, score, time_spent_minutes")
+      .eq("student_id", context.userId)
+      .eq("lesson_id", data.lessonId)
+      .maybeSingle();
+    if (existing) return { ok: true };
+    const { error } = await context.supabase
+      .from("student_progress")
+      .insert({
+        student_id: context.userId,
+        lesson_id: data.lessonId,
+        completed: false,
+        score: 0,
+        time_spent_minutes: 0,
+      });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 
 // Admin-only: worksheets contain answer keys.
 export const getWorksheet = createServerFn({ method: "GET" })
