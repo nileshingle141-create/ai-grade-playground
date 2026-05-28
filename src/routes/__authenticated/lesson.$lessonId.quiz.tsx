@@ -29,6 +29,7 @@ function QuizPage() {
 
   const fetchQuizzes = useServerFn(getQuizzes);
   const submitQuizFn = useServerFn(submitQuiz);
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ["quizzes", lessonId],
