@@ -35,11 +35,10 @@ function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [generated, setGenerated] = useState<any>(null);
 
-  const generateFn = useServerFn(generateContent);
-  const saveLessonFn = useServerFn(saveLesson);
   const saveQuizzesFn = useServerFn(saveQuizzes);
-  const saveWorksheetFn = useServerFn(saveWorksheet);
   const checkAdminFn = useServerFn(checkAdmin);
+
+  const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/rz4j66q2149zn4ylrcx99x32jem961ms";
 
   useEffect(() => {
     (async () => {
