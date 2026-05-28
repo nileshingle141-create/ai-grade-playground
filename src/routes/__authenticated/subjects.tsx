@@ -60,7 +60,7 @@ function SubjectsPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {subjects.map((s: any, i: number) => (
               <motion.div key={s.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                <Link to={`/subject/${encodeURIComponent(s.subject_name)}`} className="block">
+                <Link to="/subject/$subjectId" params={{ subjectId: s.subject_name }} className="block">
                   <div className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
                     <div className={`mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl text-lg ${subjectColors[s.subject_name] || "bg-muted"}`}>
                       {subjectIcons[s.subject_name] || <BookOpen className="h-5 w-5" />}
