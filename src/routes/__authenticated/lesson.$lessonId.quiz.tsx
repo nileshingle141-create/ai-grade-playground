@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Clock, CheckCircle2, XCircle, Trophy, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getQuizzes, submitQuiz } from "@/lib/lessons.functions";
 import { toast } from "sonner";
