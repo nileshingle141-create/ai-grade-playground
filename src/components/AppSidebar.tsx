@@ -7,10 +7,12 @@ import {
   LogOut,
   Sparkles,
   BarChart3,
-  Trophy,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -22,6 +24,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
   const [isAdmin, setIsAdmin] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     async function checkRole() {
@@ -35,14 +38,35 @@ export function AppSidebar() {
       }
     }
     checkRole();
+
+    // Check saved theme
+    const savedTheme = (localStorage.getItem("theme") as "light" | "dark") || "light";
+    setTheme(savedTheme);
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, []);
+
+  function toggleTheme() {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    localStorage.setItem("theme", nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      toast.success("Night Mode activated! 🌙");
+    } else {
+      document.documentElement.classList.remove("dark");
+      toast.success("Day Mode activated! ☀️");
+    }
+  }
 
   async function handleLogout() {
     await supabase.auth.signOut();
     navigate({ to: "/login" });
   }
 
-  // Admin menu item is conditionally appended if user has admin role
   const menuItems = [...items];
   if (isAdmin) {
     menuItems.push({ title: "Admin Panel", url: "/admin", icon: Settings });
@@ -85,7 +109,25 @@ export function AppSidebar() {
         </div>
       </div>
 
-      <div className="border-t border-white/5 px-4 py-4">
+      {/* Theme and Logout Controls */}
+      <div className="border-t border-white/5 px-4 py-4 space-y-2">
+        <button
+          onClick={toggleTheme}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-extrabold text-white/50 transition-all duration-300 hover:bg-white/5 hover:text-white"
+        >
+          {theme === "light" ? (
+            <>
+              <Moon className="h-5 w-5 text-indigo-400" />
+              <span>Night Mode</span>
+            </>
+          ) : (
+            <>
+              <Sun className="h-5 w-5 text-yellow-400 animate-spin-slow" />
+              <span>Day Mode</span>
+            </>
+          )}
+        </button>
+
         <button
           onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-extrabold text-white/50 transition-all duration-300 hover:bg-red-500/10 hover:text-red-400"
