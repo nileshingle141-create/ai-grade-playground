@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { BookOpen, Loader2 } from "lucide-react";
+import { BookOpen, Loader2, Sparkles, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
@@ -9,12 +9,12 @@ export const Route = createFileRoute("/__authenticated/subjects")({
 });
 
 const subjectColors: Record<string, string> = {
-  Mathematics: "bg-math text-white",
-  English: "bg-english text-white",
-  Science: "bg-science text-white",
-  EVS: "bg-evs text-white",
-  Hindi: "bg-hindi text-white",
-  Computer: "bg-computer text-white",
+  Mathematics: "from-blue-400 to-indigo-500 shadow-blue-500/20 text-white",
+  English: "from-orange-400 to-amber-500 shadow-amber-500/20 text-white",
+  Science: "from-green-400 to-emerald-500 shadow-emerald-500/20 text-white",
+  EVS: "from-teal-400 to-cyan-500 shadow-cyan-500/20 text-white",
+  Hindi: "from-rose-400 to-pink-500 shadow-rose-500/20 text-white",
+  Computer: "from-purple-400 to-fuchsia-500 shadow-fuchsia-500/20 text-white",
 };
 
 const subjectIcons: Record<string, string> = {
@@ -68,26 +68,54 @@ function SubjectsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
       <div className="mx-auto max-w-5xl">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-          <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">All Subjects</h1>
-          <p className="mt-1 text-muted-foreground">Grade {grade} • Pick a subject to start learning</p>
+        
+        {/* Immersive Header Card */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          className="mb-8 p-6 md:p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl relative overflow-hidden"
+        >
+          <div className="absolute -left-12 -bottom-12 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl animate-pulse" />
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="h-4 w-4 text-indigo-400" />
+            <span className="text-xs font-black uppercase tracking-widest text-indigo-400">Academy Hub</span>
+          </div>
+          <h1 className="font-heading text-3xl font-black text-white sm:text-4xl tracking-tight leading-tight">All Active Subjects</h1>
+          <p className="mt-2 text-white/60 font-bold uppercase tracking-wider text-sm">Grade {grade} School Curriculum</p>
         </motion.div>
 
         {isLoading ? (
-          <div className="flex h-32 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+          <div className="flex h-32 items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+          </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {subjects.map((s: any, i: number) => (
-              <motion.div key={s.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+              <motion.div 
+                key={s.id} 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: i * 0.05 }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                className="group"
+              >
                 <Link to="/subject/$subjectId" params={{ subjectId: s.subject_name }} className="block">
-                  <div className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
-                    <div className={`mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl text-lg ${subjectColors[s.subject_name] || "bg-muted"}`}>
+                  <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow-xl relative overflow-hidden transition-all duration-300">
+                    <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-full blur-xl group-hover:bg-white/10" />
+                    
+                    <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-bold bg-gradient-to-br ${subjectColors[s.subject_name] || "from-muted to-muted"} shadow-md`}>
                       {subjectIcons[s.subject_name] || <BookOpen className="h-5 w-5" />}
                     </div>
-                    <h3 className="font-heading text-lg font-bold text-foreground">{s.subject_name}</h3>
-                    <p className="text-sm text-muted-foreground">Grade {s.grade}</p>
+                    
+                    <h3 className="font-heading text-xl font-black text-white tracking-tight leading-tight">{s.subject_name}</h3>
+                    <p className="text-xs text-white/40 font-bold uppercase tracking-widest mt-1">Grade {s.grade} Level</p>
+
+                    <div className="mt-6 flex items-center justify-between text-xs font-black text-indigo-400 group-hover:text-indigo-300">
+                      <span>Begin Lesson Quest</span>
+                      <Sparkles className="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform" />
+                    </div>
                   </div>
                 </Link>
               </motion.div>

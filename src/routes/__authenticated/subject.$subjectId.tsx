@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, BookOpen, Clock, Loader2, Play } from "lucide-react";
+import { ArrowLeft, BookOpen, Clock, Loader2, Play, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
@@ -56,36 +56,65 @@ function SubjectPage() {
   }, [subject]);
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
       <div className="mx-auto max-w-4xl">
-        <Link to="/dashboard" className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+        <Link to="/dashboard" className="mb-6 inline-flex items-center gap-2 text-sm font-extrabold text-white/50 hover:text-white transition-all duration-300">
+          <ArrowLeft className="h-4 w-4" /> Back to dashboard
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">{subject}</h1>
-          <p className="mt-1 text-muted-foreground">Grade {grade} • {lessons.length} lessons</p>
+        {/* Dynamic Subject Banner */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 p-6 md:p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl relative overflow-hidden"
+        >
+          <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl animate-pulse" />
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="h-4 w-4 text-purple-400" />
+            <span className="text-xs font-black uppercase tracking-widest text-purple-400">Subject Hub</span>
+          </div>
+          <h1 className="font-heading text-3xl font-black text-white sm:text-4xl tracking-tight leading-tight">{subject}</h1>
+          <p className="mt-2 text-white/60 font-bold uppercase tracking-wider text-sm">Grade {grade} • {lessons.length} Learning Quests</p>
         </motion.div>
 
         {isLoading ? (
-          <div className="flex h-32 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+          <div className="flex h-32 items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+          </div>
         ) : (
-          <div className="mt-6 space-y-3">
+          <div className="mt-6 space-y-4">
             {lessons.map((lesson: any, i: number) => (
-              <motion.div key={lesson.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
+              <motion.div 
+                key={lesson.id} 
+                initial={{ opacity: 0, x: -20 }} 
+                animate={{ opacity: 1, x: 0 }} 
+                transition={{ delay: i * 0.05 }}
+                whileHover={{ scale: 1.01 }}
+                className="group"
+              >
                 <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }} className="block">
-                  <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                      <Play className="h-5 w-5 text-primary" />
+                  <div className="flex items-center gap-4 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-5 shadow-lg transition-all duration-300 hover:bg-white/10">
+                    
+                    {/* Play Bubble Icon */}
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md group-hover:scale-105 transition-transform duration-300">
+                      <Play className="h-5 w-5 fill-white text-white translate-x-0.5" />
                     </div>
+
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-heading text-base font-bold text-foreground truncate">{lesson.topic}</h3>
-                      <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {lesson.duration_minutes} min</span>
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-primary">{lesson.subject}</span>
+                      <h3 className="font-heading text-base md:text-lg font-black text-white truncate leading-tight group-hover:text-indigo-300 transition-colors">
+                        {lesson.topic}
+                      </h3>
+                      <div className="mt-2 flex items-center gap-3 text-xs font-bold text-white/50">
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="h-3.5 w-3.5 text-indigo-400" /> {lesson.duration_minutes} min quest
+                        </span>
+                        <span className="rounded-full bg-indigo-500/20 border border-indigo-500/30 px-2.5 py-0.5 text-[10px] font-black uppercase text-indigo-300 tracking-wider">
+                          {lesson.subject}
+                        </span>
                       </div>
                     </div>
-                    <BookOpen className="h-5 w-5 text-muted-foreground" />
+
+                    <BookOpen className="h-5 w-5 text-white/40 group-hover:text-white transition-colors shrink-0" />
                   </div>
                 </Link>
               </motion.div>

@@ -1,10 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { ArrowLeft, Clock, Lightbulb, Sparkles, Download, Loader2, PenLine } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Clock, Lightbulb, Sparkles, Download, Loader2, PenLine, Volume2, VolumeX, BookOpen, ChevronRight, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/__authenticated/lesson/$lessonId")({
   component: LessonPage,
@@ -12,10 +13,11 @@ export const Route = createFileRoute("/__authenticated/lesson/$lessonId")({
 
 function LessonPage() {
   const { lessonId } = Route.useParams();
-  const navigate = useNavigate();
   const [lesson, setLesson] = useState<any>(null);
   const [worksheet, setWorksheet] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [activeTab, setActiveTab] = useState<"story" | "content" | "revision">("content");
 
   useEffect(() => {
     async function loadLessonData() {
@@ -78,88 +80,210 @@ function LessonPage() {
     loadLessonData();
   }, [lessonId]);
 
+  // Clean up speech synthesis on unmount
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis?.cancel();
+    };
+  }, []);
+
+  function handleReadAloud() {
+    if (!lesson) return;
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      toast.info("Reading stopped");
+      return;
+    }
+
+    const textToRead = activeTab === "content" 
+      ? lesson.lesson_content 
+      : activeTab === "story" 
+        ? lesson.story 
+        : lesson.key_points?.join(". ") || "";
+
+    if (!textToRead) {
+      toast.warning("Nothing to read aloud");
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    utterance.rate = 0.95; // Child-friendly slow pace
+    utterance.pitch = 1.1; // Cute clear pitch
+    
+    // Attempt to pick a clean, premium voice
+    const voices = window.speechSynthesis.getVoices();
+    const childVoice = voices.find(v => v.name.includes("Google US English") || v.name.includes("Natural"));
+    if (childVoice) utterance.voice = childVoice;
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+    };
+
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+    };
+
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+    toast.success("AI Narrator started!");
+  }
+
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
-      <div className="mx-auto max-w-3xl">
-        <Link to="/dashboard" className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
+      <div className="mx-auto max-w-4xl">
+        <Link to="/dashboard" className="mb-6 inline-flex items-center gap-2 text-sm font-extrabold text-white/50 hover:text-white transition-all duration-300">
+          <ArrowLeft className="h-4 w-4" /> Back to Quest Board
         </Link>
 
         {isLoading ? (
-          <div className="flex h-32 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+          <div className="flex h-64 items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin text-indigo-400" />
+          </div>
         ) : lesson ? (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            {/* Header */}
-            <div className="mb-6">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">{lesson.subject}</span>
-                <span className="flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground">
-                  <Clock className="h-3 w-3" /> {lesson.duration_minutes} min
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            {/* Header Badge Card */}
+            <div className="mb-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow-xl relative overflow-hidden">
+              <div className="absolute -right-16 -top-16 w-36 h-36 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-full opacity-20 blur-2xl" />
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                <span className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-3.5 py-1.5 text-xs font-black text-white uppercase tracking-wider">{lesson.subject}</span>
+                <span className="flex items-center gap-1 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-extrabold text-white/80">
+                  <Clock className="h-3.5 w-3.5 text-indigo-400" /> {lesson.duration_minutes} min Quest
                 </span>
               </div>
-              <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">{lesson.topic}</h1>
+              <h1 className="font-heading text-3xl font-black text-white md:text-4xl tracking-tight leading-tight">{lesson.topic}</h1>
             </div>
 
-            {/* Content */}
-            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-sm">
-              <div className="prose prose-sm max-w-none">
-                <p className="whitespace-pre-line text-foreground leading-relaxed">{lesson.lesson_content}</p>
-              </div>
-            </div>
-
-            {/* Key Points */}
-            {lesson.key_points && lesson.key_points.length > 0 && (
-              <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-sm">
-                <div className="mb-3 flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5 text-accent" />
-                  <h3 className="font-heading text-lg font-bold text-foreground">Key Points</h3>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {lesson.key_points.map((point: string, i: number) => (
-                    <div key={i} className="flex items-start gap-2 rounded-xl bg-muted/50 p-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
-                      <p className="text-sm text-foreground">{point}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Story */}
-            {lesson.story && (
-              <div className="mt-6 rounded-2xl border border-border bg-gradient-to-br from-primary/5 to-accent/5 p-5 shadow-sm">
-                <div className="mb-2 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-accent" />
-                  <h3 className="font-heading text-lg font-bold text-foreground">Story Time</h3>
-                </div>
-                <p className="text-sm italic leading-relaxed text-foreground">{lesson.story}</p>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button
-                className="flex-1 w-full rounded-xl py-5 font-bold"
-                onClick={() => navigate({ to: "/lesson/$lessonId/quiz", params: { lessonId } })}
+            {/* Premium Tab Navigation */}
+            <div className="mb-6 flex rounded-2xl bg-white/5 border border-white/10 p-1 backdrop-blur-md">
+              <button
+                onClick={() => { setActiveTab("content"); window.speechSynthesis.cancel(); setIsSpeaking(false); }}
+                className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "content" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-white/60 hover:text-white"}`}
               >
-                <PenLine className="mr-2 h-4 w-4" /> Take Quiz
-              </Button>
+                <BookOpen className="h-4 w-4 inline mr-1.5" /> Study Material
+              </button>
+              {lesson.story && (
+                <button
+                  onClick={() => { setActiveTab("story"); window.speechSynthesis.cancel(); setIsSpeaking(false); }}
+                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "story" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-white/60 hover:text-white"}`}
+                >
+                  <Sparkles className="h-4 w-4 inline mr-1.5" /> Story Mode
+                </button>
+              )}
+              {lesson.key_points && lesson.key_points.length > 0 && (
+                <button
+                  onClick={() => { setActiveTab("revision"); window.speechSynthesis.cancel(); setIsSpeaking(false); }}
+                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "revision" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-white/60 hover:text-white"}`}
+                >
+                  <Lightbulb className="h-4 w-4 inline mr-1.5" /> Quick Revision
+                </button>
+              )}
+            </div>
+
+            {/* Tab Contents */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+                className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-6 sm:p-8 shadow-2xl relative"
+              >
+                {/* Floating TTS Narrator */}
+                <button
+                  onClick={handleReadAloud}
+                  className={`absolute right-6 top-6 flex h-11 w-11 items-center justify-center rounded-2xl border transition-all duration-300 shadow-md ${
+                    isSpeaking 
+                      ? "border-red-500/30 bg-red-500/20 text-red-400 hover:bg-red-500/30" 
+                      : "border-indigo-500/30 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30"
+                  }`}
+                  title={isSpeaking ? "Stop AI voice reader" : "Listen with AI voice reader"}
+                >
+                  {isSpeaking ? <VolumeX className="h-5 w-5 animate-pulse" /> : <Volume2 className="h-5 w-5" />}
+                </button>
+
+                {activeTab === "content" && (
+                  <div className="prose prose-invert max-w-none">
+                    <p className="whitespace-pre-line text-white/90 leading-relaxed text-base md:text-lg font-medium pr-10">{lesson.lesson_content}</p>
+                  </div>
+                )}
+
+                {activeTab === "story" && (
+                  <div className="prose prose-invert max-w-none">
+                    <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-purple-500/20 border border-purple-500/30 px-3 py-1 text-xs font-bold text-purple-400">
+                      <Sparkles className="h-3.5 w-3.5" /> Once upon a time...
+                    </div>
+                    <p className="whitespace-pre-line italic leading-relaxed text-indigo-200 text-base md:text-lg font-medium pr-10 bg-gradient-to-br from-indigo-50 to-white bg-clip-text text-transparent">{lesson.story}</p>
+                  </div>
+                )}
+
+                {activeTab === "revision" && (
+                  <div className="space-y-4">
+                    <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-pink-500/20 border border-pink-500/30 px-3 py-1 text-xs font-bold text-pink-400">
+                      <Lightbulb className="h-3.5 w-3.5" /> Key Revision Points
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {lesson.key_points.map((point: string, i: number) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.08 }}
+                          className="flex items-start gap-3 rounded-2xl bg-white/5 border border-white/10 p-4 shadow-sm"
+                        >
+                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-xs font-black text-white shadow-md">{i + 1}</span>
+                          <p className="text-sm font-semibold text-white/90 leading-relaxed">{point}</p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Smart AI Tutor Floating Banner */}
+            <div className="mt-6 rounded-3xl border border-indigo-500/20 bg-gradient-to-r from-indigo-900/30 via-purple-900/20 to-pink-900/20 backdrop-blur-md p-5 flex items-center justify-between shadow-xl">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl animate-bounce">🤖</span>
+                <div>
+                  <h3 className="text-sm font-black text-white">Have a doubt or need examples?</h3>
+                  <p className="text-xs text-white/60">Ask my AI Tutor chatbot in the bottom right corner!</p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-indigo-400" />
+            </div>
+
+            {/* Actions Grid */}
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              {/* Type-Safe Quiz Navigation Route Link */}
+              <Link to="/lesson/$lessonId/quiz" params={{ lessonId }} className="flex-1">
+                <Button className="w-full rounded-2xl py-6 text-base font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white shadow-lg shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all">
+                  <PenLine className="mr-2 h-5 w-5 animate-pulse" /> Let's Take the Quiz!
+                </Button>
+              </Link>
+
               {worksheet && (
-                <Button variant="outline" className="flex-1 rounded-xl py-5 font-bold" onClick={() => {
+                <Button variant="outline" className="flex-1 rounded-2xl py-6 text-base font-extrabold border-white/20 bg-white/5 hover:bg-white/10 text-white shadow-lg" onClick={() => {
                   const blob = new Blob([worksheet.worksheet_content], { type: "text/plain" });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement("a");
                   a.href = url;
                   a.download = `${lesson.topic}-worksheet.txt`;
                   a.click();
+                  toast.success("Worksheet downloaded!");
                 }}>
-                  <Download className="mr-2 h-4 w-4" /> Download Worksheet
+                  <Download className="mr-2 h-4 w-4" /> Download Practice Sheet
                 </Button>
               )}
             </div>
           </motion.div>
         ) : (
-          <p className="text-center text-muted-foreground">Lesson not found</p>
+          <div className="text-center py-12 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md">
+            <HelpCircle className="mx-auto h-12 w-12 text-white/30 mb-3" />
+            <p className="text-lg text-white/70 font-bold">Quest page was not found</p>
+          </div>
         )}
       </div>
     </div>
