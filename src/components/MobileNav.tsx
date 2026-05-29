@@ -1,19 +1,18 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, BookOpen, BarChart3, Settings, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, BookOpen, BarChart3, Settings, Sliders } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 const items = [
   { title: "Home", url: "/dashboard", icon: LayoutDashboard },
   { title: "Subjects", url: "/subjects", icon: BookOpen },
   { title: "Progress", url: "/progress", icon: BarChart3 },
+  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 export function MobileNav() {
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
   const [isAdmin, setIsAdmin] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     async function checkRole() {
@@ -27,33 +26,11 @@ export function MobileNav() {
       }
     }
     checkRole();
-
-    // Check saved theme
-    const savedTheme = (localStorage.getItem("theme") as "light" | "dark") || "light";
-    setTheme(savedTheme);
-    if (savedTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
   }, []);
-
-  function toggleTheme() {
-    const nextTheme = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-      toast.success("Night Mode activated! 🌙");
-    } else {
-      document.documentElement.classList.remove("dark");
-      toast.success("Day Mode activated! ☀️");
-    }
-  }
 
   const menuItems = [...items];
   if (isAdmin) {
-    menuItems.push({ title: "Admin", url: "/admin", icon: Settings });
+    menuItems.push({ title: "Admin", url: "/admin", icon: Sliders });
   }
 
   return (
@@ -74,19 +51,6 @@ export function MobileNav() {
             </Link>
           );
         })}
-
-        {/* Dedicated Night / Day Theme Mode Switch Button */}
-        <button
-          onClick={toggleTheme}
-          className="flex flex-col items-center gap-1 rounded-xl px-4 py-1 text-xs font-extrabold text-white/40 hover:text-white/70 transition-all duration-300"
-        >
-          {theme === "light" ? (
-            <Moon className="h-5 w-5 text-indigo-400" />
-          ) : (
-            <Sun className="h-5 w-5 text-yellow-400 animate-spin-slow" />
-          )}
-          <span>{theme === "light" ? "Night" : "Day"}</span>
-        </button>
       </div>
     </nav>
   );

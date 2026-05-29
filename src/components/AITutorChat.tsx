@@ -137,30 +137,30 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-24 right-6 z-[100] w-[calc(100vw-3rem)] max-w-[400px] h-[550px] rounded-3xl border border-white/10 bg-[#0F172A]/90 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-24 right-6 z-[100] w-[calc(100vw-3rem)] max-w-[400px] h-[550px] rounded-3xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden text-slate-800 dark:text-white"
           >
             {/* Header */}
-            <div className="p-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-between text-white shadow-lg relative overflow-hidden">
+            <div className="p-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-between text-white shadow-lg relative overflow-hidden animate-gradient">
               <div className="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full blur-xl" />
               <div className="flex items-center gap-3 relative z-10">
                 <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Bot className="h-6 w-6 text-white" />
+                  <Bot className="h-6 w-6 text-white animate-bounce-slow" />
                 </div>
                 <div>
                   <h3 className="font-heading text-sm font-black flex items-center gap-1">AI Tutor Buddy <Sparkles className="h-4 w-4 text-yellow-300 fill-yellow-300 animate-pulse" /></h3>
                   <p className="text-[10px] font-bold text-white/80 uppercase tracking-widest">Always Active</p>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="rounded-xl p-1.5 hover:bg-white/10 transition-colors">
+              <button onClick={() => setIsOpen(false)} className="rounded-xl p-1.5 hover:bg-white/10 transition-colors cursor-pointer">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* Current Lesson Badge */}
             {topic && (
-              <div className="px-4 py-2 border-b border-white/5 bg-indigo-500/10 flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">Class Topic:</span>
-                <span className="text-xs font-bold text-white truncate max-w-[250px]">{topic}</span>
+              <div className="px-4 py-2 border-b border-slate-200/50 dark:border-white/5 bg-indigo-500/10 flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Class Topic:</span>
+                <span className="text-xs font-bold text-slate-700 dark:text-white truncate max-w-[250px]">{topic}</span>
               </div>
             )}
 
@@ -173,16 +173,16 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
                     <div className={`flex items-start gap-2 max-w-[85%] ${isAI ? "flex-row" : "flex-row-reverse"}`}>
                       {isAI && (
                         <div className="h-7 w-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0">
-                          <Bot className="h-4 w-4 text-indigo-400" />
+                          <Bot className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
                         </div>
                       )}
                       <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                         isAI 
-                          ? "bg-white/5 border border-white/10 text-white/95 rounded-tl-none" 
+                          ? "bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white/95 rounded-tl-none" 
                           : "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-tr-none shadow-md"
                       }`}>
-                        <p className="whitespace-pre-line font-medium">{msg.text}</p>
-                        <span className="block text-[9px] font-bold text-white/40 mt-1.5 text-right">{msg.time}</span>
+                        <p className="whitespace-pre-line font-medium font-sans">{msg.text}</p>
+                        <span className={`block text-[9px] font-bold mt-1.5 text-right ${isAI ? "text-slate-400 dark:text-white/40" : "text-white/65"}`}>{msg.time}</span>
                       </div>
                     </div>
                   </div>
@@ -194,12 +194,12 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
                 <div className="flex justify-start">
                   <div className="flex items-start gap-2 max-w-[85%]">
                     <div className="h-7 w-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0">
-                      <Bot className="h-4 w-4 text-indigo-400" />
+                      <Bot className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
                     </div>
-                    <div className="rounded-2xl px-4 py-3.5 bg-white/5 border border-white/10 rounded-tl-none flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <div className="rounded-2xl px-4 py-3.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-tl-none flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-bounce" style={{ animationDelay: "300ms" }} />
                     </div>
                   </div>
                 </div>
@@ -209,12 +209,12 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
             </div>
 
             {/* Quick Suggested Prompts Selector */}
-            <div className="p-3 border-t border-white/5 bg-white/2 overflow-x-auto flex gap-2 no-scrollbar">
+            <div className="p-3 border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/2 overflow-x-auto flex gap-2 no-scrollbar">
               {prompts.map((p, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSend(p)}
-                  className="rounded-full bg-white/5 border border-white/10 px-3 py-1.5 text-xs font-bold text-white/70 hover:bg-indigo-500/20 hover:border-indigo-500/30 hover:text-indigo-300 transition-all duration-300 whitespace-nowrap"
+                  className="rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-white/70 hover:bg-indigo-50 dark:hover:bg-indigo-500/20 hover:border-indigo-200 dark:hover:border-indigo-500/30 hover:text-indigo-600 dark:hover:text-indigo-300 transition-all duration-300 whitespace-nowrap cursor-pointer"
                 >
                   {p}
                 </button>
@@ -224,18 +224,18 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
             {/* Input Row */}
             <form 
               onSubmit={(e) => { e.preventDefault(); handleSend(inputText); }}
-              className="p-3 border-t border-white/10 bg-[#0F172A] flex items-center gap-2"
+              className="p-3 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-[#0F172A] flex items-center gap-2"
             >
               <Input
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Ask me anything about the lesson! ✏️"
-                className="flex-1 rounded-2xl bg-white/5 border-white/10 text-white placeholder-white/30 h-11"
+                className="flex-1 rounded-2xl bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-white/30 h-11 focus-visible:ring-indigo-500"
               />
               <Button 
                 type="submit" 
                 disabled={!inputText.trim()}
-                className="h-11 w-11 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md flex items-center justify-center p-0 shrink-0"
+                className="h-11 w-11 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md flex items-center justify-center p-0 shrink-0 cursor-pointer hover:opacity-90"
               >
                 <Send className="h-4 w-4" />
               </Button>
