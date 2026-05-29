@@ -4,9 +4,8 @@ import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Clock, CheckCircle2, XCircle, Trophy, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { getQuizzes, submitQuiz } from "@/lib/lessons.functions";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/__authenticated/lesson/$lessonId/quiz")({
@@ -14,6 +13,7 @@ export const Route = createFileRoute("/__authenticated/lesson/$lessonId/quiz")({
 });
 
 type QuizResult = { id: string; correctAnswer: string; userAnswer: string | null; isCorrect: boolean };
+type Quiz = { id: string; lesson_id: string; question: string; option_a: string; option_b: string; option_c: string; option_d: string };
 
 function QuizPage() {
   const { lessonId } = Route.useParams();
@@ -26,18 +26,25 @@ function QuizPage() {
   const [results, setResults] = useState<QuizResult[]>([]);
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const fetchQuizzes = useServerFn(getQuizzes);
-  const submitQuizFn = useServerFn(submitQuiz);
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["quizzes", lessonId],
-    queryFn: () => fetchQuizzes({ data: { lessonId } }),
-    enabled: !!lessonId,
-  });
-
-  const quizzes = data?.quizzes || [];
+  useEffect(() => {
+    if (!lessonId) return;
+    setIsLoading(true);
+    supabase
+      .from("quizzes")
+      .select("id, lesson_id, question, option_a, option_b, option_c, option_d")
+      .eq("lesson_id", lessonId)
+      .then(({ data, error }) => {
+        if (error) setFetchError(error.message);
+        else setQuizzes((data ?? []) as Quiz[]);
+        setIsLoading(false);
+      });
+  }, [lessonId]);
 
   useEffect(() => {
     if (submitted) return;
@@ -66,15 +73,58 @@ function QuizPage() {
     setSubmitted(true);
     const timeSpent = Math.round((Date.now() - startTime) / 60000);
     try {
-      const res = await submitQuizFn({ data: { lessonId, answers, timeSpent } });
-      setResults(res.results);
-      setScore(res.score);
-      setCorrectCount(res.correct);
+      const { data: correctData, error: cErr } = await supabase
+        .from("quizzes")
+        .select("id, correct_answer")
+        .eq("lesson_id", lessonId);
+      if (cErr) throw cErr;
+
+      const computed: QuizResult[] = (correctData ?? []).map((q: any) => ({
+        id: q.id,
+        correctAnswer: q.correct_answer,
+        userAnswer: answers[q.id] ?? null,
+        isCorrect: answers[q.id] === q.correct_answer,
+      }));
+
+      const correct = computed.filter((r) => r.isCorrect).length;
+      const totalQ = computed.length;
+      const finalScore = totalQ > 0 ? Math.round((correct / totalQ) * 100) : 0;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("student_progress").upsert({
+          student_id: user.id,
+          lesson_id: lessonId,
+          completed: true,
+          score: finalScore,
+          time_spent_minutes: timeSpent,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "student_id,lesson_id" });
+      }
+
+      setResults(computed);
+      setScore(finalScore);
+      setCorrectCount(correct);
       queryClient.invalidateQueries({ queryKey: ["progress"] });
-      toast.success(`Quiz completed! Score: ${res.score}%`);
-    } catch {
-      toast.error("Failed to submit quiz");
+      toast.success(`Quiz completed! Score: ${finalScore}%`);
+    } catch (e: any) {
+      toast.error("Failed to submit quiz: " + (e?.message ?? ""));
     }
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-6">
+        <p className="text-destructive">Error loading quiz: {fetchError}</p>
+      </div>
+    );
+  }
+  if (!isLoading && quizzes.length === 0) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-6">
+        <p className="text-muted-foreground">No quiz questions found for this lesson.</p>
+      </div>
+    );
   }
 
   if (isLoading) {
