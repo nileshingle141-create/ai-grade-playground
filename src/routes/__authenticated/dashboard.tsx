@@ -4,9 +4,6 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { BookOpen, Clock, TrendingUp, Award, Flame, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getProfile, getSubjects, getStudentProgress } from "@/lib/lessons.functions";
-import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
 
 const subjectColors: Record<string, string> = {
   Mathematics: "bg-math text-white",
@@ -31,37 +28,55 @@ export const Route = createFileRoute("/__authenticated/dashboard")({
 });
 
 function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [progress, setProgress] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    async function loadDashboardData() {
+      try {
+        setIsLoading(true);
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+        if (!userData?.user) return;
+
+        const { data: profileData, error: profileErr } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", userData.user.id)
+          .single();
+        if (profileErr) throw profileErr;
+        setProfile(profileData);
+
+        if (profileData) {
+          const [subjectsRes, progressRes] = await Promise.all([
+            supabase
+              .from("subjects")
+              .select("*")
+              .eq("grade", profileData.grade)
+              .order("subject_name"),
+            supabase
+              .from("student_progress")
+              .select("*, lessons(topic, subject)")
+              .eq("student_id", userData.user.id)
+              .order("updated_at", { ascending: false }),
+          ]);
+
+          if (subjectsRes.error) throw subjectsRes.error;
+          if (progressRes.error) throw progressRes.error;
+
+          setSubjects(subjectsRes.data ?? []);
+          setProgress(progressRes.data ?? []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadDashboardData();
   }, []);
-
-  const fetchProfile = useServerFn(getProfile);
-  const fetchSubjects = useServerFn(getSubjects);
-  const fetchProgress = useServerFn(getStudentProgress);
-
-  const { data: profileData } = useQuery({
-    queryKey: ["profile"],
-    queryFn: () => fetchProfile({ data: undefined }),
-    enabled: !!user,
-  });
-
-  const { data: subjectsData, isLoading: subjectsLoading } = useQuery({
-    queryKey: ["subjects", profileData?.profile?.grade],
-    queryFn: () => fetchSubjects({ data: { grade: profileData?.profile?.grade || 1 } }),
-    enabled: !!profileData?.profile?.grade,
-  });
-
-  const { data: progressData } = useQuery({
-    queryKey: ["progress"],
-    queryFn: () => fetchProgress({ data: undefined }),
-    enabled: !!user,
-  });
-
-  const profile = profileData?.profile;
-  const subjects = subjectsData?.subjects || [];
-  const progress = progressData?.progress || [];
 
   const completedCount = progress.filter((p: any) => p.completed).length;
   const avgScore = progress.length > 0
@@ -107,7 +122,7 @@ function DashboardPage() {
         {/* Subjects */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <h2 className="mb-4 font-heading text-xl font-bold text-foreground">Your Subjects</h2>
-          {subjectsLoading ? (
+          {isLoading ? (
             <div className="flex h-32 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -135,7 +150,9 @@ function DashboardPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-6">
           <h2 className="mb-4 font-heading text-xl font-bold text-foreground">Recent Activity</h2>
           <div className="rounded-2xl border border-border bg-card p-4">
-            {progress.length === 0 ? (
+            {isLoading ? (
+              <div className="flex h-32 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+            ) : progress.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted-foreground">No activity yet. Start learning!</p>
             ) : (
               <div className="space-y-3">

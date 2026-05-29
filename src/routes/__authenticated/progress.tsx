@@ -1,22 +1,42 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Award, BookOpen, Clock, TrendingUp, Loader2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { getStudentProgress } from "@/lib/lessons.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/__authenticated/progress")({
   component: ProgressPage,
 });
 
 function ProgressPage() {
-  const fetchProgress = useServerFn(getStudentProgress);
-  const { data, isLoading } = useQuery({
-    queryKey: ["progress"],
-    queryFn: () => fetchProgress({ data: undefined }),
-  });
+  const [progress, setProgress] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const progress = data?.progress || [];
+  useEffect(() => {
+    async function loadProgress() {
+      try {
+        setIsLoading(true);
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+
+        if (userData?.user) {
+          const { data: progressData, error } = await supabase
+            .from("student_progress")
+            .select("*, lessons(topic, subject)")
+            .eq("student_id", userData.user.id)
+            .order("updated_at", { ascending: false });
+          if (error) throw error;
+          setProgress(progressData ?? []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadProgress();
+  }, []);
+
   const completed = progress.filter((p: any) => p.completed).length;
   const avgScore = progress.length > 0
     ? Math.round(progress.reduce((s: number, p: any) => s + (p.score || 0), 0) / progress.length)

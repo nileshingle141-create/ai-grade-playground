@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { BookOpen, Loader2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { getProfile, getSubjects } from "@/lib/lessons.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/__authenticated/subjects")({
   component: SubjectsPage,
@@ -28,23 +27,45 @@ const subjectIcons: Record<string, string> = {
 };
 
 function SubjectsPage() {
-  const fetchProfile = useServerFn(getProfile);
-  const fetchSubjects = useServerFn(getSubjects);
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [grade, setGrade] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: profileData } = useQuery({
-    queryKey: ["profile"],
-    queryFn: () => fetchProfile({ data: undefined }),
-  });
+  useEffect(() => {
+    async function loadSubjectsData() {
+      try {
+        setIsLoading(true);
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
 
-  const grade = profileData?.profile?.grade || 1;
+        if (userData?.user) {
+          const { data: profileData, error: profileErr } = await supabase
+            .from("profiles")
+            .select("grade")
+            .eq("id", userData.user.id)
+            .single();
+          if (profileErr) throw profileErr;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["subjects", grade],
-    queryFn: () => fetchSubjects({ data: { grade } }),
-    enabled: !!grade,
-  });
+          const userGrade = profileData?.grade || 1;
+          setGrade(userGrade);
 
-  const subjects = data?.subjects || [];
+          const { data: subjectsData, error: subjectsErr } = await supabase
+            .from("subjects")
+            .select("*")
+            .eq("grade", userGrade)
+            .order("subject_name");
+          if (subjectsErr) throw subjectsErr;
+
+          setSubjects(subjectsData ?? []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadSubjectsData();
+  }, []);
 
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">

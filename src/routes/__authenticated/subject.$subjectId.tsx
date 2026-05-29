@@ -2,9 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Clock, Loader2, Play } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { getLessons } from "@/lib/lessons.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
@@ -16,22 +13,47 @@ function SubjectPage() {
   const { subjectId } = Route.useParams();
   const subject = decodeURIComponent(subjectId);
   const [grade, setGrade] = useState(1);
+  const [lessons, setLessons] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      const g = data.user?.user_metadata?.grade || 1;
-      setGrade(g);
-    });
-  }, []);
+    async function loadLessons() {
+      try {
+        setIsLoading(true);
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
 
-  const fetchLessons = useServerFn(getLessons);
-  const { data, isLoading } = useQuery({
-    queryKey: ["lessons", grade, subject],
-    queryFn: () => fetchLessons({ data: { grade, subject } }),
-    enabled: !!grade && !!subject,
-  });
+        let userGrade = 1;
+        if (userData?.user) {
+          const { data: profileData, error: profileErr } = await supabase
+            .from("profiles")
+            .select("grade")
+            .eq("id", userData.user.id)
+            .single();
+          if (!profileErr && profileData) {
+            userGrade = profileData.grade || 1;
+          }
+        }
+        setGrade(userGrade);
 
-  const lessons = data?.lessons || [];
+        if (subject) {
+          const { data: lessonsData, error: lessonsErr } = await supabase
+            .from("lessons")
+            .select("*")
+            .eq("grade", userGrade)
+            .eq("subject", subject)
+            .order("created_at");
+          if (lessonsErr) throw lessonsErr;
+          setLessons(lessonsData ?? []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadLessons();
+  }, [subject]);
 
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">

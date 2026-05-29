@@ -9,8 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { useServerFn } from "@tanstack/react-start";
-import { saveQuizzes, checkAdmin } from "@/lib/admin.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
@@ -35,9 +33,6 @@ function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [generated, setGenerated] = useState<any>(null);
 
-  const saveQuizzesFn = useServerFn(saveQuizzes);
-  const checkAdminFn = useServerFn(checkAdmin);
-
   const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/rz4j66q2149zn4ylrcx99x32jem961ms";
 
   useEffect(() => {
@@ -48,8 +43,12 @@ function AdminPage() {
         return;
       }
       try {
-        const res = await checkAdminFn();
-        setIsAdmin(res.isAdmin);
+        const { data: isAdminRes, error: roleError } = await supabase.rpc("has_role", {
+          _user_id: data.user.id,
+          _role: "admin",
+        });
+        if (roleError) throw roleError;
+        setIsAdmin(!!isAdminRes);
       } catch {
         setIsAdmin(false);
       } finally {
@@ -58,7 +57,6 @@ function AdminPage() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
@@ -101,16 +99,18 @@ function AdminPage() {
     if (!generated) return;
     setSaving(true);
     try {
-      const quizzes = generated.quiz.map((q: any) => ({
+      const rows = generated.quiz.map((q: any) => ({
+        lesson_id: generated.lesson_id,
         question: q.question ?? q.q ?? "",
-        optionA: q.option_a ?? q.optionA ?? q.a ?? "",
-        optionB: q.option_b ?? q.optionB ?? q.b ?? "",
-        optionC: q.option_c ?? q.optionC ?? q.c ?? "",
-        optionD: q.option_d ?? q.optionD ?? q.d ?? "",
-        correctAnswer: String(q.correct_answer ?? q.correctAnswer ?? "A").toUpperCase(),
+        option_a: q.option_a ?? q.optionA ?? q.a ?? "",
+        option_b: q.option_b ?? q.optionB ?? q.b ?? "",
+        option_c: q.option_c ?? q.optionC ?? q.c ?? "",
+        option_d: q.option_d ?? q.optionD ?? q.d ?? "",
+        correct_answer: String(q.correct_answer ?? q.correctAnswer ?? "A").toUpperCase(),
       }));
-      if (quizzes.length > 0) {
-        await saveQuizzesFn({ data: { lessonId: generated.lesson_id, quizzes } });
+      if (rows.length > 0) {
+        const { error } = await supabase.from("quizzes").insert(rows);
+        if (error) throw error;
       }
       toast.success("Lesson saved!");
       setGenerated(null);

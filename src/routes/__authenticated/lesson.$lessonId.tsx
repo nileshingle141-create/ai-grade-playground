@@ -3,10 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Lightbulb, Sparkles, Download, Loader2, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { getLesson, getWorksheet, markLessonViewed } from "@/lib/lessons.functions";
-import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/__authenticated/lesson/$lessonId")({
   component: LessonPage,
@@ -15,34 +13,70 @@ export const Route = createFileRoute("/__authenticated/lesson/$lessonId")({
 function LessonPage() {
   const { lessonId } = Route.useParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
-  const fetchLesson = useServerFn(getLesson);
-  const fetchWorksheet = useServerFn(getWorksheet);
-  const markViewed = useServerFn(markLessonViewed);
-
-  const { data: lessonData, isLoading } = useQuery({
-    queryKey: ["lesson", lessonId],
-    queryFn: () => fetchLesson({ data: { id: lessonId } }),
-    enabled: !!lessonId,
-  });
-
-  const { data: worksheetData } = useQuery({
-    queryKey: ["worksheet", lessonId],
-    queryFn: () => fetchWorksheet({ data: { lessonId } }),
-    enabled: !!lessonId,
-    retry: false,
-  });
+  const [lesson, setLesson] = useState<any>(null);
+  const [worksheet, setWorksheet] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!lessonId) return;
-    markViewed({ data: { lessonId } })
-      .then(() => queryClient.invalidateQueries({ queryKey: ["progress"] }))
-      .catch(() => {});
-  }, [lessonId, markViewed, queryClient]);
+    async function loadLessonData() {
+      if (!lessonId) return;
+      try {
+        setIsLoading(true);
+        // Fetch lesson
+        const { data: lessonData, error: lessonError } = await supabase
+          .from("lessons")
+          .select("*")
+          .eq("id", lessonId)
+          .single();
+        if (lessonError) throw lessonError;
+        setLesson(lessonData);
 
-  const lesson = lessonData?.lesson;
-  const worksheet = worksheetData?.worksheet;
+        // Fetch user and check progress
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+
+        if (userData.user) {
+          const { data: existing } = await supabase
+            .from("student_progress")
+            .select("id, completed, score, time_spent_minutes")
+            .eq("student_id", userData.user.id)
+            .eq("lesson_id", lessonId)
+            .maybeSingle();
+
+          if (!existing) {
+            await supabase
+              .from("student_progress")
+              .insert({
+                student_id: userData.user.id,
+                lesson_id: lessonId,
+                completed: false,
+                score: 0,
+                time_spent_minutes: 0,
+              });
+          }
+
+          // Check if admin to load worksheet
+          const { data: isAdmin, error: roleError } = await supabase.rpc("has_role", {
+            _user_id: userData.user.id,
+            _role: "admin",
+          });
+          if (!roleError && isAdmin) {
+            const { data: wsData } = await supabase
+              .from("worksheets")
+              .select("*")
+              .eq("lesson_id", lessonId)
+              .maybeSingle();
+            setWorksheet(wsData);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadLessonData();
+  }, [lessonId]);
 
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
