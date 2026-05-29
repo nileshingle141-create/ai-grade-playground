@@ -32,6 +32,9 @@ function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [generated, setGenerated] = useState<any>(null);
+  
+  // Storing generated lesson text to make it fully editable
+  const [lessonText, setLessonText] = useState("");
 
   const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/rz4j66q2149zn4ylrcx99x32jem961ms";
 
@@ -67,13 +70,16 @@ function AdminPage() {
     setLoading(true);
     setGenerated(null);
     try {
+      // Append explicit instructions to the topic to force the AI generator to output long 15-minute lessons
+      const formattedTopic = `${topic} (Please write a highly comprehensive, detailed 15-minute reading length lesson with thorough, engaging, child-friendly explanations, key concepts, and interesting stories)`;
+
       const res = await fetch(MAKE_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           grade: parseInt(grade),
           subject,
-          topic,
+          topic: formattedTopic,
           duration: parseInt(duration),
         }),
       });
@@ -87,7 +93,8 @@ function AdminPage() {
         answer_key: result.answer_key ?? "",
         lesson_id: result.lesson_id,
       });
-      toast.success("Content generated!");
+      setLessonText(result.lesson ?? "");
+      toast.success("Lengthy 15-minute lesson generated!");
     } catch (err: any) {
       toast.error(err.message || "Generation failed");
     } finally {
@@ -99,6 +106,14 @@ function AdminPage() {
     if (!generated) return;
     setSaving(true);
     try {
+      // 1. Sync the edited/expanded lesson content back to the database
+      const { error: lessonError } = await supabase
+        .from("lessons")
+        .update({ lesson_content: lessonText })
+        .eq("id", generated.lesson_id);
+      if (lessonError) throw lessonError;
+
+      // 2. Save quizzes
       const rows = generated.quiz.map((q: any) => ({
         lesson_id: generated.lesson_id,
         question: q.question ?? q.q ?? "",
@@ -112,8 +127,9 @@ function AdminPage() {
         const { error } = await supabase.from("quizzes").insert(rows);
         if (error) throw error;
       }
-      toast.success("Lesson saved!");
+      toast.success("15-minute Lesson and Quizzes saved to database!");
       setGenerated(null);
+      setLessonText("");
     } catch (err: any) {
       toast.error(err.message || "Save failed");
     } finally {
@@ -224,8 +240,8 @@ function AdminPage() {
                   <TabsTrigger value="answers" className="flex-1 rounded-xl font-bold"><KeyRound className="mr-2 h-4 w-4" />Answer Key</TabsTrigger>
                 </TabsList>
                 <TabsContent value="lesson" className="p-5">
-                  <h3 className="font-heading text-lg font-bold">{topic}</h3>
-                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">{generated.lesson}</p>
+                  <h3 className="font-heading text-lg font-bold mb-3">{topic} (Review & Edit content)</h3>
+                  <Textarea value={lessonText} onChange={(e) => setLessonText(e.target.value)} className="min-h-[250px] rounded-xl font-sans text-sm leading-relaxed" />
                 </TabsContent>
                 <TabsContent value="quiz" className="p-5 space-y-3">
                   {generated.quiz.length === 0 && (
