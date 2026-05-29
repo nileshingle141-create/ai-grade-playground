@@ -20,6 +20,7 @@ import { Route as _authenticatedDashboardRouteImport } from './routes/__authenti
 import { Route as _authenticatedSubjectSubjectIdRouteImport } from './routes/__authenticated/subject.$subjectId'
 import { Route as _authenticatedLessonLessonIdRouteImport } from './routes/__authenticated/lesson.$lessonId'
 import { Route as _authenticatedLessonLessonIdQuizRouteImport } from './routes/__authenticated/lesson.$lessonId.quiz'
+import { Route as _authenticatedLessonLessonIdIndexRouteImport } from './routes/__authenticated/lesson.$lessonId.index'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -72,6 +73,12 @@ const _authenticatedLessonLessonIdRoute =
     path: '/lesson/$lessonId',
     getParentRoute: () => _authenticatedRoute,
   } as any)
+const _authenticatedLessonLessonIdIndexRoute =
+  _authenticatedLessonLessonIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => _authenticatedLessonLessonIdRoute,
+  } as any)
 const _authenticatedLessonLessonIdQuizRoute =
   _authenticatedLessonLessonIdQuizRouteImport.update({
     id: '/quiz',
@@ -87,7 +94,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof _authenticatedDashboardRoute
   '/progress': typeof _authenticatedProgressRoute
   '/subjects': typeof _authenticatedSubjectsRoute
-  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
+  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdIndexRoute
   '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
   '/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
 }
@@ -99,7 +106,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof _authenticatedDashboardRoute
   '/progress': typeof _authenticatedProgressRoute
   '/subjects': typeof _authenticatedSubjectsRoute
-  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
+  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdIndexRoute
   '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
   '/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
 }
@@ -115,6 +122,7 @@ export interface FileRoutesById {
   '/__authenticated/subjects': typeof _authenticatedSubjectsRoute
   '/__authenticated/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
   '/__authenticated/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
+  '/__authenticated/lesson/$lessonId/': typeof _authenticatedLessonLessonIdIndexRoute
   '/__authenticated/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
 }
 export interface FileRouteTypes {
@@ -154,8 +162,9 @@ export interface FileRouteTypes {
     | '/__authenticated/subjects'
     | '/__authenticated/lesson/$lessonId'
     | '/__authenticated/subject/$subjectId'
+    | '/__authenticated/lesson/$lessonId/'
     | '/__authenticated/lesson/$lessonId/quiz'
-  fileRoutesById: FileRoutesById
+  fileRoutesById: FileRouteTypes['fileRoutesById']
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
@@ -237,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _authenticatedLessonLessonIdRouteImport
       parentRoute: typeof _authenticatedRoute
     }
+    '/__authenticated/lesson/$lessonId/': {
+      id: '/__authenticated/lesson/$lessonId/'
+      path: '/'
+      fullPath: '/lesson/$lessonId/'
+      preLoaderRoute: typeof _authenticatedLessonLessonIdIndexRouteImport
+      parentRoute: typeof _authenticatedLessonLessonIdRoute
+    }
     '/__authenticated/lesson/$lessonId/quiz': {
       id: '/__authenticated/lesson/$lessonId/quiz'
       path: '/quiz'
@@ -248,11 +264,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface _authenticatedLessonLessonIdRouteChildren {
+  _authenticatedLessonLessonIdIndexRoute: typeof _authenticatedLessonLessonIdIndexRoute
   _authenticatedLessonLessonIdQuizRoute: typeof _authenticatedLessonLessonIdQuizRoute
 }
 
 const _authenticatedLessonLessonIdRouteChildren: _authenticatedLessonLessonIdRouteChildren =
   {
+    _authenticatedLessonLessonIdIndexRoute:
+      _authenticatedLessonLessonIdIndexRoute,
     _authenticatedLessonLessonIdQuizRoute:
       _authenticatedLessonLessonIdQuizRoute,
   }
