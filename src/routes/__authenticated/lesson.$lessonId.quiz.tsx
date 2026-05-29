@@ -6,11 +6,13 @@ import { ArrowLeft, Clock, CheckCircle2, XCircle, Trophy, Loader2 } from "lucide
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/__authenticated/lesson/$lessonId/quiz")({
   component: QuizPage,
 });
 
+type Quiz = { id: string; question: string; option_a: string; option_b: string; option_c: string; option_d: string };
 type QuizResult = { id: string; correctAnswer: string; userAnswer: string | null; isCorrect: boolean };
 
 function QuizPage() {
@@ -18,12 +20,12 @@ function QuizPage() {
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentQ, setCurrentQ] = useState(0);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [selected, setSelected] = useState(null);
+  const [answers, setAnswers] = useState>({});
   const [submitted, setSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(600);
   const [startTime] = useState(Date.now());
-  const [results, setResults] = useState<QuizResult[]>([]);
+  const [results, setResults] = useState([]);
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
 
@@ -52,7 +54,7 @@ function QuizPage() {
   }, [lessonId]);
 
   useEffect(() => {
-    if (submitted) return;
+    if (submitted || isLoading) return;
     const timer = setInterval(() => {
       setTimeLeft((t) => {
         if (t <= 1) {
@@ -62,10 +64,9 @@ function QuizPage() {
         }
         return t - 1;
       });
-    }, 1000);
+    }, [submitted, isLoading]);
     return () => clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitted]);
+  }, [submitted, isLoading]);
 
   const currentQuiz = quizzes[currentQ];
   const total = quizzes.length;
@@ -127,64 +128,62 @@ function QuizPage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  if (isLoading) return (
+    
+      
+    
+  );
+
+  if (fetchError) return (
+    
+      Error loading quiz: {fetchError}
+      Back to Dashboard
+    
+  );
+
+  if (total === 0) return (
+    
+      No quiz questions found for this lesson.
+      Back to Dashboard
+    
+  );
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
-      <div className="mx-auto max-w-2xl">
-        <Link to="/lesson/$lessonId" params={{ lessonId }} className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to Lesson
-        </Link>
-
-        <div className="mb-4 flex items-center justify-between">
-          <h1 className="font-heading text-xl font-bold text-foreground">Quiz</h1>
-          <span className="flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm font-bold text-muted-foreground">
-            <Clock className="h-4 w-4" /> {formatTime(timeLeft)}
-          </span>
-        </div>
-
-        <div className="mb-6 flex gap-1.5">
+    
+      
+        
+           Back to Lesson
+        
+        
+          Quiz
+          
+             {formatTime(timeLeft)}
+          
+        
+        
           {quizzes.map((_: any, i: number) => (
-            <div key={i} className={`h-2 flex-1 rounded-full transition-colors ${
-              i < currentQ ? "bg-primary" : i === currentQ ? "bg-accent" : "bg-muted"
-            }`} />
+            
           ))}
-        </div>
-
+        
         {!submitted ? (
-          <motion.div key={currentQ} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <p className="mb-1 text-sm text-muted-foreground">Question {currentQ + 1} of {total}</p>
-              <h2 className="mb-4 font-heading text-lg font-bold text-foreground">{currentQuiz?.question}</h2>
-              <div className="space-y-2">
+          
+            
+              Question {currentQ + 1} of {total}
+              {currentQuiz?.question}
+              
                 {[
                   { key: "A", text: currentQuiz?.option_a },
                   { key: "B", text: currentQuiz?.option_b },
                   { key: "C", text: currentQuiz?.option_c },
                   { key: "D", text: currentQuiz?.option_d },
                 ].map((opt) => (
-                  <button
-                    key={opt.key}
-                    onClick={() => handleSelect(opt.key)}
-                    className={`flex w-full items-center gap-3 rounded-xl border p-4 text-left transition-all ${
-                      selected === opt.key
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-muted/50 hover:bg-muted"
-                    }`}
-                  >
-                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold ${
-                      selected === opt.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                    }`}>
+                   handleSelect(opt.key)}
+                    className={`flex w-full items-center gap-3 rounded-xl border p-4 text-left transition-all ${selected === opt.key ? "border-primary bg-primary/10" : "border-border bg-muted/50 hover:bg-muted"}`}>
+                    
                       {opt.key}
-                    </span>
-                    <span className="text-sm font-medium text-foreground">{opt.text}</span>
-                  </button>
+                    
+                    {opt.text}
+                  
                 ))}
               </div>
             </div>
@@ -198,52 +197,49 @@ function QuizPage() {
                   Next
                 </Button>
               ) : (
-                <Button onClick={handleSubmit} className="rounded-xl font-bold bg-accent text-accent-foreground hover:bg-accent/90">
+                
                   Submit Quiz
-                </Button>
               )}
-            </div>
-          </motion.div>
+            
+          
         ) : (
-          <AnimatePresence>
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
-              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-                <Trophy className="h-10 w-10 text-primary" />
-              </div>
-              <h2 className="font-heading text-2xl font-bold text-foreground">Quiz Complete!</h2>
-              <p className="mt-2 text-lg text-muted-foreground">You scored</p>
-              <p className="font-heading text-5xl font-extrabold text-primary">{score}%</p>
-              <p className="mt-2 text-sm text-muted-foreground">{correctCount} out of {total} correct</p>
-
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <Link to="/lesson/$lessonId" params={{ lessonId }} className="inline-flex">
-                  <Button variant="outline" className="rounded-xl font-bold">Review Lesson</Button>
-                </Link>
-                <Link to="/dashboard" className="inline-flex">
-                  <Button className="rounded-xl font-bold">Back to Dashboard</Button>
-                </Link>
-              </div>
-
-              <div className="mt-8 space-y-3 text-left">
+          
+            
+              
+                
+              
+              Quiz Complete!
+              You scored
+              {score}%
+              {correctCount} out of {total} correct
+              
+                
+                  Review Lesson
+                
+                
+                  Back to Dashboard
+                
+              
+              
                 {results.map((r, i) => {
-                  const q = quizzes.find((qq: any) => qq.id === r.id);
+                  const q = quizzes.find((qq) => qq.id === r.id);
                   return (
-                    <div key={r.id} className={`rounded-xl border p-3 ${r.isCorrect ? "border-science/30 bg-science/5" : "border-destructive/30 bg-destructive/5"}`}>
-                      <div className="flex items-start gap-2">
-                        {r.isCorrect ? <CheckCircle2 className="mt-0.5 h-4 w-4 text-science" /> : <XCircle className="mt-0.5 h-4 w-4 text-destructive" />}
-                        <div>
-                          <p className="text-sm font-bold text-foreground">{i + 1}. {q?.question}</p>
-                          <p className="text-xs text-muted-foreground">Your answer: {r.userAnswer || "-"} • Correct: {r.correctAnswer}</p>
-                        </div>
-                      </div>
-                    </div>
+                    
+                      
+                        {r.isCorrect ?  : }
+                        
+                          {i + 1}. {q?.question}
+                          Your answer: {r.userAnswer || "-"} • Correct: {r.correctAnswer}
+                        
+                      
+                    
                   );
                 })}
-              </div>
-            </motion.div>
-          </AnimatePresence>
+              
+            
+          
         )}
-      </div>
-    </div>
+      
+    
   );
 }
