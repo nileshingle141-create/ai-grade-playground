@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as _authenticatedRouteImport } from './routes/__authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as _authenticatedSubjectsRouteImport } from './routes/__authenticated/subjects'
+import { Route as _authenticatedSettingsRouteImport } from './routes/__authenticated/settings'
 import { Route as _authenticatedProgressRouteImport } from './routes/__authenticated/progress'
 import { Route as _authenticatedDashboardRouteImport } from './routes/__authenticated/dashboard'
 import { Route as _authenticatedSubjectSubjectIdRouteImport } from './routes/__authenticated/subject.$subjectId'
@@ -49,6 +50,11 @@ const IndexRoute = IndexRouteImport.update({
 const _authenticatedSubjectsRoute = _authenticatedSubjectsRouteImport.update({
   id: '/subjects',
   path: '/subjects',
+  getParentRoute: () => _authenticatedRoute,
+} as any)
+const _authenticatedSettingsRoute = _authenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => _authenticatedRoute,
 } as any)
 const _authenticatedProgressRoute = _authenticatedProgressRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/dashboard': typeof _authenticatedDashboardRoute
   '/progress': typeof _authenticatedProgressRoute
+  '/settings': typeof _authenticatedSettingsRoute
   '/subjects': typeof _authenticatedSubjectsRoute
   '/lesson/$lessonId': typeof _authenticatedLessonLessonIdIndexRoute
   '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/dashboard': typeof _authenticatedDashboardRoute
   '/progress': typeof _authenticatedProgressRoute
+  '/settings': typeof _authenticatedSettingsRoute
   '/subjects': typeof _authenticatedSubjectsRoute
   '/lesson/$lessonId': typeof _authenticatedLessonLessonIdIndexRoute
   '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/__authenticated/dashboard': typeof _authenticatedDashboardRoute
   '/__authenticated/progress': typeof _authenticatedProgressRoute
+  '/__authenticated/settings': typeof _authenticatedSettingsRoute
   '/__authenticated/subjects': typeof _authenticatedSubjectsRoute
   '/__authenticated/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
   '/__authenticated/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard'
     | '/progress'
+    | '/settings'
     | '/subjects'
     | '/lesson/$lessonId'
     | '/subject/$subjectId'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard'
     | '/progress'
+    | '/settings'
     | '/subjects'
     | '/lesson/$lessonId'
     | '/subject/$subjectId'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/__authenticated/dashboard'
     | '/__authenticated/progress'
+    | '/__authenticated/settings'
     | '/__authenticated/subjects'
     | '/__authenticated/lesson/$lessonId'
     | '/__authenticated/subject/$subjectId'
@@ -216,6 +228,13 @@ declare module '@tanstack/react-router' {
       path: '/subjects'
       fullPath: '/subjects'
       preLoaderRoute: typeof _authenticatedSubjectsRouteImport
+      parentRoute: typeof _authenticatedRoute
+    }
+    '/__authenticated/settings': {
+      id: '/__authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof _authenticatedSettingsRouteImport
       parentRoute: typeof _authenticatedRoute
     }
     '/__authenticated/progress': {
@@ -284,6 +303,7 @@ const _authenticatedLessonLessonIdRouteWithChildren =
 interface _authenticatedRouteChildren {
   _authenticatedDashboardRoute: typeof _authenticatedDashboardRoute
   _authenticatedProgressRoute: typeof _authenticatedProgressRoute
+  _authenticatedSettingsRoute: typeof _authenticatedSettingsRoute
   _authenticatedSubjectsRoute: typeof _authenticatedSubjectsRoute
   _authenticatedLessonLessonIdRoute: typeof _authenticatedLessonLessonIdRouteWithChildren
   _authenticatedSubjectSubjectIdRoute: typeof _authenticatedSubjectSubjectIdRoute
@@ -292,6 +312,7 @@ interface _authenticatedRouteChildren {
 const _authenticatedRouteChildren: _authenticatedRouteChildren = {
   _authenticatedDashboardRoute: _authenticatedDashboardRoute,
   _authenticatedProgressRoute: _authenticatedProgressRoute,
+  _authenticatedSettingsRoute: _authenticatedSettingsRoute,
   _authenticatedSubjectsRoute: _authenticatedSubjectsRoute,
   _authenticatedLessonLessonIdRoute:
     _authenticatedLessonLessonIdRouteWithChildren,
