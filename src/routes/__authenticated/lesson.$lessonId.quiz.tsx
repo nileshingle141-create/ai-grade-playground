@@ -13,11 +13,80 @@ export const Route = createFileRoute("/__authenticated/lesson/$lessonId/quiz")({
 
 type QuizResult = { id: string; correctAnswer: string; userAnswer: string | null; isCorrect: boolean };
 
+const SAMPLE_QUIZZES_BY_TOPIC: Record<string, Array<{
+  question: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  correct_answer: string;
+}>> = {
+  "Counting 1 to 20": [
+    { question: "What number comes after 15?", option_a: "14", option_b: "16", option_c: "17", option_d: "18", correct_answer: "B" },
+    { question: "How many fingers do you have on both hands?", option_a: "5", option_b: "8", option_c: "10", option_d: "20", correct_answer: "C" },
+    { question: "What is 10 + 5?", option_a: "14", option_b: "15", option_c: "16", option_d: "20", correct_answer: "B" },
+    { question: "Count backwards: 20, 19, 18, __?", option_a: "17", option_b: "16", option_c: "15", option_d: "14", correct_answer: "A" },
+    { question: "How many toes do you have?", option_a: "5", option_b: "8", option_c: "10", option_d: "20", correct_answer: "D" },
+  ],
+  "Shapes Around Us": [
+    { question: "Which shape is round like a ball?", option_a: "Square", option_b: "Triangle", option_c: "Circle", option_d: "Rectangle", correct_answer: "C" },
+    { question: "How many sides does a triangle have?", option_a: "2", option_b: "3", option_c: "4", option_d: "5", correct_answer: "B" },
+    { question: "A pizza slice looks like which shape?", option_a: "Circle", option_b: "Square", option_c: "Triangle", option_d: "Rectangle", correct_answer: "C" },
+    { question: "A book is usually which shape?", option_a: "Circle", option_b: "Square", option_c: "Triangle", option_d: "Rectangle", correct_answer: "D" },
+    { question: "A building block is usually what shape?", option_a: "Circle", option_b: "Square", option_c: "Triangle", option_d: "Oval", correct_answer: "B" },
+  ],
+  "The Alphabet A-M": [
+    { question: "What letter comes after B?", option_a: "A", option_b: "C", option_c: "D", option_d: "E", correct_answer: "B" },
+    { question: "A is for?", option_a: "Ball", option_b: "Cat", option_c: "Apple", option_d: "Dog", correct_answer: "C" },
+    { question: "How many letters are from A to M?", option_a: "10", option_b: "11", option_c: "12", option_d: "13", correct_answer: "D" },
+    { question: "Which letter makes the sound /b/ ?", option_a: "A", option_b: "B", option_c: "C", option_d: "D", correct_answer: "B" },
+    { question: "M is for?", option_a: "Moon", option_b: "Sun", option_c: "Star", option_d: "Cloud", correct_answer: "A" },
+  ],
+  "My Family": [
+    { question: "Who takes care of you at home?", option_a: "Teacher", option_b: "Mother and Father", option_c: "Doctor", option_d: "Friend", correct_answer: "B" },
+    { question: "Your father's mother is your?", option_a: "Sister", option_b: "Aunt", option_c: "Grandmother", option_d: "Cousin", correct_answer: "C" },
+    { question: "A family pet could be a?", option_a: "Car", option_b: "Dog", option_c: "Tree", option_d: "Book", correct_answer: "B" },
+    { question: "Who is your father's brother?", option_a: "Uncle", option_b: "Grandfather", option_c: "Cousin", option_d: "Nephew", correct_answer: "A" },
+    { question: "A brother and sister are your?", option_a: "Parents", option_b: "Siblings", option_c: "Cousins", option_d: "Friends", correct_answer: "B" },
+  ],
+  "Plants Around Us": [
+    { question: "What do plants need to grow?", option_a: "Ice cream", option_b: "Water and sunlight", option_c: "Toys", option_d: "Shoes", correct_answer: "B" },
+    { question: "Which part of the plant is underground?", option_a: "Leaf", option_b: "Flower", option_c: "Root", option_d: "Stem", correct_answer: "C" },
+    { question: "Trees give us?", option_a: "Candy", option_b: "Clean air", option_c: "Toys", option_d: "Cars", correct_answer: "B" },
+    { question: "Which plant gives us apples?", option_a: "Rose", option_b: "Oak tree", option_c: "Apple tree", option_d: "Pine tree", correct_answer: "C" },
+    { question: "Leaves are usually what color?", option_a: "Blue", option_b: "Red", option_c: "Green", option_d: "Yellow", correct_answer: "C" },
+  ],
+  "Animals and Their Homes": [
+    { question: "Where do birds live?", option_a: "Burrow", option_b: "Nest", option_c: "Pond", option_d: "Hive", correct_answer: "B" },
+    { question: "A rabbit lives in a?", option_a: "Nest", option_b: "Kennel", option_c: "Burrow", option_d: "Hive", correct_answer: "C" },
+    { question: "Bees live in a?", option_a: "Nest", option_b: "Burrow", option_c: "Hive", option_d: "Kennel", correct_answer: "C" },
+    { question: "Where do fish live?", option_a: "Air", option_b: "Water", option_c: "Trees", option_d: "Ground", correct_answer: "B" },
+    { question: "A dog lives in a?", option_a: "Nest", option_b: "Burrow", option_c: "Kennel", option_d: "Hive", correct_answer: "C" },
+  ],
+  "My School": [
+    { question: "What do we do at school?", option_a: "Sleep", option_b: "Learn and play", option_c: "Cook", option_d: "Drive", correct_answer: "B" },
+    { question: "Who helps us learn at school?", option_a: "Driver", option_b: "Teacher", option_c: "Doctor", option_d: "Farmer", correct_answer: "B" },
+    { question: "Where do we play at school?", option_a: "Library", option_b: "Playground", option_c: "Canteen", option_d: "Office", correct_answer: "B" },
+    { question: "Books are kept in the?", option_a: "Playground", option_b: "Canteen", option_c: "Library", option_d: "Office", correct_answer: "C" },
+    { question: "We should be polite to our teachers?", option_a: "Rude", option_b: "Polite", option_c: "Noisy", option_d: "Lazy", correct_answer: "B" },
+  ],
+  "Good Habits": [
+    { question: "How many times should we brush our teeth daily?", option_a: "One", option_b: "Two", option_c: "Three", option_d: "Four", correct_answer: "B" },
+    { question: "When should we wash our hands?", option_a: "After eating only", option_b: "Before eating only", option_c: "Before and after eating", option_d: "Never", correct_answer: "C" },
+    { question: "What should we say when someone helps us?", option_a: "Go away", option_b: "Thank you", option_c: "No", option_d: "Maybe", correct_answer: "B" },
+    { question: "Helping parents is a?", option_a: "Bad habit", option_b: "Good habit", option_c: "Boring task", option_d: "Waste of time", correct_answer: "B" },
+    { question: "We should say please when we request something?", option_a: "Demand something", option_b: "Request something", option_c: "Take something", option_d: "Hide something", correct_answer: "B" },
+  ]
+};
+
 function QuizPage() {
   const { lessonId } = Route.useParams();
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [lessonTopic, setLessonTopic] = useState<string | null>(null);
+  const [isSeeding, setIsSeeding] = useState(false);
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   
@@ -43,12 +112,32 @@ function QuizPage() {
       try {
         setIsLoading(true);
         setFetchError(null);
+        
+        // 1. Fetch quizzes
         const { data: quizData, error } = await supabase
           .from("quizzes")
           .select("id, lesson_id, question, option_a, option_b, option_c, option_d, correct_answer")
           .eq("lesson_id", lessonId);
         if (error) throw error;
         setQuizzes(quizData ?? []);
+
+        // 2. Fetch lesson topic for auto-seeding
+        const { data: lessonData } = await supabase
+          .from("lessons")
+          .select("topic")
+          .eq("id", lessonId)
+          .single();
+        if (lessonData) setLessonTopic(lessonData.topic);
+
+        // 3. Check user admin status
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: hasAdminRole } = await supabase.rpc("has_role", {
+            _user_id: user.id,
+            _role: "admin"
+          });
+          setIsAdmin(!!hasAdminRole);
+        }
       } catch (err: any) {
         console.error(err);
         setFetchError(err.message || "Failed to load quizzes");
@@ -59,6 +148,42 @@ function QuizPage() {
     }
     loadQuizzes();
   }, [lessonId]);
+
+  async function handleAutoSeed() {
+    if (!lessonTopic || !lessonId) return;
+    const sample = SAMPLE_QUIZZES_BY_TOPIC[lessonTopic];
+    if (!sample) {
+      toast.error(`No sample quiz available for topic: ${lessonTopic}`);
+      return;
+    }
+    try {
+      setIsSeeding(true);
+      const rows = sample.map((q) => ({
+        lesson_id: lessonId,
+        question: q.question,
+        option_a: q.option_a,
+        option_b: q.option_b,
+        option_c: q.option_c,
+        option_d: q.option_d,
+        correct_answer: q.correct_answer,
+      }));
+      const { error } = await supabase.from("quizzes").insert(rows);
+      if (error) throw error;
+      toast.success("Sample quizzes auto-seeded!");
+      
+      // Reload quizzes
+      const { data: quizData } = await supabase
+        .from("quizzes")
+        .select("id, lesson_id, question, option_a, option_b, option_c, option_d, correct_answer")
+        .eq("lesson_id", lessonId);
+      setQuizzes(quizData ?? []);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to seed quizzes");
+    } finally {
+      setIsSeeding(false);
+    }
+  }
 
   useEffect(() => {
     if (submitted) return;
@@ -219,13 +344,48 @@ function QuizPage() {
   }
 
   if (quizzes.length === 0) {
+    const hasSampleQuiz = lessonTopic && SAMPLE_QUIZZES_BY_TOPIC[lessonTopic];
+
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
         <HelpCircle className="mx-auto h-16 w-16 text-indigo-400 mb-4 animate-bounce" />
         <h2 className="text-2xl font-black text-white mb-2">No Quiz Questions Found</h2>
-        <p className="text-white/60 mb-6 max-w-md">There are no quiz questions seeded for this lesson in the database yet.</p>
+        <p className="text-white/60 mb-4 max-w-md">
+          {lessonTopic ? `There are no quiz questions seeded for the topic "${lessonTopic}" yet.` : "There are no quiz questions seeded for this lesson in the database yet."}
+        </p>
+
+        {isAdmin && hasSampleQuiz ? (
+          <div className="mb-6 flex flex-col items-center gap-2">
+            <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">✨ Admin Feature Available</p>
+            <Button 
+              onClick={handleAutoSeed} 
+              disabled={isSeeding}
+              className="rounded-2xl font-black bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-6 shadow-lg shadow-emerald-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer"
+            >
+              {isSeeding ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Seeding Quizzes...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-5 w-5 animate-pulse" /> Auto-Seed Sample Quizzes
+                </>
+              )}
+            </Button>
+          </div>
+        ) : !isAdmin ? (
+          <div className="mb-6 rounded-2xl bg-white/5 border border-white/10 p-4 max-w-md text-left">
+            <p className="text-xs font-bold text-yellow-400 uppercase tracking-widest mb-1.5 flex items-center gap-1">💡 Developer / Student Hint</p>
+            <p className="text-xs text-white/80 leading-relaxed font-semibold">
+              The quizzes table is currently empty in your database. You can easily populate all Grade 1 quizzes by copying and running the <code className="bg-white/15 px-1.5 py-0.5 rounded text-[11px]">seed_quizzes_editor.sql</code> script (located in your workspace root folder) inside the **Supabase SQL Editor** dashboard.
+            </p>
+          </div>
+        ) : (
+          <p className="text-xs text-white/40 mb-6 italic">No pre-defined sample quizzes available for topic: "{lessonTopic || "unknown"}"</p>
+        )}
+
         <Link to="/dashboard">
-          <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 cursor-pointer">
+          <Button variant="outline" className="rounded-2xl font-black border-white/20 hover:bg-white/5 text-white px-6 cursor-pointer">
             Back to Dashboard
           </Button>
         </Link>
