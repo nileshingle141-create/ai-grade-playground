@@ -286,5 +286,4 @@ function LessonPage() {
       </div>
     </div>
   );
-};
 }
