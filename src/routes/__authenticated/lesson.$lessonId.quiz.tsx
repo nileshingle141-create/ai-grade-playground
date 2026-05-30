@@ -166,13 +166,13 @@ function QuizPage() {
             setQuizzes(quizData);
           } else {
             // Fallback to Server Function (bypasses RLS)
-            const serverRes = await getQuizzesWithAnswersServer({ lessonId });
+            const serverRes = await getQuizzesWithAnswersServer({ data: { lessonId } });
             setQuizzes(serverRes.quizzes ?? []);
           }
         } catch (clientErr) {
           console.warn("Client-side quiz fetch failed, attempting server function fallback:", clientErr);
           try {
-            const serverRes = await getQuizzesWithAnswersServer({ lessonId });
+            const serverRes = await getQuizzesWithAnswersServer({ data: { lessonId } });
             setQuizzes(serverRes.quizzes ?? []);
           } catch (serverErr: any) {
             throw new Error(serverErr.message || "Failed to load quizzes from both client and server");
@@ -231,11 +231,11 @@ function QuizPage() {
       }));
       
       // Call Server Function to seed (bypasses RLS completely)
-      await seedQuizzesServer({ lessonId, quizzes: rows });
+      await seedQuizzesServer({ data: { lessonId, quizzes: rows } });
       toast.success("Sample quizzes auto-seeded!");
       
       // Reload quizzes using Server Function to bypass RLS
-      const serverRes = await getQuizzesWithAnswersServer({ lessonId });
+      const serverRes = await getQuizzesWithAnswersServer({ data: { lessonId } });
       setQuizzes(serverRes.quizzes ?? []);
     } catch (err: any) {
       console.error(err);
