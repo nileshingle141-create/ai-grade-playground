@@ -28,12 +28,15 @@ const SAMPLE_QUIZZES_BY_TOPIC: Record<string, Array<{
     { question: "Count backwards: 20, 19, 18, __?", option_a: "17", option_b: "16", option_c: "15", option_d: "14", correct_answer: "A" },
     { question: "How many toes do you have?", option_a: "5", option_b: "8", option_c: "10", option_d: "20", correct_answer: "D" },
   ],
-  "Shapes Around Us": [
-    { question: "Which shape is round like a ball?", option_a: "Square", option_b: "Triangle", option_c: "Circle", option_d: "Rectangle", correct_answer: "C" },
-    { question: "How many sides does a triangle have?", option_a: "2", option_b: "3", option_c: "4", option_d: "5", correct_answer: "B" },
-    { question: "A pizza slice looks like which shape?", option_a: "Circle", option_b: "Square", option_c: "Triangle", option_d: "Rectangle", correct_answer: "C" },
-    { question: "A book is usually which shape?", option_a: "Circle", option_b: "Square", option_c: "Triangle", option_d: "Rectangle", correct_answer: "D" },
-    { question: "A building block is usually what shape?", option_a: "Circle", option_b: "Square", option_c: "Triangle", option_d: "Oval", correct_answer: "B" },
+  "Simple Addition": [
+    { question: "2 + 3 = ?", option_a: "4", option_b: "5", option_c: "6", option_d: "7", correct_answer: "B" },
+    { question: "1 + 4 = ?", option_a: "5", option_b: "3", option_c: "6", option_d: "4", correct_answer: "A" },
+    { question: "6 + 2 = ?", option_a: "7", option_b: "8", option_c: "9", option_d: "10", correct_answer: "B" }
+  ],
+  "The Alphabet": [
+    { question: "Which letter comes after B?", option_a: "A", option_b: "C", option_c: "D", option_d: "E", correct_answer: "B" },
+    { question: "How many letters are there in the English alphabet?", option_a: "24", option_b: "25", option_c: "26", option_d: "27", correct_answer: "C" },
+    { question: "Which is the last letter of the alphabet?", option_a: "X", option_b: "Y", option_c: "Z", option_d: "W", correct_answer: "C" }
   ],
   "The Alphabet A-M": [
     { question: "What letter comes after B?", option_a: "A", option_b: "C", option_c: "D", option_d: "E", correct_answer: "B" },
@@ -41,6 +44,28 @@ const SAMPLE_QUIZZES_BY_TOPIC: Record<string, Array<{
     { question: "How many letters are from A to M?", option_a: "10", option_b: "11", option_c: "12", option_d: "13", correct_answer: "D" },
     { question: "Which letter makes the sound /b/ ?", option_a: "A", option_b: "B", option_c: "C", option_d: "D", correct_answer: "B" },
     { question: "M is for?", option_a: "Moon", option_b: "Sun", option_c: "Star", option_d: "Cloud", correct_answer: "A" },
+  ],
+  "Vowels and Consonants": [
+    { question: "Which of the following is a vowel?", option_a: "B", option_b: "E", option_c: "K", option_d: "M", correct_answer: "B" },
+    { question: "How many vowels are there in English?", option_a: "3", option_b: "4", option_c: "5", option_d: "6", correct_answer: "C" },
+    { question: "Is the letter T a vowel?", option_a: "Yes", option_b: "No", option_c: "Sometimes", option_d: "Maybe", correct_answer: "B" }
+  ],
+  "My Body Parts": [
+    { question: "What body part do we use to see things?", option_a: "Ears", option_b: "Eyes", option_c: "Nose", option_d: "Mouth", correct_answer: "B" },
+    { question: "How many ears do you have?", option_a: "1", option_b: "2", option_c: "3", option_d: "4", correct_answer: "B" },
+    { question: "What do we smell nice flowers with?", option_a: "Eyes", option_b: "Hands", option_c: "Nose", option_d: "Feet", correct_answer: "C" }
+  ],
+  "Living and Non-living": [
+    { question: "Which of these is a living thing?", option_a: "Chair", option_b: "Dog", option_c: "Pen", option_d: "Cup", correct_answer: "B" },
+    { question: "Which of these is a non-living thing?", option_a: "Tree", option_b: "Fish", option_c: "Stone", option_d: "Bird", correct_answer: "C" },
+    { question: "Do plants grow like other living things?", option_a: "Yes", option_b: "No", option_c: "Never", option_d: "Rarely", correct_answer: "A" }
+  ],
+  "Shapes Around Us": [
+    { question: "Which shape is round like a ball?", option_a: "Square", option_b: "Triangle", option_c: "Circle", option_d: "Rectangle", correct_answer: "C" },
+    { question: "How many sides does a triangle have?", option_a: "2", option_b: "3", option_c: "4", option_d: "5", correct_answer: "B" },
+    { question: "A pizza slice looks like which shape?", option_a: "Circle", option_b: "Square", option_c: "Triangle", option_d: "Rectangle", correct_answer: "C" },
+    { question: "A book is usually which shape?", option_a: "Circle", option_b: "Square", option_c: "Triangle", option_d: "Rectangle", correct_answer: "D" },
+    { question: "A building block is usually what shape?", option_a: "Circle", option_b: "Square", option_c: "Triangle", option_d: "Oval", correct_answer: "B" },
   ],
   "My Family": [
     { question: "Who takes care of you at home?", option_a: "Teacher", option_b: "Mother and Father", option_c: "Doctor", option_d: "Friend", correct_answer: "B" },
@@ -76,7 +101,22 @@ const SAMPLE_QUIZZES_BY_TOPIC: Record<string, Array<{
     { question: "What should we say when someone helps us?", option_a: "Go away", option_b: "Thank you", option_c: "No", option_d: "Maybe", correct_answer: "B" },
     { question: "Helping parents is a?", option_a: "Bad habit", option_b: "Good habit", option_c: "Boring task", option_d: "Waste of time", correct_answer: "B" },
     { question: "We should say please when we request something?", option_a: "Demand something", option_b: "Request something", option_c: "Take something", option_d: "Hide something", correct_answer: "B" },
-  ]
+  ],
+  "Safe and Clean": [
+    { question: "When should we wash our hands?", option_a: "Never", option_b: "Before eating", option_c: "Once a year", option_d: "Only Sunday", correct_answer: "B" },
+    { question: "How many times should we brush our teeth in a day?", option_a: "1", option_b: "2", option_c: "5", option_d: "0", correct_answer: "B" },
+    { question: "What does a red traffic light mean?", option_a: "Go", option_b: "Stop", option_c: "Run", option_d: "Dance", correct_answer: "B" }
+  ],
+  "Parts of Computer": [
+    { question: "What shows pictures on a computer?", option_a: "Mouse", option_b: "Monitor", option_c: "CPU", option_d: "Wire", correct_answer: "B" },
+    { question: "What do we use to type letters and numbers?", option_a: "Keyboard", option_b: "Screen", option_c: "Speaker", option_d: "Mouse", correct_answer: "A" },
+    { question: "What is known as the brain of the computer?", option_a: "Mouse", option_b: "CPU", option_c: "Monitor", option_d: "Cable", correct_answer: "B" }
+  ],
+  "Using the Mouse": [
+    { question: "How many main buttons does a computer mouse have?", option_a: "1", option_b: "2", option_c: "3", option_d: "4", correct_answer: "B" },
+    { question: "What action should you take to open a file?", option_a: "Single click", option_b: "Double click", option_c: "Right click", option_d: "No click", correct_answer: "B" },
+    { question: "To select an item on the screen, which click do we use?", option_a: "Left click", option_b: "Shake", option_c: "Throw", option_d: "Press all", correct_answer: "A" }
+  ],
 };
 
 function QuizPage() {
@@ -359,13 +399,13 @@ function QuizPage() {
           {lessonTopic ? `There are no quiz questions seeded for the topic "${lessonTopic}" yet.` : "There are no quiz questions seeded for this lesson in the database yet."}
         </p>
 
-        {isAdmin && hasSampleQuiz ? (
+        {hasSampleQuiz ? (
           <div className="mb-6 flex flex-col items-center gap-2">
-            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">✨ Admin Feature Available</p>
+            <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-2">✨ Quick Seeding Available</p>
             <Button 
               onClick={handleAutoSeed} 
               disabled={isSeeding}
-              className="rounded-2xl font-black bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-6 shadow-lg shadow-emerald-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer"
+              className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white px-8 py-6 shadow-lg shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer"
             >
               {isSeeding ? (
                 <>
@@ -373,20 +413,19 @@ function QuizPage() {
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-5 w-5 animate-pulse" /> Auto-Seed Sample Quizzes
+                  <Sparkles className="mr-2 h-5 w-5 animate-pulse" /> Auto-Seed Lesson Quizzes
                 </>
               )}
             </Button>
+            <p className="text-[10px] text-slate-500 dark:text-white/40 italic">Click to populate this quiz with Grade 1 curriculum questions instantly</p>
           </div>
-        ) : !isAdmin ? (
+        ) : (
           <div className="mb-6 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 max-w-md text-left shadow-sm">
             <p className="text-xs font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-widest mb-1.5 flex items-center gap-1">💡 Developer / Student Hint</p>
             <p className="text-xs text-slate-600 dark:text-white/80 leading-relaxed font-semibold">
               The quizzes table is currently empty in your database. You can easily populate all Grade 1 quizzes by copying and running the <code className="bg-slate-100 dark:bg-white/15 px-1.5 py-0.5 rounded text-[11px] text-slate-800 dark:text-white">seed_quizzes_editor.sql</code> script (located in your workspace root folder) inside the **Supabase SQL Editor** dashboard.
             </p>
           </div>
-        ) : (
-          <p className="text-xs text-slate-400 dark:text-white/40 mb-6 italic">No pre-defined sample quizzes available for topic: "{lessonTopic || "unknown"}"</p>
         )}
 
         <Link to="/dashboard">
