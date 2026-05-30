@@ -129,14 +129,19 @@ function QuizPage() {
           .single();
         if (lessonData) setLessonTopic(lessonData.topic);
 
-        // 3. Check user admin status
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data: hasAdminRole } = await supabase.rpc("has_role", {
-            _user_id: user.id,
-            _role: "admin"
-          });
-          setIsAdmin(!!hasAdminRole);
+        // 3. Check user admin status with isolated safety try-catch
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data: hasAdminRole } = await supabase.rpc("has_role", {
+              _user_id: user.id,
+              _role: "admin"
+            });
+            setIsAdmin(!!hasAdminRole);
+          }
+        } catch (adminErr) {
+          console.warn("Failed to check admin role, defaulting to false:", adminErr);
+          setIsAdmin(false);
         }
       } catch (err: any) {
         console.error(err);
@@ -322,18 +327,18 @@ function QuizPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0F172A]">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-[#0F172A] transition-colors duration-300">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
       </div>
     );
   }
 
   if (fetchError) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
         <XCircle className="mx-auto h-16 w-16 text-rose-500 mb-4" />
-        <h2 className="text-2xl font-black text-white mb-2">Error Loading Quiz</h2>
-        <p className="text-white/60 mb-6 max-w-md">{fetchError}</p>
+        <h2 className="text-2xl font-heading font-black mb-2">Error Loading Quiz</h2>
+        <p className="text-slate-500 dark:text-white/60 mb-6 max-w-md">{fetchError}</p>
         <Link to="/dashboard">
           <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 cursor-pointer">
             Back to Dashboard
@@ -347,16 +352,16 @@ function QuizPage() {
     const hasSampleQuiz = lessonTopic && SAMPLE_QUIZZES_BY_TOPIC[lessonTopic];
 
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
-        <HelpCircle className="mx-auto h-16 w-16 text-indigo-400 mb-4 animate-bounce" />
-        <h2 className="text-2xl font-black text-white mb-2">No Quiz Questions Found</h2>
-        <p className="text-white/60 mb-4 max-w-md">
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+        <HelpCircle className="mx-auto h-16 w-16 text-indigo-500 dark:text-indigo-400 mb-4 animate-bounce" />
+        <h2 className="text-2xl font-heading font-black mb-2">No Quiz Questions Found</h2>
+        <p className="text-slate-500 dark:text-white/60 mb-4 max-w-md">
           {lessonTopic ? `There are no quiz questions seeded for the topic "${lessonTopic}" yet.` : "There are no quiz questions seeded for this lesson in the database yet."}
         </p>
 
         {isAdmin && hasSampleQuiz ? (
           <div className="mb-6 flex flex-col items-center gap-2">
-            <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">✨ Admin Feature Available</p>
+            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">✨ Admin Feature Available</p>
             <Button 
               onClick={handleAutoSeed} 
               disabled={isSeeding}
@@ -374,27 +379,24 @@ function QuizPage() {
             </Button>
           </div>
         ) : !isAdmin ? (
-          <div className="mb-6 rounded-2xl bg-white/5 border border-white/10 p-4 max-w-md text-left">
-            <p className="text-xs font-bold text-yellow-400 uppercase tracking-widest mb-1.5 flex items-center gap-1">💡 Developer / Student Hint</p>
-            <p className="text-xs text-white/80 leading-relaxed font-semibold">
-              The quizzes table is currently empty in your database. You can easily populate all Grade 1 quizzes by copying and running the <code className="bg-white/15 px-1.5 py-0.5 rounded text-[11px]">seed_quizzes_editor.sql</code> script (located in your workspace root folder) inside the **Supabase SQL Editor** dashboard.
+          <div className="mb-6 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 max-w-md text-left shadow-sm">
+            <p className="text-xs font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-widest mb-1.5 flex items-center gap-1">💡 Developer / Student Hint</p>
+            <p className="text-xs text-slate-600 dark:text-white/80 leading-relaxed font-semibold">
+              The quizzes table is currently empty in your database. You can easily populate all Grade 1 quizzes by copying and running the <code className="bg-slate-100 dark:bg-white/15 px-1.5 py-0.5 rounded text-[11px] text-slate-800 dark:text-white">seed_quizzes_editor.sql</code> script (located in your workspace root folder) inside the **Supabase SQL Editor** dashboard.
             </p>
           </div>
         ) : (
-          <p className="text-xs text-white/40 mb-6 italic">No pre-defined sample quizzes available for topic: "{lessonTopic || "unknown"}"</p>
+          <p className="text-xs text-slate-400 dark:text-white/40 mb-6 italic">No pre-defined sample quizzes available for topic: "{lessonTopic || "unknown"}"</p>
         )}
 
         <Link to="/dashboard">
-          <Button variant="outline" className="rounded-2xl font-black border-white/20 hover:bg-white/5 text-white px-6 cursor-pointer">
+          <Button variant="outline" className="rounded-2xl font-black border-slate-300 dark:border-white/20 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-800 dark:text-white px-6 cursor-pointer transition-all">
             Back to Dashboard
           </Button>
         </Link>
       </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B] relative overflow-hidden">
+      return (
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300 relative overflow-hidden">
       
       {/* Confetti Elements */}
       {confetti.map((c) => (
@@ -414,33 +416,33 @@ function QuizPage() {
       ))}
 
       <div className="mx-auto max-w-2xl">
-        <Link to="/lesson/$lessonId" params={{ lessonId }} className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-white/50 hover:text-white transition-all">
+        <Link to="/lesson/$lessonId" params={{ lessonId }} className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-slate-500 hover:text-slate-800 dark:text-white/50 dark:hover:text-white transition-all">
           <ArrowLeft className="h-4 w-4" /> Back to Lesson
         </Link>
 
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="font-heading text-2xl font-black text-white tracking-tight">Daily Quest Quiz</h1>
-          <span className="flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-black text-indigo-300">
+          <h1 className="font-heading text-2xl font-black text-slate-800 dark:text-white tracking-tight">Daily Quest Quiz</h1>
+          <span className="flex items-center gap-1.5 rounded-full bg-slate-200/50 dark:bg-white/10 px-3.5 py-1.5 text-xs font-black text-indigo-600 dark:text-indigo-300">
             <Clock className="h-4 w-4" /> {formatTime(timeLeft)}
           </span>
         </div>
 
         {/* Dynamic Progress Bar */}
         <div className="mb-6 flex items-center gap-3">
-          <div className="h-3 flex-1 rounded-full bg-white/10 overflow-hidden">
+          <div className="h-3 flex-1 rounded-full bg-slate-200 dark:bg-white/10 overflow-hidden">
             <div 
-              className="h-full rounded-full bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 transition-all duration-300"
+              className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-300"
               style={{ width: `${((currentQ) / (total || 1)) * 100}%` }}
             />
           </div>
-          <span className="text-xs font-black text-white/60">{currentQ} / {total} Done</span>
+          <span className="text-xs font-black text-slate-500 dark:text-white/60">{currentQ} / {total} Done</span>
         </div>
 
         {!submitted ? (
           <motion.div key={currentQ} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
-            <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow-2xl relative overflow-hidden">
-              <p className="mb-1 text-xs font-bold text-indigo-400 uppercase tracking-widest">Question {currentQ + 1} of {total}</p>
-              <h2 className="mb-6 font-heading text-lg md:text-xl font-black text-white leading-relaxed">{currentQuiz?.question}</h2>
+            <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-6 shadow-md dark:shadow-2xl relative overflow-hidden">
+              <p className="mb-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Question {currentQ + 1} of {total}</p>
+              <h2 className="mb-6 font-heading text-lg md:text-xl font-black text-slate-800 dark:text-white leading-relaxed">{currentQuiz?.question}</h2>
               
               <div className="space-y-2.5">
                 {[
@@ -456,16 +458,16 @@ function QuizPage() {
                       key={opt.key}
                       onClick={() => handleSelect(opt.key)}
                       disabled={isChecked}
-                      className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-300 ${
+                      className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-300 cursor-pointer ${
                         isChecked 
                           ? isCorrectAnswer 
-                            ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-300"
+                            ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
                             : isSelected
-                              ? "border-rose-500/50 bg-rose-500/10 text-rose-300"
-                              : "border-white/5 bg-white/5 opacity-50"
+                              ? "border-rose-500/50 bg-rose-500/10 text-rose-700 dark:text-rose-300"
+                              : "border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 opacity-50"
                           : isSelected
-                            ? "border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/10"
-                            : "border-white/10 bg-white/5 hover:bg-white/10"
+                            ? "border-indigo-500 bg-indigo-500/10 shadow-md shadow-indigo-500/10"
+                            : "border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10"
                       }`}
                     >
                       <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-sm font-black transition-all ${
@@ -474,14 +476,14 @@ function QuizPage() {
                             ? "bg-emerald-500 text-white"
                             : isSelected
                               ? "bg-rose-500 text-white"
-                              : "bg-white/10 text-white/30"
+                              : "bg-slate-200 dark:bg-white/10 text-slate-400 dark:text-white/30"
                           : isSelected
                             ? "bg-indigo-500 text-white"
-                            : "bg-white/10 text-white/60"
+                            : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/60"
                       }`}>
                         {opt.key}
                       </span>
-                      <span className="text-sm font-bold text-white">{opt.text}</span>
+                      <span className="text-sm font-bold text-slate-700 dark:text-white">{opt.text}</span>
                     </button>
                   );
                 })}
@@ -495,15 +497,15 @@ function QuizPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className={`mt-6 rounded-2xl p-4 border ${
                       isCorrectFeedback 
-                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
-                        : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400" 
+                        : "bg-rose-500/10 border-rose-500/20 text-rose-700 dark:text-rose-400"
                     }`}
                   >
                     <div className="flex items-start gap-2.5">
                       {isCorrectFeedback ? <CheckCircle2 className="h-5 w-5 shrink-0" /> : <XCircle className="h-5 w-5 shrink-0" />}
                       <div>
                         <h4 className="text-sm font-black uppercase tracking-wider">{isCorrectFeedback ? "Excellent Job! 🎉" : "Not Quite! 💡"}</h4>
-                        <p className="text-xs text-white/70 font-semibold mt-1 leading-relaxed">
+                        <p className="text-xs text-slate-600 dark:text-white/70 font-semibold mt-1 leading-relaxed">
                           {isCorrectFeedback ? "You nailed it!" : `The correct option was ${currentQuiz.correct_answer}.`} {getKidExplanation(currentQuiz)}
                         </p>
                       </div>
@@ -519,7 +521,7 @@ function QuizPage() {
                 variant="outline" 
                 disabled={currentQ === 0 || isChecked} 
                 onClick={() => { const prev = quizzes[currentQ - 1]; setCurrentQ((q) => q - 1); setSelected(prev ? answersRef.current[prev.id] || null : null); }} 
-                className="rounded-2xl font-black text-white/80 border-white/20 hover:bg-white/5"
+                className="rounded-2xl font-black text-slate-600 border-slate-300 dark:border-white/20 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white/80 cursor-pointer"
               >
                 Previous
               </Button>
@@ -528,14 +530,14 @@ function QuizPage() {
                 <Button 
                   onClick={handleCheckAnswer} 
                   disabled={!selected}
-                  className="rounded-2xl font-black bg-indigo-500 hover:bg-indigo-600 text-white shadow-lg px-6"
+                  className="rounded-2xl font-black bg-indigo-500 hover:bg-indigo-600 text-white shadow-md px-6 cursor-pointer"
                 >
                   Check Answer
                 </Button>
               ) : (
                 <Button 
                   onClick={handleNextQuestion} 
-                  className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg px-6"
+                  className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md px-6 cursor-pointer"
                 >
                   {currentQ < total - 1 ? "Continue" : "Submit Quest"}
                 </Button>
@@ -544,40 +546,40 @@ function QuizPage() {
           </motion.div>
         ) : (
           <AnimatePresence>
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-8 shadow-2xl">
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-8 shadow-md dark:shadow-2xl">
               <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-400 to-amber-500 shadow-lg animate-bounce">
                 <Trophy className="h-10 w-10 text-white" />
               </div>
-              <h2 className="font-heading text-3xl font-black text-white">Quest Finished!</h2>
-              <p className="mt-2 text-white/60 font-semibold text-base">You achieved a score of</p>
-              <p className="font-heading text-6xl font-black text-indigo-400 mt-2 bg-gradient-to-r from-indigo-400 to-pink-500 bg-clip-text text-transparent">{score}%</p>
+              <h2 className="font-heading text-3xl font-black text-slate-800 dark:text-white">Quest Finished!</h2>
+              <p className="mt-2 text-slate-500 dark:text-white/60 font-semibold text-base">You achieved a score of</p>
+              <p className="font-heading text-6xl font-black text-indigo-600 dark:text-indigo-400 mt-2">{score}%</p>
               
-              <div className="mt-4 flex items-center justify-center gap-1.5 bg-white/5 border border-white/5 rounded-2xl py-3 px-6 max-w-xs mx-auto">
-                <Award className="h-5 w-5 text-yellow-400" />
-                <span className="text-sm font-black text-white">{correctCount} of {total} correct answers</span>
+              <div className="mt-4 flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-2xl py-3 px-6 max-w-xs mx-auto shadow-sm">
+                <Award className="h-5 w-5 text-yellow-500 dark:text-yellow-400" />
+                <span className="text-sm font-black text-slate-700 dark:text-white">{correctCount} of {total} correct answers</span>
               </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Link to="/lesson/$lessonId" params={{ lessonId }} className="inline-flex">
-                  <Button variant="outline" className="rounded-2xl font-black border-white/20 bg-white/5 hover:bg-white/10 text-white px-6">Review Lesson</Button>
+                  <Button variant="outline" className="rounded-2xl font-black border-slate-300 dark:border-white/20 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-800 dark:text-white px-6 cursor-pointer">Review Lesson</Button>
                 </Link>
                 <Link to="/dashboard" className="inline-flex">
-                  <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 shadow-lg shadow-indigo-500/20">Back to Dashboard</Button>
+                  <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 shadow-md dark:shadow-none cursor-pointer">Back to Dashboard</Button>
                 </Link>
               </div>
 
               {/* Performance Analytical Breakdown */}
-              <div className="mt-8 space-y-3 text-left border-t border-white/10 pt-6">
-                <h3 className="text-sm font-black text-white/70 uppercase tracking-widest mb-3">Quest Recap</h3>
+              <div className="mt-8 space-y-3 text-left border-t border-slate-200 dark:border-white/10 pt-6">
+                <h3 className="text-sm font-black text-slate-600 dark:text-white/70 uppercase tracking-widest mb-3">Quest Recap</h3>
                 {results.map((r, i) => {
                   const q = quizzes.find((qq: any) => qq.id === r.id);
                   return (
-                    <div key={r.id} className={`rounded-2xl border p-4 ${r.isCorrect ? "border-emerald-500/30 bg-emerald-500/5" : "border-rose-500/30 bg-rose-500/5"}`}>
+                    <div key={r.id} className={`rounded-2xl border p-4 ${r.isCorrect ? "border-emerald-200 dark:border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-50/5" : "border-rose-200 dark:border-rose-500/30 bg-rose-50/50 dark:bg-rose-50/5"}`}>
                       <div className="flex items-start gap-2.5">
-                        {r.isCorrect ? <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-400 shrink-0" /> : <XCircle className="mt-0.5 h-4 w-4 text-rose-400 shrink-0" />}
+                        {r.isCorrect ? <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" /> : <XCircle className="mt-0.5 h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />}
                         <div>
-                          <p className="text-sm font-bold text-white/95 leading-relaxed">{i + 1}. {q?.question}</p>
-                          <p className="text-xs text-white/50 font-bold mt-1">Your answer: {r.userAnswer || "-"} • Correct: {r.correctAnswer}</p>
+                          <p className="text-sm font-bold text-slate-800 dark:text-white/95 leading-relaxed">{i + 1}. {q?.question}</p>
+                          <p className="text-xs text-slate-500 dark:text-white/50 font-bold mt-1">Your answer: {r.userAnswer || "-"} • Correct: {r.correctAnswer}</p>
                         </div>
                       </div>
                     </div>
