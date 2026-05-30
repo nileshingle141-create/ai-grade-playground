@@ -395,7 +395,10 @@ function QuizPage() {
           </Button>
         </Link>
       </div>
-      return (
+    );
+  }
+
+  return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300 relative overflow-hidden">
       
       {/* Confetti Elements */}
