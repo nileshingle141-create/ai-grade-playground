@@ -17,6 +17,7 @@ function QuizPage() {
   const { lessonId } = Route.useParams();
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   
@@ -41,14 +42,16 @@ function QuizPage() {
       if (!lessonId) return;
       try {
         setIsLoading(true);
+        setFetchError(null);
         const { data: quizData, error } = await supabase
           .from("quizzes")
           .select("id, lesson_id, question, option_a, option_b, option_c, option_d, correct_answer")
           .eq("lesson_id", lessonId);
         if (error) throw error;
         setQuizzes(quizData ?? []);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
+        setFetchError(err.message || "Failed to load quizzes");
         toast.error("Failed to load quizzes");
       } finally {
         setIsLoading(false);
@@ -196,6 +199,36 @@ function QuizPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#0F172A]">
         <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
+        <XCircle className="mx-auto h-16 w-16 text-rose-500 mb-4" />
+        <h2 className="text-2xl font-black text-white mb-2">Error Loading Quiz</h2>
+        <p className="text-white/60 mb-6 max-w-md">{fetchError}</p>
+        <Link to="/dashboard">
+          <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 cursor-pointer">
+            Back to Dashboard
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (quizzes.length === 0) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
+        <HelpCircle className="mx-auto h-16 w-16 text-indigo-400 mb-4 animate-bounce" />
+        <h2 className="text-2xl font-black text-white mb-2">No Quiz Questions Found</h2>
+        <p className="text-white/60 mb-6 max-w-md">There are no quiz questions seeded for this lesson in the database yet.</p>
+        <Link to="/dashboard">
+          <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 cursor-pointer">
+            Back to Dashboard
+          </Button>
+        </Link>
       </div>
     );
   }
