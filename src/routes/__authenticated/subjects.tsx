@@ -68,27 +68,27 @@ function SubjectsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
       <div className="mx-auto max-w-5xl">
         
         {/* Immersive Header Card */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
-          className="mb-8 p-6 md:p-8 rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md shadow-md dark:shadow-none relative overflow-hidden"
+          className="mb-8 p-6 md:p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl relative overflow-hidden"
         >
-          <div className="absolute -left-12 -bottom-12 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl animate-pulse" />
+          <div className="absolute -left-12 -bottom-12 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl animate-pulse" />
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-            <span className="text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Academy Hub</span>
+            <Sparkles className="h-4 w-4 text-indigo-400" />
+            <span className="text-xs font-black uppercase tracking-widest text-indigo-400">Academy Hub</span>
           </div>
-          <h1 className="font-heading text-3xl font-black text-slate-800 dark:text-white sm:text-4xl tracking-tight leading-tight">All Active Subjects</h1>
-          <p className="mt-2 text-slate-500 dark:text-white/60 font-bold uppercase tracking-wider text-sm">Grade {grade} School Curriculum</p>
+          <h1 className="font-heading text-3xl font-black text-white sm:text-4xl tracking-tight leading-tight">All Active Subjects</h1>
+          <p className="mt-2 text-white/60 font-bold uppercase tracking-wider text-sm">Grade {grade} School Curriculum</p>
         </motion.div>
 
         {isLoading ? (
           <div className="flex h-32 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-500 dark:text-indigo-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -102,17 +102,17 @@ function SubjectsPage() {
                 className="group"
               >
                 <Link to="/subject/$subjectId" params={{ subjectId: s.subject_name }} className="block">
-                  <div className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-6 shadow-md dark:shadow-none relative overflow-hidden transition-all duration-300">
-                    <div className="absolute right-0 top-0 w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-full blur-xl group-hover:bg-slate-100 dark:group-hover:bg-white/10" />
+                  <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow-xl relative overflow-hidden transition-all duration-300">
+                    <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-full blur-xl group-hover:bg-white/10" />
                     
                     <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-bold bg-gradient-to-br ${subjectColors[s.subject_name] || "from-muted to-muted"} shadow-md`}>
                       {subjectIcons[s.subject_name] || <BookOpen className="h-5 w-5" />}
                     </div>
                     
-                    <h3 className="font-heading text-xl font-black text-slate-800 dark:text-white tracking-tight leading-tight">{s.subject_name}</h3>
-                    <p className="text-xs text-slate-500 dark:text-white/40 font-bold uppercase tracking-widest mt-1">Grade {s.grade} Level</p>
+                    <h3 className="font-heading text-xl font-black text-white tracking-tight leading-tight">{s.subject_name}</h3>
+                    <p className="text-xs text-white/40 font-bold uppercase tracking-widest mt-1">Grade {s.grade} Level</p>
 
-                    <div className="mt-6 flex items-center justify-between text-xs font-black text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-300">
+                    <div className="mt-6 flex items-center justify-between text-xs font-black text-indigo-400 group-hover:text-indigo-300">
                       <span>Begin Lesson Quest</span>
                       <Sparkles className="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform" />
                     </div>

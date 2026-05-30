@@ -130,42 +130,42 @@ function LessonPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-[#0F172A] via-[#1E1B4B] to-[#1E293B]">
       <div className="mx-auto max-w-4xl">
-        <Link to="/dashboard" className="mb-6 inline-flex items-center gap-2 text-sm font-extrabold text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white transition-all duration-300">
+        <Link to="/dashboard" className="mb-6 inline-flex items-center gap-2 text-sm font-extrabold text-white/50 hover:text-white transition-all duration-300">
           <ArrowLeft className="h-4 w-4" /> Back to Quest Board
         </Link>
- 
+
         {isLoading ? (
           <div className="flex h-64 items-center justify-center">
-            <Loader2 className="h-10 w-10 animate-spin text-indigo-500 dark:text-indigo-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-indigo-400" />
           </div>
         ) : lesson ? (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             {/* Header Badge Card */}
-            <div className="mb-6 rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-6 shadow-md dark:shadow-none relative overflow-hidden">
+            <div className="mb-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow-xl relative overflow-hidden">
               <div className="absolute -right-16 -top-16 w-36 h-36 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-full opacity-20 blur-2xl" />
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-3.5 py-1.5 text-xs font-black text-white uppercase tracking-wider">{lesson.subject}</span>
-                <span className="flex items-center gap-1 rounded-full bg-slate-100 dark:bg-white/10 px-3.5 py-1.5 text-xs font-extrabold text-slate-700 dark:text-white/80">
-                  <Clock className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" /> {lesson.duration_minutes} min Quest
+                <span className="flex items-center gap-1 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-extrabold text-white/80">
+                  <Clock className="h-3.5 w-3.5 text-indigo-400" /> {lesson.duration_minutes} min Quest
                 </span>
               </div>
-              <h1 className="font-heading text-3xl font-black text-slate-800 dark:text-white md:text-4xl tracking-tight leading-tight">{lesson.topic}</h1>
+              <h1 className="font-heading text-3xl font-black text-white md:text-4xl tracking-tight leading-tight">{lesson.topic}</h1>
             </div>
- 
+
             {/* Premium Tab Navigation */}
-            <div className="mb-6 flex rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 p-1 backdrop-blur-md">
+            <div className="mb-6 flex rounded-2xl bg-white/5 border border-white/10 p-1 backdrop-blur-md">
               <button
                 onClick={() => { setActiveTab("content"); window.speechSynthesis.cancel(); setIsSpeaking(false); }}
-                className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "content" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white"}`}
+                className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "content" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-white/60 hover:text-white"}`}
               >
                 <BookOpen className="h-4 w-4 inline mr-1.5" /> Study Material
               </button>
               {lesson.story && (
                 <button
                   onClick={() => { setActiveTab("story"); window.speechSynthesis.cancel(); setIsSpeaking(false); }}
-                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "story" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white"}`}
+                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "story" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-white/60 hover:text-white"}`}
                 >
                   <Sparkles className="h-4 w-4 inline mr-1.5" /> Story Mode
                 </button>
@@ -173,13 +173,13 @@ function LessonPage() {
               {lesson.key_points && lesson.key_points.length > 0 && (
                 <button
                   onClick={() => { setActiveTab("revision"); window.speechSynthesis.cancel(); setIsSpeaking(false); }}
-                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "revision" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white"}`}
+                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "revision" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-white/60 hover:text-white"}`}
                 >
                   <Lightbulb className="h-4 w-4 inline mr-1.5" /> Quick Revision
                 </button>
               )}
             </div>
- 
+
             {/* Tab Contents */}
             <AnimatePresence mode="wait">
               <motion.div
@@ -188,39 +188,39 @@ function LessonPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.2 }}
-                className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-6 sm:p-8 shadow-md dark:shadow-none relative"
+                className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-6 sm:p-8 shadow-2xl relative"
               >
                 {/* Floating TTS Narrator */}
                 <button
                   onClick={handleReadAloud}
-                  className={`absolute right-6 top-6 flex h-11 w-11 items-center justify-center rounded-2xl border transition-all duration-300 shadow-sm cursor-pointer ${
+                  className={`absolute right-6 top-6 flex h-11 w-11 items-center justify-center rounded-2xl border transition-all duration-300 shadow-md ${
                     isSpeaking 
-                      ? "border-red-500/30 bg-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-500/30" 
-                      : "border-indigo-500/30 bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30"
+                      ? "border-red-500/30 bg-red-500/20 text-red-400 hover:bg-red-500/30" 
+                      : "border-indigo-500/30 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30"
                   }`}
                   title={isSpeaking ? "Stop AI voice reader" : "Listen with AI voice reader"}
                 >
                   {isSpeaking ? <VolumeX className="h-5 w-5 animate-pulse" /> : <Volume2 className="h-5 w-5" />}
                 </button>
- 
+
                 {activeTab === "content" && (
-                  <div className="prose prose-slate dark:prose-invert max-w-none">
-                    <p className="whitespace-pre-line text-slate-700 dark:text-white/90 leading-relaxed text-base md:text-lg font-medium pr-10">{lesson.lesson_content}</p>
+                  <div className="prose prose-invert max-w-none">
+                    <p className="whitespace-pre-line text-white/90 leading-relaxed text-base md:text-lg font-medium pr-10">{lesson.lesson_content}</p>
                   </div>
                 )}
- 
+
                 {activeTab === "story" && (
-                  <div className="prose prose-slate dark:prose-invert max-w-none">
-                    <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-purple-500/10 dark:bg-purple-500/20 border border-purple-200 dark:border-purple-500/30 px-3 py-1 text-xs font-bold text-purple-600 dark:text-purple-400">
+                  <div className="prose prose-invert max-w-none">
+                    <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-purple-500/20 border border-purple-500/30 px-3 py-1 text-xs font-bold text-purple-400">
                       <Sparkles className="h-3.5 w-3.5" /> Once upon a time...
                     </div>
-                    <p className="whitespace-pre-line italic leading-relaxed text-indigo-900 dark:text-indigo-200 text-base md:text-lg font-semibold pr-10">{lesson.story}</p>
+                    <p className="whitespace-pre-line italic leading-relaxed text-indigo-200 text-base md:text-lg font-medium pr-10 bg-gradient-to-br from-indigo-50 to-white bg-clip-text text-transparent">{lesson.story}</p>
                   </div>
                 )}
- 
+
                 {activeTab === "revision" && (
                   <div className="space-y-4">
-                    <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-pink-500/10 dark:bg-pink-500/20 border border-pink-200 dark:border-pink-500/30 px-3 py-1 text-xs font-bold text-pink-600 dark:text-pink-400">
+                    <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-pink-500/20 border border-pink-500/30 px-3 py-1 text-xs font-bold text-pink-400">
                       <Lightbulb className="h-3.5 w-3.5" /> Key Revision Points
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
@@ -230,10 +230,10 @@ function LessonPage() {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.08 }}
-                          className="flex items-start gap-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 p-4 shadow-sm"
+                          className="flex items-start gap-3 rounded-2xl bg-white/5 border border-white/10 p-4 shadow-sm"
                         >
                           <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-xs font-black text-white shadow-md">{i + 1}</span>
-                          <p className="text-sm font-semibold text-slate-700 dark:text-white/90 leading-relaxed">{point}</p>
+                          <p className="text-sm font-semibold text-white/90 leading-relaxed">{point}</p>
                         </motion.div>
                       ))}
                     </div>
@@ -241,29 +241,29 @@ function LessonPage() {
                 )}
               </motion.div>
             </AnimatePresence>
- 
+
             {/* Smart AI Tutor Floating Banner */}
-            <div className="mt-6 rounded-3xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-r from-indigo-50 dark:from-indigo-900/30 via-purple-50 dark:via-purple-900/20 to-pink-50 dark:to-pink-900/20 backdrop-blur-md p-5 flex items-center justify-between shadow-md dark:shadow-none">
+            <div className="mt-6 rounded-3xl border border-indigo-500/20 bg-gradient-to-r from-indigo-900/30 via-purple-900/20 to-pink-900/20 backdrop-blur-md p-5 flex items-center justify-between shadow-xl">
               <div className="flex items-center gap-3">
                 <span className="text-3xl animate-bounce">🤖</span>
                 <div>
-                  <h3 className="text-sm font-black text-slate-800 dark:text-white">Have a doubt or need examples?</h3>
-                  <p className="text-xs text-slate-500 dark:text-white/60">Ask my AI Tutor chatbot in the bottom right corner!</p>
+                  <h3 className="text-sm font-black text-white">Have a doubt or need examples?</h3>
+                  <p className="text-xs text-white/60">Ask my AI Tutor chatbot in the bottom right corner!</p>
                 </div>
               </div>
-              <ChevronRight className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <ChevronRight className="h-5 w-5 text-indigo-400" />
             </div>
- 
+
             {/* Actions Grid */}
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link to="/lesson/$lessonId/quiz" params={{ lessonId }} className="flex-1">
-                <Button className="w-full rounded-2xl py-6 text-base font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white shadow-lg shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer">
+                <Button className="w-full rounded-2xl py-6 text-base font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white shadow-lg shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all">
                   <PenLine className="mr-2 h-5 w-5 animate-pulse" /> Let's Take the Quiz!
                 </Button>
               </Link>
- 
+
               {worksheet && (
-                <Button variant="outline" className="flex-1 rounded-2xl py-6 text-base font-extrabold border-slate-300 dark:border-white/20 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-800 dark:text-white shadow-sm transition-all cursor-pointer" onClick={() => {
+                <Button variant="outline" className="flex-1 rounded-2xl py-6 text-base font-extrabold border-white/20 bg-white/5 hover:bg-white/10 text-white shadow-lg" onClick={() => {
                   const blob = new Blob([worksheet.worksheet_content], { type: "text/plain" });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement("a");
@@ -278,13 +278,12 @@ function LessonPage() {
             </div>
           </motion.div>
         ) : (
-          <div className="text-center py-12 rounded-3xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md">
-            <HelpCircle className="mx-auto h-12 w-12 text-slate-300 dark:text-white/30 mb-3" />
-            <p className="text-lg text-slate-600 dark:text-white/70 font-bold">Quest page was not found</p>
+          <div className="text-center py-12 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md">
+            <HelpCircle className="mx-auto h-12 w-12 text-white/30 mb-3" />
+            <p className="text-lg text-white/70 font-bold">Quest page was not found</p>
           </div>
         )}
       </div>
     </div>
   );
-};
 }

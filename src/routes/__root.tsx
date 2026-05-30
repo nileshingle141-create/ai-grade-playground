@@ -11,7 +11,6 @@ import {
 import { Toaster } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -100,6 +99,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "preconnect",
         href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous",
       },
     ],
   }),
@@ -114,21 +114,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              try {
-                var theme = localStorage.getItem('app-theme') || 'system';
-                var isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                if (isDark) {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
-              } catch (e) {}
-            })();
-          `
-        }} />
       </head>
       <body>
         {children}
@@ -154,10 +139,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <Outlet />
-        <Toaster position="top-center" richColors />
-      </ThemeProvider>
+      <Outlet />
+      <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
 }

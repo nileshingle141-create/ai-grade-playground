@@ -2,9 +2,8 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { BookOpen, Brain, Gamepad2, Trophy, Sparkles, ArrowRight, Star, Zap, Heart, Sun, Moon } from "lucide-react";
+import { BookOpen, Brain, Gamepad2, Trophy, Sparkles, ArrowRight, Star, Zap, Heart } from "lucide-react";
 import heroImg from "@/assets/hero-illustration.png";
-import { useTheme } from "@/components/ThemeProvider";
 
 const features = [
   { icon: Brain, title: "AI-Powered Lessons", desc: "Smart lessons that adapt to your child's learning pace with AI-generated content." },
@@ -26,14 +25,8 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
-  const { theme, setTheme, isDark } = useTheme();
-
-  function toggleTheme() {
-    setTheme(isDark ? "light" : "dark");
-  }
-
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="min-h-screen bg-background">
       {/* Navbar */}
       <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
@@ -44,17 +37,6 @@ function LandingPage() {
             <span className="font-heading text-xl font-bold text-foreground">AI Teaching Studio</span>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={toggleTheme}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white shadow-sm transition-all duration-300 cursor-pointer"
-              title={isDark ? "Switch to Day Mode" : "Switch to Night Mode"}
-            >
-              {isDark ? (
-                <Sun className="h-5 w-5 text-yellow-400 animate-spin-slow" />
-              ) : (
-                <Moon className="h-5 w-5 text-indigo-600" />
-              )}
-            </button>
             <Link
               to="/login"
               className="hidden rounded-xl px-4 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-flex"
