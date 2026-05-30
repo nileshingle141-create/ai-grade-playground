@@ -73,6 +73,64 @@ export const getQuizzes = createServerFn({ method: "GET" })
     return { quizzes: quizzes ?? [] };
   });
 
+// Returns quiz questions WITH correct_answer for direct client-side fallback (bypasses RLS)
+export const getQuizzesWithAnswersServer = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { lessonId: string }) =>
+    z.object({ lessonId: z.string().uuid() }).parse(input)
+  )
+  .handler(async ({ data }) => {
+    const { data: quizzes, error } = await supabaseAdmin
+      .from("quizzes")
+      .select("id, lesson_id, question, option_a, option_b, option_c, option_d, correct_answer")
+      .eq("lesson_id", data.lessonId);
+    if (error) throw new Error(error.message);
+    return { quizzes: quizzes ?? [] };
+  });
+
+// Seeds quizzes directly from the server using admin client (bypasses RLS)
+export const seedQuizzesServer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { 
+    lessonId: string;
+    quizzes: Array<{
+      question: string;
+      option_a: string;
+      option_b: string;
+      option_c: string;
+      option_d: string;
+      correct_answer: string;
+    }>;
+  }) =>
+    z.object({
+      lessonId: z.string().uuid(),
+      quizzes: z.array(
+        z.object({
+          question: z.string(),
+          option_a: z.string(),
+          option_b: z.string(),
+          option_c: z.string(),
+          option_d: z.string(),
+          correct_answer: z.string(),
+        })
+      ),
+    }).parse(input)
+  )
+  .handler(async ({ data }) => {
+    const rows = data.quizzes.map((q) => ({
+      lesson_id: data.lessonId,
+      question: q.question,
+      option_a: q.option_a,
+      option_b: q.option_b,
+      option_c: q.option_c,
+      option_d: q.option_d,
+      correct_answer: q.correct_answer,
+    }));
+    const { error } = await supabaseAdmin.from("quizzes").insert(rows);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 // Server-side quiz grading: takes user answers, returns score + per-question correctness + correct answers.
 export const submitQuiz = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

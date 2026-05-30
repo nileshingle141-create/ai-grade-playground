@@ -6,6 +6,7 @@ import { ArrowLeft, Clock, CheckCircle2, XCircle, Trophy, Loader2, Award, Sparkl
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getQuizzesWithAnswersServer, seedQuizzesServer } from "@/lib/lessons.functions";
 
 export const Route = createFileRoute("/__authenticated/lesson/$lessonId/quiz")({
   component: QuizPage,
@@ -153,13 +154,30 @@ function QuizPage() {
         setIsLoading(true);
         setFetchError(null);
         
-        // 1. Fetch quizzes
-        const { data: quizData, error } = await supabase
-          .from("quizzes")
-          .select("id, lesson_id, question, option_a, option_b, option_c, option_d, correct_answer")
-          .eq("lesson_id", lessonId);
-        if (error) throw error;
-        setQuizzes(quizData ?? []);
+        // 1. Fetch quizzes (Try client-side first, fallback to Server Function if RLS or database permission error blocks it)
+        try {
+          const { data: quizData, error } = await supabase
+            .from("quizzes")
+            .select("id, lesson_id, question, option_a, option_b, option_c, option_d, correct_answer")
+            .eq("lesson_id", lessonId);
+          if (error) throw error;
+          
+          if (quizData && quizData.length > 0) {
+            setQuizzes(quizData);
+          } else {
+            // Fallback to Server Function (bypasses RLS)
+            const serverRes = await getQuizzesWithAnswersServer({ lessonId });
+            setQuizzes(serverRes.quizzes ?? []);
+          }
+        } catch (clientErr) {
+          console.warn("Client-side quiz fetch failed, attempting server function fallback:", clientErr);
+          try {
+            const serverRes = await getQuizzesWithAnswersServer({ lessonId });
+            setQuizzes(serverRes.quizzes ?? []);
+          } catch (serverErr: any) {
+            throw new Error(serverErr.message || "Failed to load quizzes from both client and server");
+          }
+        }
 
         // 2. Fetch lesson topic for auto-seeding
         const { data: lessonData } = await supabase
@@ -204,7 +222,6 @@ function QuizPage() {
     try {
       setIsSeeding(true);
       const rows = sample.map((q) => ({
-        lesson_id: lessonId,
         question: q.question,
         option_a: q.option_a,
         option_b: q.option_b,
@@ -212,16 +229,14 @@ function QuizPage() {
         option_d: q.option_d,
         correct_answer: q.correct_answer,
       }));
-      const { error } = await supabase.from("quizzes").insert(rows);
-      if (error) throw error;
+      
+      // Call Server Function to seed (bypasses RLS completely)
+      await seedQuizzesServer({ lessonId, quizzes: rows });
       toast.success("Sample quizzes auto-seeded!");
       
-      // Reload quizzes
-      const { data: quizData } = await supabase
-        .from("quizzes")
-        .select("id, lesson_id, question, option_a, option_b, option_c, option_d, correct_answer")
-        .eq("lesson_id", lessonId);
-      setQuizzes(quizData ?? []);
+      // Reload quizzes using Server Function to bypass RLS
+      const serverRes = await getQuizzesWithAnswersServer({ lessonId });
+      setQuizzes(serverRes.quizzes ?? []);
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Failed to seed quizzes");
