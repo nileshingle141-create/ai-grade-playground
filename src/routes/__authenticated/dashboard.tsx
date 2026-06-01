@@ -98,11 +98,12 @@ function DashboardPage() {
   const currentStreak = completedCount > 0 ? Math.min(completedCount + 1, 7) : 0; // Simulated active streak
 
   // Dynamic ranking logic
-  const syncedLeaderboard = initialLeaderboard.map(student => {
-    if (student.name === "You") {
-      return { ...student, xp: xpPoints };
-    }
-  }).sort((a, b) => b.xp - a.xp).map((item, idx) => ({ ...item, rank: idx + 1 }));
+  const syncedLeaderboard = initialLeaderboard
+    .map((student) =>
+      student.name === "You" ? { ...student, xp: xpPoints } : student
+    )
+    .sort((a, b) => b.xp - a.xp)
+    .map((item, idx) => ({ ...item, rank: idx + 1 }));
 
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
