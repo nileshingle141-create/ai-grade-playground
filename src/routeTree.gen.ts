@@ -19,8 +19,8 @@ import { Route as _authenticatedProgressRouteImport } from './routes/__authentic
 import { Route as _authenticatedDashboardRouteImport } from './routes/__authenticated/dashboard'
 import { Route as _authenticatedSubjectSubjectIdRouteImport } from './routes/__authenticated/subject.$subjectId'
 import { Route as _authenticatedLessonLessonIdRouteImport } from './routes/__authenticated/lesson.$lessonId'
-import { Route as _authenticatedLessonLessonIdQuizRouteImport } from './routes/__authenticated/lesson.$lessonId.quiz'
 import { Route as _authenticatedLessonLessonIdIndexRouteImport } from './routes/__authenticated/lesson.$lessonId.index'
+import { Route as _authenticatedLessonLessonIdQuizRouteImport } from './routes/__authenticated/lesson.$lessonId.quiz'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -94,9 +94,10 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof _authenticatedDashboardRoute
   '/progress': typeof _authenticatedProgressRoute
   '/subjects': typeof _authenticatedSubjectsRoute
-  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdIndexRoute
+  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
   '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
   '/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
+  '/lesson/$lessonId/': typeof _authenticatedLessonLessonIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -106,9 +107,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof _authenticatedDashboardRoute
   '/progress': typeof _authenticatedProgressRoute
   '/subjects': typeof _authenticatedSubjectsRoute
-  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdIndexRoute
   '/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
   '/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
+  '/lesson/$lessonId': typeof _authenticatedLessonLessonIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -122,8 +123,8 @@ export interface FileRoutesById {
   '/__authenticated/subjects': typeof _authenticatedSubjectsRoute
   '/__authenticated/lesson/$lessonId': typeof _authenticatedLessonLessonIdRouteWithChildren
   '/__authenticated/subject/$subjectId': typeof _authenticatedSubjectSubjectIdRoute
-  '/__authenticated/lesson/$lessonId/': typeof _authenticatedLessonLessonIdIndexRoute
   '/__authenticated/lesson/$lessonId/quiz': typeof _authenticatedLessonLessonIdQuizRoute
+  '/__authenticated/lesson/$lessonId/': typeof _authenticatedLessonLessonIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -138,6 +139,7 @@ export interface FileRouteTypes {
     | '/lesson/$lessonId'
     | '/subject/$subjectId'
     | '/lesson/$lessonId/quiz'
+    | '/lesson/$lessonId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -147,9 +149,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/progress'
     | '/subjects'
-    | '/lesson/$lessonId'
     | '/subject/$subjectId'
     | '/lesson/$lessonId/quiz'
+    | '/lesson/$lessonId'
   id:
     | '__root__'
     | '/'
@@ -162,9 +164,9 @@ export interface FileRouteTypes {
     | '/__authenticated/subjects'
     | '/__authenticated/lesson/$lessonId'
     | '/__authenticated/subject/$subjectId'
-    | '/__authenticated/lesson/$lessonId/'
     | '/__authenticated/lesson/$lessonId/quiz'
-  fileRoutesById: FileRouteTypes['fileRoutesById']
+    | '/__authenticated/lesson/$lessonId/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
@@ -264,16 +266,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface _authenticatedLessonLessonIdRouteChildren {
-  _authenticatedLessonLessonIdIndexRoute: typeof _authenticatedLessonLessonIdIndexRoute
   _authenticatedLessonLessonIdQuizRoute: typeof _authenticatedLessonLessonIdQuizRoute
+  _authenticatedLessonLessonIdIndexRoute: typeof _authenticatedLessonLessonIdIndexRoute
 }
 
 const _authenticatedLessonLessonIdRouteChildren: _authenticatedLessonLessonIdRouteChildren =
   {
-    _authenticatedLessonLessonIdIndexRoute:
-      _authenticatedLessonLessonIdIndexRoute,
     _authenticatedLessonLessonIdQuizRoute:
       _authenticatedLessonLessonIdQuizRoute,
+    _authenticatedLessonLessonIdIndexRoute:
+      _authenticatedLessonLessonIdIndexRoute,
   }
 
 const _authenticatedLessonLessonIdRouteWithChildren =
@@ -312,3 +314,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
