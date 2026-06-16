@@ -6,7 +6,7 @@ import { ArrowLeft, Clock, CheckCircle2, XCircle, Trophy, Loader2, Award, Sparkl
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { getQuizzesWithAnswersServer, seedQuizzesServer } from "@/lib/lessons.functions";
+import { getQuizzesWithAnswersServer, seedQuizzesServer, submitQuiz } from "@/lib/lessons.functions";
 
 export const Route = createFileRoute("/__authenticated/lesson/$lessonId/quiz")({
   component: QuizPage,
@@ -304,61 +304,29 @@ function QuizPage() {
     setSubmitted(true);
     const timeSpent = Math.round((Date.now() - startTime) / 60000);
     try {
-      // Use already-loaded quizzes (they include correct_answer via server-fn fallback).
-      // Don't re-query supabase.from("quizzes") here — RLS blocks non-admin students,
-      // which would yield 0 rows and a false 0% score.
-      let list: Array<{ id: string; correct_answer: string }> = quizzes.map((q: any) => ({
-        id: q.id,
-        correct_answer: q.correct_answer,
-      }));
-
-      // Safety fallback: if for any reason state is empty, fetch via server fn
-      if (list.length === 0) {
-        const serverRes = await getQuizzesWithAnswersServer({ data: { lessonId } });
-        list = (serverRes.quizzes ?? []).map((q: any) => ({
-          id: q.id,
-          correct_answer: q.correct_answer,
-        }));
+      // Server-side grading: validates answers against DB, prevents score tampering.
+      const sanitizedAnswers: Record<string, "A" | "B" | "C" | "D"> = {};
+      for (const [qid, val] of Object.entries(answersRef.current)) {
+        if (val === "A" || val === "B" || val === "C" || val === "D") {
+          sanitizedAnswers[qid] = val;
+        }
       }
 
-      const resultsData = list.map((q) => ({
-        id: q.id,
-        correctAnswer: q.correct_answer,
-        userAnswer: answersRef.current[q.id] ?? null,
-        isCorrect: answersRef.current[q.id] === q.correct_answer,
-      }));
-      const correct = resultsData.filter((r) => r.isCorrect).length;
-      const totalCount = list.length;
-      const scoreValue = totalCount > 0 ? Math.round((correct / totalCount) * 100) : 0;
+      const res = await submitQuiz({
+        data: { lessonId, answers: sanitizedAnswers, timeSpent },
+      });
 
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-      if (!userData.user) throw new Error("No user found");
+      setResults(res.results);
+      setScore(res.score);
+      setCorrectCount(res.correct);
+      toast.success(`Quiz completed! Score: ${res.score}%`);
 
-      const { error: progErr } = await supabase
-        .from("student_progress")
-        .upsert({
-          student_id: userData.user.id,
-          lesson_id: lessonId,
-          completed: true,
-          score: scoreValue,
-          time_spent_minutes: timeSpent,
-        }, { onConflict: "student_id,lesson_id" });
-
-      if (progErr) throw progErr;
-
-      setResults(resultsData);
-      setScore(scoreValue);
-      setCorrectCount(correct);
-      toast.success(`Quiz completed! Score: ${scoreValue}%`);
-
-      // Trigger gamified confetti explosion
-      if (scoreValue >= 80) {
+      if (res.score >= 80) {
         triggerConfetti();
       }
     } catch (err: any) {
       console.error(err);
-      toast.error("Failed to submit quiz");
+      toast.error(err?.message || "Failed to submit quiz");
     }
   }
 
