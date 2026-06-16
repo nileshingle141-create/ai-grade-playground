@@ -304,13 +304,23 @@ function QuizPage() {
     setSubmitted(true);
     const timeSpent = Math.round((Date.now() - startTime) / 60000);
     try {
-      const { data: quizAnswers, error: quizError } = await supabase
-        .from("quizzes")
-        .select("id, correct_answer")
-        .eq("lesson_id", lessonId);
-      if (quizError) throw quizError;
+      // Use already-loaded quizzes (they include correct_answer via server-fn fallback).
+      // Don't re-query supabase.from("quizzes") here — RLS blocks non-admin students,
+      // which would yield 0 rows and a false 0% score.
+      let list: Array<{ id: string; correct_answer: string }> = quizzes.map((q: any) => ({
+        id: q.id,
+        correct_answer: q.correct_answer,
+      }));
 
-      const list = quizAnswers ?? [];
+      // Safety fallback: if for any reason state is empty, fetch via server fn
+      if (list.length === 0) {
+        const serverRes = await getQuizzesWithAnswersServer({ data: { lessonId } });
+        list = (serverRes.quizzes ?? []).map((q: any) => ({
+          id: q.id,
+          correct_answer: q.correct_answer,
+        }));
+      }
+
       const resultsData = list.map((q) => ({
         id: q.id,
         correctAnswer: q.correct_answer,
