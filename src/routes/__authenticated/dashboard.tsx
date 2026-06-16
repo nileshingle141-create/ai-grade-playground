@@ -166,7 +166,14 @@ function DashboardPage() {
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {subjects.map((subject: any, i: number) => {
-                    const progressPercentage = Math.min((completedCount / (subjects.length || 1)) * 100, 100);
+                    const subjectProgress = progress.filter(
+                      (p: any) => p.lessons?.subject === subject.subject_name
+                    );
+                    const subjectCompleted = subjectProgress.filter((p: any) => p.completed).length;
+                    const subjectTotal = subjectProgress.length;
+                    const progressPercentage = subjectTotal > 0
+                      ? Math.min((subjectCompleted / subjectTotal) * 100, 100)
+                      : 0;
                     return (
                       <motion.div 
                         key={subject.id} 
