@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, BookOpen, Clock, Loader2, Play, Sparkles } from "lucide-react";
+import { ArrowLeft, BookOpen, Clock, Loader2, Play, Search, Sparkles, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
@@ -15,6 +15,13 @@ function SubjectPage() {
   const [grade, setGrade] = useState(1);
   const [lessons, setLessons] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredLessons = searchQuery.trim()
+    ? lessons.filter((l) =>
+        l.topic?.toLowerCase().includes(searchQuery.trim().toLowerCase())
+      )
+    : lessons;
 
   useEffect(() => {
     async function loadLessons() {
@@ -77,13 +84,58 @@ function SubjectPage() {
           <p className="mt-2 text-slate-500 dark:text-white/60 font-bold uppercase tracking-wider text-sm">Grade {grade} • {lessons.length} Learning Quests</p>
         </motion.div>
  
+        {/* Search Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-6 relative"
+        >
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <Search className="h-4 w-4 text-slate-400 dark:text-white/40" />
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search lessons by topic..."
+            className="w-full rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md py-3 pl-10 pr-10 text-sm font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </motion.div>
+
         {isLoading ? (
           <div className="flex h-32 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
           </div>
         ) : (
           <div className="mt-6 space-y-4">
-            {lessons.map((lesson: any, i: number) => (
+            {filteredLessons.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center justify-center py-16 text-center"
+              >
+                <Search className="h-10 w-10 text-slate-300 dark:text-white/20 mb-3" />
+                <p className="text-sm font-bold text-slate-500 dark:text-white/50">
+                  No lessons match "{searchQuery}"
+                </p>
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="mt-2 text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 hover:underline"
+                >
+                  Clear search
+                </button>
+              </motion.div>
+            )}
+            {filteredLessons.map((lesson: any, i: number) => (
               <motion.div 
                 key={lesson.id} 
                 initial={{ opacity: 0, x: -20 }} 
