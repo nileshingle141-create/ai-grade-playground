@@ -106,27 +106,39 @@ function DashboardPage() {
     .map((item, idx) => ({ ...item, rank: idx + 1 }));
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen p-3 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
       <div className="mx-auto max-w-6xl">
         {/* Welcome Glowing Header Banner */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
-          className="mb-8 p-6 md:p-8 rounded-3xl border border-indigo-100 dark:border-white/10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-2xl relative overflow-hidden"
+          className="mb-6 sm:mb-8 p-5 sm:p-8 rounded-3xl border border-indigo-100 dark:border-white/10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-2xl relative overflow-hidden"
         >
           <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
+            <div className="min-w-0">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 border border-white/30 px-3 py-1 text-xs font-black text-white uppercase tracking-wider">
                 <Sparkles className="h-3.5 w-3.5" /> Grade {profile?.grade || 1} Champion
               </span>
-              <h1 className="mt-3 font-heading text-3xl font-black text-white sm:text-4xl tracking-tight leading-tight">
+              <h1 className="mt-3 font-heading text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
                 Hello, {profile?.name?.split(" ")[0] || "Student"}! 👋
               </h1>
-              <p className="mt-2 text-white/80 font-semibold max-w-md">
+              <p className="mt-2 text-white/80 font-semibold max-w-md text-sm sm:text-base">
                 Ready to conquer your daily quests and raise your leaderboard rank?
               </p>
+              {currentStreak > 0 && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-orange-500 border-2 border-yellow-300 px-3 py-1.5 shadow-lg shadow-orange-900/30"
+                >
+                  <Flame className="h-4 w-4 text-yellow-100 animate-pulse" />
+                  <span className="text-xs font-black text-white uppercase tracking-wider">{currentStreak}-Day Streak!</span>
+                </motion.div>
+              )}
             </div>
+
             <Link to="/subjects" className="inline-flex shrink-0">
               <button className="bg-white hover:bg-indigo-50 text-indigo-600 font-black rounded-2xl px-6 py-3.5 shadow-lg transform hover:-translate-y-0.5 transition-all text-sm flex items-center gap-1 cursor-pointer">
                 Start Learning Quest <ChevronRight className="h-4 w-4" />
@@ -197,8 +209,13 @@ function DashboardPage() {
                                 <span>Quest Progress</span>
                                 <span>{Math.round(progressPercentage)}%</span>
                               </div>
-                              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
-                                <div className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-purple-500 transition-all duration-300" style={{ width: `${progressPercentage}%` }} />
+                              <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${progressPercentage}%` }}
+                                  transition={{ duration: 0.8, delay: 0.1 * i, ease: "easeOut" }}
+                                  className="h-full rounded-full bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 shadow-sm shadow-indigo-500/30"
+                                />
                               </div>
                             </div>
                           </div>
