@@ -581,47 +581,113 @@ function QuizPage() {
           </motion.div>
         ) : (
           <AnimatePresence>
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-8 shadow-md dark:shadow-2xl">
-              <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-400 to-amber-500 shadow-lg animate-bounce">
-                <Trophy className="h-10 w-10 text-white" />
-              </div>
-              <h2 className="font-heading text-3xl font-black text-slate-800 dark:text-white">Quest Finished!</h2>
-              <p className="mt-2 text-slate-500 dark:text-white/60 font-semibold text-base">You achieved a score of</p>
-              <p className="font-heading text-6xl font-black text-indigo-600 dark:text-indigo-400 mt-2">{score}%</p>
-              
-              <div className="mt-4 flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-2xl py-3 px-6 max-w-xs mx-auto shadow-sm">
-                <Award className="h-5 w-5 text-yellow-500 dark:text-yellow-400" />
-                <span className="text-sm font-black text-slate-700 dark:text-white">{correctCount} of {total} correct answers</span>
-              </div>
+            {(() => {
+              const wrongCount = results.filter((r) => !r.isCorrect && r.userAnswer).length;
+              const skippedCount = results.filter((r) => !r.userAnswer).length;
+              const wrongResults = results.filter((r) => !r.isCorrect);
+              const optionText = (q: any, letter: string | null) => {
+                if (!q || !letter) return "Not answered";
+                return q[`option_${letter.toLowerCase()}` as keyof typeof q] as string;
+              };
+              const tier = score >= 80 ? { label: "Outstanding! 🏆", color: "from-emerald-400 to-teal-500" }
+                : score >= 50 ? { label: "Good effort! 💪", color: "from-indigo-400 to-purple-500" }
+                : { label: "Keep practicing! 🌱", color: "from-rose-400 to-orange-500" };
+              return (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.92, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ type: "spring", stiffness: 120, damping: 14 }}
+                  className="text-center rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-6 sm:p-8 shadow-xl dark:shadow-2xl"
+                >
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.15 }}
+                    className={`mx-auto mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-tr ${tier.color} shadow-2xl shadow-indigo-500/30`}
+                  >
+                    <Trophy className="h-12 w-12 text-white drop-shadow-md" />
+                  </motion.div>
+                  <h2 className="font-heading text-3xl font-black text-slate-800 dark:text-white">Quest Finished!</h2>
+                  <p className="mt-2 text-sm font-bold text-indigo-600 dark:text-indigo-300">{tier.label}</p>
+                  <motion.p
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.4, type: "spring" }}
+                    className="font-heading text-6xl sm:text-7xl font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mt-3"
+                  >
+                    {score}%
+                  </motion.p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <Link to="/lesson/$lessonId" params={{ lessonId }} className="inline-flex">
-                  <Button variant="outline" className="rounded-2xl font-black border-slate-300 dark:border-white/20 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-800 dark:text-white px-6 cursor-pointer">Review Lesson</Button>
-                </Link>
-                <Link to="/dashboard" className="inline-flex">
-                  <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 shadow-md dark:shadow-none cursor-pointer">Back to Dashboard</Button>
-                </Link>
-              </div>
-
-              {/* Performance Analytical Breakdown */}
-              <div className="mt-8 space-y-3 text-left border-t border-slate-200 dark:border-white/10 pt-6">
-                <h3 className="text-sm font-black text-slate-600 dark:text-white/70 uppercase tracking-widest mb-3">Quest Recap</h3>
-                {results.map((r, i) => {
-                  const q = quizzes.find((qq: any) => qq.id === r.id);
-                  return (
-                    <div key={r.id} className={`rounded-2xl border p-4 ${r.isCorrect ? "border-emerald-200 dark:border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-50/5" : "border-rose-200 dark:border-rose-500/30 bg-rose-50/50 dark:bg-rose-50/5"}`}>
-                      <div className="flex items-start gap-2.5">
-                        {r.isCorrect ? <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" /> : <XCircle className="mt-0.5 h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />}
-                        <div>
-                          <p className="text-sm font-bold text-slate-800 dark:text-white/95 leading-relaxed">{i + 1}. {q?.question}</p>
-                          <p className="text-xs text-slate-500 dark:text-white/50 font-bold mt-1">Your answer: {r.userAnswer || "-"} • Correct: {r.correctAnswer}</p>
-                        </div>
-                      </div>
+                  {/* Clear Score Breakdown */}
+                  <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3 max-w-md mx-auto">
+                    <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 p-3">
+                      <p className="font-heading text-2xl font-black text-emerald-600 dark:text-emerald-400">{correctCount}</p>
+                      <p className="text-[10px] font-black uppercase tracking-wider text-emerald-700/80 dark:text-emerald-300/80 mt-0.5">Correct</p>
                     </div>
-                  );
-                })}
-              </div>
-            </motion.div>
+                    <div className="rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 p-3">
+                      <p className="font-heading text-2xl font-black text-rose-600 dark:text-rose-400">{wrongCount}</p>
+                      <p className="text-[10px] font-black uppercase tracking-wider text-rose-700/80 dark:text-rose-300/80 mt-0.5">Wrong</p>
+                    </div>
+                    <div className="rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-3">
+                      <p className="font-heading text-2xl font-black text-slate-600 dark:text-white/70">{skippedCount}</p>
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-white/50 mt-0.5">Skipped</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-2xl py-2.5 px-5 max-w-xs mx-auto">
+                    <Award className="h-4 w-4 text-yellow-500 dark:text-yellow-400" />
+                    <span className="text-xs font-black text-slate-700 dark:text-white">{correctCount} of {total} correct</span>
+                  </div>
+
+                  <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                    <Link to="/lesson/$lessonId" params={{ lessonId }} className="inline-flex">
+                      <Button variant="outline" className="rounded-2xl font-black border-slate-300 dark:border-white/20 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-800 dark:text-white px-6 cursor-pointer w-full">Review Lesson</Button>
+                    </Link>
+                    <Link to="/dashboard" className="inline-flex">
+                      <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 shadow-md cursor-pointer w-full">Back to Dashboard</Button>
+                    </Link>
+                  </div>
+
+                  {/* Wrong Answers Review */}
+                  {wrongResults.length > 0 && (
+                    <div className="mt-8 space-y-3 text-left border-t border-slate-200 dark:border-white/10 pt-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <XCircle className="h-4 w-4 text-rose-500" />
+                        <h3 className="text-sm font-black text-slate-700 dark:text-white/80 uppercase tracking-widest">Review Wrong Answers</h3>
+                      </div>
+                      {wrongResults.map((r, i) => {
+                        const q = quizzes.find((qq: any) => qq.id === r.id);
+                        return (
+                          <motion.div
+                            key={r.id}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.05 * i }}
+                            className="rounded-2xl border border-rose-200 dark:border-rose-500/30 bg-rose-50/50 dark:bg-rose-500/5 p-4"
+                          >
+                            <p className="text-sm font-bold text-slate-800 dark:text-white/95 leading-relaxed mb-2.5">{q?.question}</p>
+                            <div className="space-y-1.5 text-xs">
+                              <div className="flex items-start gap-2">
+                                <XCircle className="h-3.5 w-3.5 text-rose-500 shrink-0 mt-0.5" />
+                                <p className="font-bold text-rose-700 dark:text-rose-300">
+                                  Your answer: <span className="font-black">{r.userAnswer ? `${r.userAnswer}. ${optionText(q, r.userAnswer)}` : "Not answered"}</span>
+                                </p>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                                <p className="font-bold text-emerald-700 dark:text-emerald-300">
+                                  Correct: <span className="font-black">{r.correctAnswer}. {optionText(q, r.correctAnswer)}</span>
+                                </p>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })()}
           </AnimatePresence>
         )}
       </div>
