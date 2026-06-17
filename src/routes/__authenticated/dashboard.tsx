@@ -209,8 +209,13 @@ function DashboardPage() {
                                 <span>Quest Progress</span>
                                 <span>{Math.round(progressPercentage)}%</span>
                               </div>
-                              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
-                                <div className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-purple-500 transition-all duration-300" style={{ width: `${progressPercentage}%` }} />
+                              <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${progressPercentage}%` }}
+                                  transition={{ duration: 0.8, delay: 0.1 * i, ease: "easeOut" }}
+                                  className="h-full rounded-full bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 shadow-sm shadow-indigo-500/30"
+                                />
                               </div>
                             </div>
                           </div>
