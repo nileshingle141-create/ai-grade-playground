@@ -15,6 +15,13 @@ function SubjectPage() {
   const [grade, setGrade] = useState(1);
   const [lessons, setLessons] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredLessons = searchQuery.trim()
+    ? lessons.filter((l) =>
+        l.topic?.toLowerCase().includes(searchQuery.trim().toLowerCase())
+      )
+    : lessons;
 
   useEffect(() => {
     async function loadLessons() {
