@@ -115,6 +115,37 @@ function SubjectPage() {
           <div className="flex h-32 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
           </div>
+        ) : lessons.length === 0 ? (
+          // Friendly fallback when this subject has no lessons for the student's grade
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 flex flex-col items-center justify-center rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-10 text-center shadow-md"
+          >
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg mb-4">
+              <BookOpen className="h-7 w-7 text-white" />
+            </div>
+            <h2 className="font-heading text-xl font-black text-slate-800 dark:text-white">
+              No lessons here yet
+            </h2>
+            <p className="mt-2 max-w-sm text-sm font-bold text-slate-500 dark:text-white/60">
+              We couldn't find any "{subject}" quests for Grade {grade}. Try another subject from your dashboard!
+            </p>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+              <Link
+                to="/subjects"
+                className="inline-flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-5 py-3 text-sm font-black text-white shadow-md hover:scale-105 transition-transform"
+              >
+                Browse all subjects
+              </Link>
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-5 py-3 text-sm font-black text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
+              >
+                Back to dashboard
+              </Link>
+            </div>
+          </motion.div>
         ) : (
           <div className="mt-6 space-y-4">
             {filteredLessons.length === 0 && (
