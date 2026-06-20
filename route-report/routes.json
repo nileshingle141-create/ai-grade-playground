@@ -1,0 +1,95 @@
+{
+  "generatedAt": "2026-06-20T07:03:07.149Z",
+  "routes": [
+    {
+      "path": "/",
+      "access": "public",
+      "dynamic": false,
+      "registered": true,
+      "expectedRedirect": "renders directly",
+      "status": "ok",
+      "issues": []
+    },
+    {
+      "path": "/login",
+      "access": "public",
+      "dynamic": false,
+      "registered": true,
+      "expectedRedirect": "renders directly",
+      "status": "ok",
+      "issues": []
+    },
+    {
+      "path": "/signup",
+      "access": "public",
+      "dynamic": false,
+      "registered": true,
+      "expectedRedirect": "renders directly",
+      "status": "ok",
+      "issues": []
+    },
+    {
+      "path": "/admin",
+      "access": "public",
+      "dynamic": false,
+      "registered": true,
+      "expectedRedirect": "renders directly",
+      "status": "ok",
+      "issues": []
+    },
+    {
+      "path": "/__authenticated/dashboard",
+      "access": "authenticated",
+      "dynamic": false,
+      "registered": true,
+      "expectedRedirect": "/login (when signed out)",
+      "status": "ok",
+      "issues": []
+    },
+    {
+      "path": "/__authenticated/subjects",
+      "access": "authenticated",
+      "dynamic": false,
+      "registered": true,
+      "expectedRedirect": "/login (when signed out)",
+      "status": "ok",
+      "issues": []
+    },
+    {
+      "path": "/__authenticated/progress",
+      "access": "authenticated",
+      "dynamic": false,
+      "registered": true,
+      "expectedRedirect": "/login (when signed out)",
+      "status": "ok",
+      "issues": []
+    },
+    {
+      "path": "/__authenticated/subject/$subjectId",
+      "access": "authenticated",
+      "dynamic": true,
+      "registered": true,
+      "expectedRedirect": "/login (when signed out)",
+      "status": "ok",
+      "issues": []
+    },
+    {
+      "path": "/__authenticated/lesson/$lessonId",
+      "access": "authenticated",
+      "dynamic": true,
+      "registered": true,
+      "expectedRedirect": "/login (when signed out)",
+      "status": "ok",
+      "issues": []
+    },
+    {
+      "path": "/__authenticated/lesson/$lessonId/quiz",
+      "access": "authenticated",
+      "dynamic": true,
+      "registered": true,
+      "expectedRedirect": "/login (when signed out)",
+      "status": "ok",
+      "issues": []
+    }
+  ]
+}

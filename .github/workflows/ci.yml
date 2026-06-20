@@ -25,6 +25,14 @@ jobs:
       - name: Route smoke test
         run: bun run check:routes
 
+      - name: Upload route report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: route-report
+          path: route-report/
+          if-no-files-found: warn
+
       - name: Lint
         run: bun run lint
 
