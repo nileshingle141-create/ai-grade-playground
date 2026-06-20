@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-06-20T07:14:02.825Z",
+  "baseUrl": "http://localhost:8080",
+  "redirects": [
+    {
+      "name": "subject (unauth)",
+      "requested": "/subject/Mathematics",
+      "finalPath": "/login",
+      "expected": "/login",
+      "status": "ok",
+      "issue": null
+    },
+    {
+      "name": "lesson (unauth)",
+      "requested": "/lesson/00000000-0000-0000-0000-000000000000",
+      "finalPath": "/login",
+      "expected": "/login",
+      "status": "ok",
+      "issue": null
+    },
+    {
+      "name": "quiz (unauth)",
+      "requested": "/lesson/00000000-0000-0000-0000-000000000000/quiz",
+      "finalPath": "/login",
+      "expected": "/login",
+      "status": "ok",
+      "issue": null
+    }
+  ],
+  "fallbacks": [
+    {
+      "name": "invalid subjectId → friendly fallback",
+      "requested": "/subject/ThisSubjectDoesNotExist123",
+      "finalPath": "/subject/ThisSubjectDoesNotExist123",
+      "expectedText": "No lessons here yet",
+      "status": "ok",
+      "issue": null
+    },
+    {
+      "name": "invalid lessonId → friendly fallback",
+      "requested": "/lesson/00000000-0000-0000-0000-000000000000",
+      "finalPath": "/lesson/00000000-0000-0000-0000-000000000000",
+      "expectedText": "Quest page was not found",
+      "status": "ok",
+      "issue": null
+    },
+    {
+      "name": "invalid quiz route → friendly fallback",
+      "requested": "/lesson/00000000-0000-0000-0000-000000000000/quiz",
+      "finalPath": "/lesson/00000000-0000-0000-0000-000000000000/quiz",
+      "expectedText": "No Quiz Questions Found | Error Loading Quiz",
+      "status": "ok",
+      "issue": null
+    }
+  ]
+}
