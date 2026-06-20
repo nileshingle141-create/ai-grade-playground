@@ -17,7 +17,19 @@
  * so the test does not require a real Supabase session or seeded data.
  */
 import { chromium } from "playwright";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+
+/** Read VITE_SUPABASE_PROJECT_ID from .env so we can compute the Supabase auth storage key. */
+function readProjectRef() {
+  if (process.env.VITE_SUPABASE_PROJECT_ID) return process.env.VITE_SUPABASE_PROJECT_ID;
+  const envPath = resolve(process.cwd(), ".env");
+  if (!existsSync(envPath)) return null;
+  const m = readFileSync(envPath, "utf8").match(/^VITE_SUPABASE_PROJECT_ID=(.+)$/m);
+  return m ? m[1].trim() : null;
+}
+const PROJECT_REF = readProjectRef();
+const STORAGE_KEY = PROJECT_REF ? `sb-${PROJECT_REF}-auth-token` : null;
 import { resolve } from "node:path";
 
 const BASE_URL = process.env.SMOKE_BASE_URL || "http://localhost:8080";
@@ -116,6 +128,21 @@ async function assertFallback(browser, { name, path, expectText }) {
   const page = await context.newPage();
   await stubSupabase(page, { authenticated: true });
   try {
+    // Seed a fake Supabase session so the auth gate calls /auth/v1/user (which we intercept).
+    if (!STORAGE_KEY) throw new Error("VITE_SUPABASE_PROJECT_ID not found in env/.env — cannot seed fake session");
+    await page.goto(`${BASE_URL}/`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    const fakeSession = {
+      access_token: "fake.fake.fake",
+      refresh_token: "fake-refresh",
+      token_type: "bearer",
+      expires_at: Math.floor(Date.now() / 1000) + 3600,
+      expires_in: 3600,
+      user: { id: FAKE_USER_ID, email: "smoke@test.local", aud: "authenticated", role: "authenticated" },
+    };
+    await page.evaluate(
+      ([k, v]) => window.localStorage.setItem(k, v),
+      [STORAGE_KEY, JSON.stringify(fakeSession)],
+    );
     await page.goto(`${BASE_URL}${path}`, { waitUntil: "domcontentloaded", timeout: 15000 });
     await page.waitForFunction(
       (needle) => document.body && document.body.innerText.includes(needle),
