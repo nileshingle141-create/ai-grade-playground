@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T07:08:46.964Z",
+  "generatedAt": "2026-06-20T07:10:34.747Z",
   "baseUrl": "http://localhost:8080",
   "redirects": [
     {
@@ -31,26 +31,26 @@
     {
       "name": "invalid subjectId → friendly fallback",
       "requested": "/subject/ThisSubjectDoesNotExist123",
-      "finalPath": "/login",
+      "finalPath": "/subject/ThisSubjectDoesNotExist123",
       "expectedText": "No lessons here yet",
-      "status": "fail",
-      "issue": "expected text \"No lessons here yet\" not found. Body preview: Welcome Back! Continue your learning adventure Email Password Log In or Continue with Google New here? Create account Back to home"
+      "status": "ok",
+      "issue": null
     },
     {
       "name": "invalid lessonId → friendly fallback",
       "requested": "/lesson/00000000-0000-0000-0000-000000000000",
-      "finalPath": "/login",
+      "finalPath": "/lesson/00000000-0000-0000-0000-000000000000",
       "expectedText": "Quest page was not found",
       "status": "fail",
-      "issue": "expected text \"Quest page was not found\" not found. Body preview: Welcome Back! Continue your learning adventure Email Password Log In or Continue with Google New here? Create account Back to home"
+      "issue": "expected text \"Quest page was not found\" not found. Body preview: AI Tutor Studio SUPER SCHOOL LEARNING PATH Dashboard Subjects Progress Log Out Learning Quest 🚀 Back to Quest Board min Quest Study Material 🤖 Have a doubt or need examples? Ask my AI Tutor chatb"
     },
     {
       "name": "invalid quiz route → friendly fallback",
       "requested": "/lesson/00000000-0000-0000-0000-000000000000/quiz",
-      "finalPath": "/login",
+      "finalPath": "/lesson/00000000-0000-0000-0000-000000000000/quiz",
       "expectedText": "No Quiz Questions Found",
       "status": "fail",
-      "issue": "expected text \"No Quiz Questions Found\" not found. Body preview: Welcome Back! Continue your learning adventure Email Password Log In or Continue with Google New here? Create account Back to home"
+      "issue": "expected text \"No Quiz Questions Found\" not found. Body preview: AI Tutor Studio SUPER SCHOOL LEARNING PATH Dashboard Subjects Progress Log Out Learning Quest 🚀 Error Loading Quiz Invalid UTF-8 sequence Back to Dashboard"
     }
   ]
 }
