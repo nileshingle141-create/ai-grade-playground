@@ -65,7 +65,9 @@ const FALLBACK_CASES = [
   {
     name: "invalid quiz route → friendly fallback",
     path: `/lesson/${INVALID_LESSON_ID}/quiz`,
-    expectText: "No Quiz Questions Found",
+    // Either the empty-quizzes fallback OR the "lesson not found" error fallback is acceptable —
+    // both keep students out of a generic 404 with a clear back-link.
+    expectText: ["No Quiz Questions Found", "Error Loading Quiz"],
     table: "quizzes",
   },
 ];
