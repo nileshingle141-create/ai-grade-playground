@@ -30,7 +30,6 @@ function readProjectRef() {
 }
 const PROJECT_REF = readProjectRef();
 const STORAGE_KEY = PROJECT_REF ? `sb-${PROJECT_REF}-auth-token` : null;
-import { resolve } from "node:path";
 
 const BASE_URL = process.env.SMOKE_BASE_URL || "http://localhost:8080";
 const REPORT_DIR = resolve(process.cwd(), "route-report");
