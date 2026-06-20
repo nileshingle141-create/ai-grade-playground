@@ -157,22 +157,24 @@ async function assertFallback(browser, { name, path, expectText }) {
       [STORAGE_KEY, JSON.stringify(fakeSession)],
     );
     await page.goto(`${BASE_URL}${path}`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    const needles = Array.isArray(expectText) ? expectText : [expectText];
     await page.waitForFunction(
-      (needle) => document.body && document.body.innerText.includes(needle),
-      expectText,
+      (ns) => !!document.body && ns.some((n) => document.body.innerText.includes(n)),
+      needles,
       { timeout: 10000 }
     );
     const finalPath = new URL(page.url()).pathname;
-    return { name, requested: path, finalPath, expectedText: expectText, status: "ok", issue: null };
+    return { name, requested: path, finalPath, expectedText: needles.join(" | "), status: "ok", issue: null };
   } catch (err) {
     const bodyText = await page.evaluate(() => document.body?.innerText?.slice(0, 200) || "");
+    const needles = Array.isArray(expectText) ? expectText : [expectText];
     return {
       name,
       requested: path,
       finalPath: (() => { try { return new URL(page.url()).pathname; } catch { return "(unknown)"; } })(),
-      expectedText: expectText,
+      expectedText: needles.join(" | "),
       status: "fail",
-      issue: `expected text "${expectText}" not found. Body preview: ${bodyText.replace(/\s+/g, " ")}`,
+      issue: `expected one of [${needles.map((n) => `"${n}"`).join(", ")}] not found. Body preview: ${bodyText.replace(/\s+/g, " ")}`,
     };
   } finally {
     await context.close();

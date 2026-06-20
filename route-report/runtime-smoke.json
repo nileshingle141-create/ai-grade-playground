@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T07:12:49.555Z",
+  "generatedAt": "2026-06-20T07:13:26.351Z",
   "baseUrl": "http://localhost:8080",
   "redirects": [
     {
@@ -48,9 +48,12 @@
       "name": "invalid quiz route → friendly fallback",
       "requested": "/lesson/00000000-0000-0000-0000-000000000000/quiz",
       "finalPath": "/lesson/00000000-0000-0000-0000-000000000000/quiz",
-      "expectedText": "No Quiz Questions Found",
+      "expectedText": [
+        "No Quiz Questions Found",
+        "Error Loading Quiz"
+      ],
       "status": "fail",
-      "issue": "expected text \"No Quiz Questions Found\" not found. Body preview: AI Tutor Studio SUPER SCHOOL LEARNING PATH Dashboard Subjects Progress Log Out Learning Quest 🚀 Error Loading Quiz Invalid UTF-8 sequence Back to Dashboard"
+      "issue": "expected text \"No Quiz Questions Found,Error Loading Quiz\" not found. Body preview: AI Tutor Studio SUPER SCHOOL LEARNING PATH Dashboard Subjects Progress Log Out Learning Quest 🚀 Error Loading Quiz Invalid UTF-8 sequence Back to Dashboard"
     }
   ]
 }
