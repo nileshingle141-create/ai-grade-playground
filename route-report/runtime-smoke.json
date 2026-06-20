@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T07:11:24.641Z",
+  "generatedAt": "2026-06-20T07:12:49.555Z",
   "baseUrl": "http://localhost:8080",
   "redirects": [
     {
@@ -41,8 +41,8 @@
       "requested": "/lesson/00000000-0000-0000-0000-000000000000",
       "finalPath": "/lesson/00000000-0000-0000-0000-000000000000",
       "expectedText": "Quest page was not found",
-      "status": "fail",
-      "issue": "expected text \"Quest page was not found\" not found. Body preview: AI Tutor Studio SUPER SCHOOL LEARNING PATH Dashboard Subjects Progress Log Out Learning Quest 🚀 Back to Quest Board min Quest Study Material 🤖 Have a doubt or need examples? Ask my AI Tutor chatb"
+      "status": "ok",
+      "issue": null
     },
     {
       "name": "invalid quiz route → friendly fallback",
