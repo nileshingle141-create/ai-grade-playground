@@ -85,16 +85,28 @@ async function stubSupabase(page, { authenticated }) {
 
   // Profile, lessons, quizzes, progress — return empty so fallback paths trigger.
   await page.route("**/rest/v1/**", (route) => {
-    const url = route.request().url();
-    // profiles.single() needs a single object, not an array, when using .single()
+    const req = route.request();
+    const url = req.url();
+    const accept = req.headers()["accept"] || "";
+    const wantsSingle = accept.includes("application/vnd.pgrst.object+json");
+
     if (url.includes("/rest/v1/profiles")) {
+      // The profile lookup uses .single(); return a real object so the auth flow proceeds.
       return route.fulfill({
         status: 200,
-        contentType: "application/json",
+        contentType: "application/vnd.pgrst.object+json",
         body: JSON.stringify({ id: FAKE_USER_ID, grade: 1 }),
       });
     }
-    // Default: empty list — triggers "no lessons", "no quiz", "lesson not found" paths
+    if (wantsSingle) {
+      // Simulate "row not found" — drives the friendly "not found" fallback.
+      return route.fulfill({
+        status: 406,
+        contentType: "application/json",
+        body: JSON.stringify({ code: "PGRST116", message: "Row not found", details: "0 rows" }),
+      });
+    }
+    // Default list response — empty so "no lessons / no quiz" fallbacks trigger.
     return route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
   });
 

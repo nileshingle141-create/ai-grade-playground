@@ -1,6 +1,6 @@
 # Runtime smoke report
 
-Generated: 2026-06-20T07:10:34.748Z  ·  Base URL: `http://localhost:8080`
+Generated: 2026-06-20T07:11:24.641Z  ·  Base URL: `http://localhost:8080`
 
 ## Unauthenticated redirect assertions
 | Case | Requested | Final | Expected | Status | Issue |
