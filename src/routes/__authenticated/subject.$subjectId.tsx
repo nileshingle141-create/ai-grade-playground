@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Clock, Loader2, Play, Search, Sparkles, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/__authenticated/subject/$subjectId")({
   component: SubjectPage,
@@ -15,13 +15,28 @@ function SubjectPage() {
   const [grade, setGrade] = useState(1);
   const [lessons, setLessons] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navigate = useNavigate();
 
-  const filteredLessons = searchQuery.trim()
+  const filteredLessons = searchQuery
     ? lessons.filter((l) =>
-        l.topic?.toLowerCase().includes(searchQuery.trim().toLowerCase())
+        l.topic?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : lessons;
+
+  useEffect(() => {
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(() => {
+      setSearchQuery(inputValue.trim());
+      setSelectedIndex(0);
+    }, 300);
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, [inputValue]);
 
   useEffect(() => {
     async function loadLessons() {
@@ -62,6 +77,25 @@ function SubjectPage() {
     loadLessons();
   }, [subject]);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (filteredLessons.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) => Math.min(prev + 1, filteredLessons.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const selected = filteredLessons[selectedIndex];
+      if (selected) {
+        navigate({ to: "/lesson/$lessonId", params: { lessonId: selected.id } });
+      }
+    } else if (e.key === "Escape") {
+      setInputValue("");
+    }
+  };
+
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
       <div className="mx-auto max-w-4xl">
@@ -96,15 +130,19 @@ function SubjectPage() {
           </div>
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Search lessons by topic..."
+            aria-label="Search lessons"
+            aria-autocomplete="list"
             className="w-full rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md py-3 pl-10 pr-10 text-sm font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all"
           />
-          {searchQuery && (
+          {inputValue && (
             <button
-              onClick={() => setSearchQuery("")}
+              onClick={() => setInputValue("")}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white transition-colors"
+              aria-label="Clear search"
             >
               <X className="h-4 w-4" />
             </button>
@@ -159,7 +197,7 @@ function SubjectPage() {
                   No lessons match "{searchQuery}"
                 </p>
                 <button
-                  onClick={() => setSearchQuery("")}
+                  onClick={() => setInputValue("")}
                   className="mt-2 text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 hover:underline"
                 >
                   Clear search
@@ -176,7 +214,7 @@ function SubjectPage() {
                 className="group"
               >
                 <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }} className="block">
-                  <div className="flex items-center gap-4 rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-5 shadow-sm dark:shadow-none transition-all duration-300 hover:bg-slate-50 dark:hover:bg-white/10">
+                  <div className={`flex items-center gap-4 rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-5 shadow-sm dark:shadow-none transition-all duration-300 hover:bg-slate-50 dark:hover:bg-white/10 ${i === selectedIndex ? "ring-2 ring-indigo-500/50 bg-indigo-50/50 dark:bg-indigo-500/10" : ""}`}>
                     
                     {/* Play Bubble Icon */}
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md group-hover:scale-105 transition-transform duration-300">
@@ -197,7 +235,7 @@ function SubjectPage() {
                       </div>
                     </div>
  
-                    <BookOpen className="h-5 w-5 text-slate-400 dark:text-white/40 group-hover:text-slate-700 dark:group-hover:text-white transition-colors shrink-0" />
+                    <BookOpen className="h-5 w-5 text-slate-400 dark:text-white/40 group-hover:text-slate-700 dark:hover:text-white transition-colors shrink-0" />
                   </div>
                 </Link>
               </motion.div>
