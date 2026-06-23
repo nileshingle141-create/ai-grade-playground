@@ -158,7 +158,9 @@ export const submitQuiz = createServerFn({ method: "POST" })
     const total = list.length;
     const score = total > 0 ? Math.round((correct / total) * 100) : 0;
 
-    const { error: progErr } = await context.supabase
+    // Use admin client so the score guard trigger (which blocks
+    // non-service-role writes to score/completed) allows this server-graded result through.
+    const { error: progErr } = await supabaseAdmin
       .from("student_progress")
       .upsert({
         student_id: context.userId,
