@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { BookOpen, Clock, TrendingUp, Award, Flame, Loader2, Sparkles, Star, ChevronRight, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const subjectColors: Record<string, string> = {
   Mathematics: "from-blue-400 to-indigo-500 shadow-blue-500/20 text-white",
@@ -139,11 +140,14 @@ function DashboardPage() {
               )}
             </div>
 
-            <Link to="/subjects" className="inline-flex shrink-0">
-              <button className="bg-white hover:bg-indigo-50 text-indigo-600 font-black rounded-2xl px-6 py-3.5 shadow-lg transform hover:-translate-y-0.5 transition-all text-sm flex items-center gap-1 cursor-pointer">
-                Start Learning Quest <ChevronRight className="h-4 w-4" />
-              </button>
-            </Link>
+            <div className="flex shrink-0 items-center gap-2">
+              <ThemeToggle />
+              <Link to="/subjects" className="inline-flex">
+                <button className="bg-white hover:bg-indigo-50 text-indigo-600 font-black rounded-2xl px-6 py-3.5 shadow-lg transform hover:-translate-y-0.5 transition-all text-sm flex items-center gap-1 cursor-pointer">
+                  Start Learning Quest <ChevronRight className="h-4 w-4" />
+                </button>
+              </Link>
+            </div>
           </div>
         </motion.div>
 
