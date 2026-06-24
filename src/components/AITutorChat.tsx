@@ -26,12 +26,12 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
       id: "welcome",
       sender: "ai",
       text: "Hi there! I am your AI Study Buddy! 🤖 Ask me anything about your current lesson, and I will explain it with fun examples!",
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    },
   ]);
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  
+
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll messages to bottom
@@ -47,11 +47,11 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
       id: String(Date.now()),
       sender: "user",
       text: textToSend,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInputText("");
-    
+
     // Simulate AI response
     simulateAIResponse(textToSend);
   }
@@ -65,27 +65,44 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
 
       // Check if query is educational / related to the active topic
       const isAboutTopic = topic ? lowerQuery.includes(topic.toLowerCase().split(" ")[0]) : false;
-      const isGeneralEdu = lowerQuery.includes("explain") || lowerQuery.includes("example") || lowerQuery.includes("question") || lowerQuery.includes("summarize") || lowerQuery.includes("what") || lowerQuery.includes("how") || lowerQuery.includes("why") || lowerQuery.includes("help");
+      const isGeneralEdu =
+        lowerQuery.includes("explain") ||
+        lowerQuery.includes("example") ||
+        lowerQuery.includes("question") ||
+        lowerQuery.includes("summarize") ||
+        lowerQuery.includes("what") ||
+        lowerQuery.includes("how") ||
+        lowerQuery.includes("why") ||
+        lowerQuery.includes("help");
 
-      if (topic && lowerQuery.includes("practice") || lowerQuery.includes("question")) {
+      if ((topic && lowerQuery.includes("practice")) || lowerQuery.includes("question")) {
         aiText = `Let's play a mini-game! 🧠 Here is a practice question about "${topic}":\n\nCan you explain in your own words what is the most interesting thing you learned about it? Or write down one fact you remember! Tell me, and I'll grade it! 🌟`;
       } else if (lowerQuery.includes("example")) {
-        aiText = `Here is a fun example! 🍎 Imagine you are explaining "${topic || 'this topic'}" to a puppy. You would say:\n\n"It is like when you have 3 juicy bones, and you get 2 more, so you have 5 bones in total!"\n\nIsn't that easy to understand? 🐶`;
-      } else if (lowerQuery.includes("summarize") || lowerQuery.includes("summary") || lowerQuery.includes("chapter")) {
+        aiText = `Here is a fun example! 🍎 Imagine you are explaining "${topic || "this topic"}" to a puppy. You would say:\n\n"It is like when you have 3 juicy bones, and you get 2 more, so you have 5 bones in total!"\n\nIsn't that easy to understand? 🐶`;
+      } else if (
+        lowerQuery.includes("summarize") ||
+        lowerQuery.includes("summary") ||
+        lowerQuery.includes("chapter")
+      ) {
         if (lessonContent) {
           const sentences = lessonContent.split(". ").slice(0, 3).join(". ");
-          aiText = `Here is a quick summary of this chapter! 📝\n\n✨ **Key Idea**: We are exploring "${topic || 'this lesson'}" under ${subject || 'our subject'}.\n💡 **Important Fact**: ${sentences}.\n🚀 **Super Tip**: Review key points and try the quiz!`;
+          aiText = `Here is a quick summary of this chapter! 📝\n\n✨ **Key Idea**: We are exploring "${topic || "this lesson"}" under ${subject || "our subject"}.\n💡 **Important Fact**: ${sentences}.\n🚀 **Super Tip**: Review key points and try the quiz!`;
         } else {
-          aiText = `Sure! The main idea is to understand the core concepts of "${topic || 'this lesson'}". It teaches us how these concepts work in our daily lives!`;
+          aiText = `Sure! The main idea is to understand the core concepts of "${topic || "this lesson"}". It teaches us how these concepts work in our daily lives!`;
         }
-      } else if (lowerQuery.includes("simply") || lowerQuery.includes("simple language") || lowerQuery.includes("simply 🧸")) {
-        aiText = `No worries! Let's make it super simple! 🧸\n\nThink of "${topic || 'this topic'}" like a giant puzzle. Every time we learn a small fact, we put a piece in. It is basically the way we see how ${subject || 'things'} connect in the world! You are doing amazing!`;
+      } else if (
+        lowerQuery.includes("simply") ||
+        lowerQuery.includes("simple language") ||
+        lowerQuery.includes("simply 🧸")
+      ) {
+        aiText = `No worries! Let's make it super simple! 🧸\n\nThink of "${topic || "this topic"}" like a giant puzzle. Every time we learn a small fact, we put a piece in. It is basically the way we see how ${subject || "things"} connect in the world! You are doing amazing!`;
       } else {
         // Fallback context-aware response
         if (topic) {
-          aiText = `Great question! Let's think about "${topic}" in ${subject || 'science/math'}. 💡\n\nIt is super important because it helps us understand the world around us. What specific part of this lesson can I clarify or give an example of?`;
+          aiText = `Great question! Let's think about "${topic}" in ${subject || "science/math"}. 💡\n\nIt is super important because it helps us understand the world around us. What specific part of this lesson can I clarify or give an example of?`;
         } else {
-          aiText = "I am ready to help you with your lessons! Pick one of the quick prompts below or ask me any question about your homework! 🚀";
+          aiText =
+            "I am ready to help you with your lessons! Pick one of the quick prompts below or ask me any question about your homework! 🚀";
         }
       }
 
@@ -93,10 +110,10 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
         id: String(Date.now() + 1),
         sender: "ai",
         text: aiText,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
-      
-      setMessages(prev => [...prev, aiMsg]);
+
+      setMessages((prev) => [...prev, aiMsg]);
       setIsTyping(false);
     }, 1500); // Child-friendly typing delay
   }
@@ -113,11 +130,22 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
         >
           <AnimatePresence mode="wait">
             {isOpen ? (
-              <motion.div key="close" initial={{ rotate: -45 }} animate={{ rotate: 0 }} exit={{ rotate: 45 }}>
+              <motion.div
+                key="close"
+                initial={{ rotate: -45 }}
+                animate={{ rotate: 0 }}
+                exit={{ rotate: 45 }}
+              >
                 <X className="h-6 w-6" />
               </motion.div>
             ) : (
-              <motion.div key="chat" initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} className="relative">
+              <motion.div
+                key="chat"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.8 }}
+                className="relative"
+              >
                 <MessageSquare className="h-6 w-6" />
                 <span className="absolute -top-2 -right-2 flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
@@ -147,11 +175,19 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
                   <Bot className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-sm font-black flex items-center gap-1">AI Tutor Buddy <Sparkles className="h-4 w-4 text-yellow-300 fill-yellow-300 animate-pulse" /></h3>
-                  <p className="text-[10px] font-bold text-white/80 uppercase tracking-widest">Always Active</p>
+                  <h3 className="font-heading text-sm font-black flex items-center gap-1">
+                    AI Tutor Buddy{" "}
+                    <Sparkles className="h-4 w-4 text-yellow-300 fill-yellow-300 animate-pulse" />
+                  </h3>
+                  <p className="text-[10px] font-bold text-white/80 uppercase tracking-widest">
+                    Always Active
+                  </p>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="rounded-xl p-1.5 hover:bg-white/10 transition-colors">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="rounded-xl p-1.5 hover:bg-white/10 transition-colors"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -159,7 +195,9 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
             {/* Current Lesson Badge */}
             {topic && (
               <div className="px-4 py-2 border-b border-white/5 bg-indigo-500/10 flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">Class Topic:</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">
+                  Class Topic:
+                </span>
                 <span className="text-xs font-bold text-white truncate max-w-[250px]">{topic}</span>
               </div>
             )}
@@ -170,19 +208,25 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
                 const isAI = msg.sender === "ai";
                 return (
                   <div key={msg.id} className={`flex ${isAI ? "justify-start" : "justify-end"}`}>
-                    <div className={`flex items-start gap-2 max-w-[85%] ${isAI ? "flex-row" : "flex-row-reverse"}`}>
+                    <div
+                      className={`flex items-start gap-2 max-w-[85%] ${isAI ? "flex-row" : "flex-row-reverse"}`}
+                    >
                       {isAI && (
                         <div className="h-7 w-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0">
                           <Bot className="h-4 w-4 text-indigo-400" />
                         </div>
                       )}
-                      <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                        isAI 
-                          ? "bg-white/5 border border-white/10 text-white/95 rounded-tl-none" 
-                          : "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-tr-none shadow-md"
-                      }`}>
+                      <div
+                        className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                          isAI
+                            ? "bg-white/5 border border-white/10 text-white/95 rounded-tl-none"
+                            : "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-tr-none shadow-md"
+                        }`}
+                      >
                         <p className="whitespace-pre-line font-medium">{msg.text}</p>
-                        <span className="block text-[9px] font-bold text-white/40 mt-1.5 text-right">{msg.time}</span>
+                        <span className="block text-[9px] font-bold text-white/40 mt-1.5 text-right">
+                          {msg.time}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -197,14 +241,23 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
                       <Bot className="h-4 w-4 text-indigo-400" />
                     </div>
                     <div className="rounded-2xl px-4 py-3.5 bg-white/5 border border-white/10 rounded-tl-none flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                      <span
+                        className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce"
+                        style={{ animationDelay: "0ms" }}
+                      />
+                      <span
+                        className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce"
+                        style={{ animationDelay: "150ms" }}
+                      />
+                      <span
+                        className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce"
+                        style={{ animationDelay: "300ms" }}
+                      />
                     </div>
                   </div>
                 </div>
               )}
-              
+
               <div ref={chatEndRef} />
             </div>
 
@@ -222,8 +275,11 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
             </div>
 
             {/* Input Row */}
-            <form 
-              onSubmit={(e) => { e.preventDefault(); handleSend(inputText); }}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSend(inputText);
+              }}
               className="p-3 border-t border-white/10 bg-[#0F172A] flex items-center gap-2"
             >
               <Input
@@ -232,8 +288,8 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
                 placeholder="Ask me anything about the lesson! ✏️"
                 className="flex-1 rounded-2xl bg-white/5 border-white/10 text-white placeholder-white/30 h-11"
               />
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={!inputText.trim()}
                 className="h-11 w-11 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md flex items-center justify-center p-0 shrink-0"
               >

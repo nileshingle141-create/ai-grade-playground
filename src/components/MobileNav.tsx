@@ -45,7 +45,9 @@ export function MobileNav() {
                 isActive ? "text-indigo-400 scale-105" : "text-white/40 hover:text-white/70"
               }`}
             >
-              <item.icon className={`h-5 w-5 ${isActive ? "text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" : ""}`} />
+              <item.icon
+                className={`h-5 w-5 ${isActive ? "text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" : ""}`}
+              />
               <span>{item.title}</span>
             </Link>
           );

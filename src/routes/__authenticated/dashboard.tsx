@@ -2,7 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { BookOpen, Clock, TrendingUp, Award, Flame, Loader2, Sparkles, Star, ChevronRight, Trophy } from "lucide-react";
+import {
+  BookOpen,
+  Clock,
+  TrendingUp,
+  Award,
+  Flame,
+  Loader2,
+  Sparkles,
+  Star,
+  ChevronRight,
+  Trophy,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -89,20 +100,21 @@ function DashboardPage() {
   }, []);
 
   const completedCount = progress.filter((p: any) => p.completed).length;
-  const avgScore = progress.length > 0
-    ? Math.round(progress.reduce((sum: number, p: any) => sum + (p.score || 0), 0) / progress.length)
-    : 0;
+  const avgScore =
+    progress.length > 0
+      ? Math.round(
+          progress.reduce((sum: number, p: any) => sum + (p.score || 0), 0) / progress.length,
+        )
+      : 0;
   const totalTime = progress.reduce((sum: number, p: any) => sum + (p.time_spent_minutes || 0), 0);
-  
+
   // XP Point Logic matching BYJU'S/Duolingo style
   const xpPoints = completedCount * 50 + avgScore * 2;
   const currentStreak = completedCount > 0 ? Math.min(completedCount + 1, 7) : 0; // Simulated active streak
 
   // Dynamic ranking logic
   const syncedLeaderboard = initialLeaderboard
-    .map((student) =>
-      student.name === "You" ? { ...student, xp: xpPoints } : student
-    )
+    .map((student) => (student.name === "You" ? { ...student, xp: xpPoints } : student))
     .sort((a, b) => b.xp - a.xp)
     .map((item, idx) => ({ ...item, rank: idx + 1 }));
 
@@ -110,9 +122,9 @@ function DashboardPage() {
     <div className="min-h-screen p-3 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
       <div className="mx-auto max-w-6xl">
         {/* Welcome Glowing Header Banner */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} 
-          animate={{ opacity: 1, y: 0 }} 
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="mb-6 sm:mb-8 p-5 sm:p-8 rounded-3xl border border-indigo-100 dark:border-white/10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-2xl relative overflow-hidden"
         >
           <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
@@ -135,7 +147,9 @@ function DashboardPage() {
                   className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-orange-500 border-2 border-yellow-300 px-3 py-1.5 shadow-lg shadow-orange-900/30"
                 >
                   <Flame className="h-4 w-4 text-yellow-100 animate-pulse" />
-                  <span className="text-xs font-black text-white uppercase tracking-wider">{currentStreak}-Day Streak!</span>
+                  <span className="text-xs font-black text-white uppercase tracking-wider">
+                    {currentStreak}-Day Streak!
+                  </span>
                 </motion.div>
               )}
             </div>
@@ -154,25 +168,55 @@ function DashboardPage() {
         {/* Primary Gamified Metrics Grid */}
         <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
           <div className="md:col-span-2 lg:col-span-3 space-y-8">
-            
             {/* Gamification Stats */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="grid grid-cols-2 gap-4 sm:grid-cols-4"
             >
-              <StatCard icon={<Flame className="h-6 w-6" />} label="Daily Streak" value={`${currentStreak} Days`} color="bg-orange-500 shadow-orange-500/20" />
-              <StatCard icon={<Star className="h-6 w-6" />} label="XP earned" value={String(xpPoints)} color="bg-indigo-500 shadow-indigo-500/20" />
-              <StatCard icon={<BookOpen className="h-6 w-6" />} label="Quests Done" value={String(completedCount)} color="bg-purple-500 shadow-purple-500/20" />
-              <StatCard icon={<Trophy className="h-6 w-6" />} label="Avg Score" value={`${avgScore}%`} color="bg-pink-500 shadow-pink-500/20" />
+              <StatCard
+                icon={<Flame className="h-6 w-6" />}
+                label="Daily Streak"
+                value={`${currentStreak} Days`}
+                color="bg-orange-500 shadow-orange-500/20"
+              />
+              <StatCard
+                icon={<Star className="h-6 w-6" />}
+                label="XP earned"
+                value={String(xpPoints)}
+                color="bg-indigo-500 shadow-indigo-500/20"
+              />
+              <StatCard
+                icon={<BookOpen className="h-6 w-6" />}
+                label="Quests Done"
+                value={String(completedCount)}
+                color="bg-purple-500 shadow-purple-500/20"
+              />
+              <StatCard
+                icon={<Trophy className="h-6 w-6" />}
+                label="Avg Score"
+                value={`${avgScore}%`}
+                color="bg-pink-500 shadow-pink-500/20"
+              />
             </motion.div>
 
             {/* Subjects List */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-heading text-xl font-black text-slate-800 dark:text-white tracking-tight">Active Subjects</h2>
-                <Link to="/subjects" className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">View all</Link>
+                <h2 className="font-heading text-xl font-black text-slate-800 dark:text-white tracking-tight">
+                  Active Subjects
+                </h2>
+                <Link
+                  to="/subjects"
+                  className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300"
+                >
+                  View all
+                </Link>
               </div>
 
               {isLoading ? (
@@ -183,31 +227,42 @@ function DashboardPage() {
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {subjects.map((subject: any, i: number) => {
                     const subjectProgress = progress.filter(
-                      (p: any) => p.lessons?.subject === subject.subject_name
+                      (p: any) => p.lessons?.subject === subject.subject_name,
                     );
                     const subjectCompleted = subjectProgress.filter((p: any) => p.completed).length;
                     const subjectTotal = subjectProgress.length;
-                    const progressPercentage = subjectTotal > 0
-                      ? Math.min((subjectCompleted / subjectTotal) * 100, 100)
-                      : 0;
+                    const progressPercentage =
+                      subjectTotal > 0 ? Math.min((subjectCompleted / subjectTotal) * 100, 100) : 0;
                     return (
-                      <motion.div 
-                        key={subject.id} 
-                        initial={{ opacity: 0, scale: 0.95 }} 
-                        animate={{ opacity: 1, scale: 1 }} 
+                      <motion.div
+                        key={subject.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.05 * i }}
                         whileHover={{ y: -4, scale: 1.02 }}
                         className="group relative"
                       >
-                        <Link to="/subject/$subjectId" params={{ subjectId: subject.subject_name }} className="block">
+                        <Link
+                          to="/subject/$subjectId"
+                          params={{ subjectId: subject.subject_name }}
+                          className="block"
+                        >
                           <div className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-5 shadow-md dark:shadow-none relative overflow-hidden transition-all duration-300">
                             <div className="absolute right-0 top-0 w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-full blur-xl group-hover:bg-slate-100 dark:group-hover:bg-white/10 transition-all duration-300" />
-                            <div className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${subjectColors[subject.subject_name] || "from-muted to-muted"} shadow-md`}>
-                              {subjectIcons[subject.subject_name] || <BookOpen className="h-5 w-5" />}
+                            <div
+                              className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${subjectColors[subject.subject_name] || "from-muted to-muted"} shadow-md`}
+                            >
+                              {subjectIcons[subject.subject_name] || (
+                                <BookOpen className="h-5 w-5" />
+                              )}
                             </div>
-                            <h3 className="font-heading text-lg font-black text-slate-800 dark:text-white">{subject.subject_name}</h3>
-                            <p className="text-xs text-slate-500 dark:text-white/50 font-bold uppercase tracking-wider mt-0.5">Grade {subject.grade}</p>
-                            
+                            <h3 className="font-heading text-lg font-black text-slate-800 dark:text-white">
+                              {subject.subject_name}
+                            </h3>
+                            <p className="text-xs text-slate-500 dark:text-white/50 font-bold uppercase tracking-wider mt-0.5">
+                              Grade {subject.grade}
+                            </p>
+
                             <div className="mt-4">
                               <div className="flex justify-between text-xs font-black text-slate-600 dark:text-white/60 mb-1.5">
                                 <span>Quest Progress</span>
@@ -232,27 +287,50 @@ function DashboardPage() {
             </motion.div>
 
             {/* Recent Activity */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-              <h2 className="mb-4 font-heading text-xl font-black text-slate-800 dark:text-white tracking-tight">Recent Activity Log</h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <h2 className="mb-4 font-heading text-xl font-black text-slate-800 dark:text-white tracking-tight">
+                Recent Activity Log
+              </h2>
               <div className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-5 shadow-lg dark:shadow-none space-y-3">
                 {isLoading ? (
-                  <div className="flex h-32 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-500 dark:text-indigo-400" /></div>
+                  <div className="flex h-32 items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin text-indigo-500 dark:text-indigo-400" />
+                  </div>
                 ) : progress.length === 0 ? (
-                  <p className="py-6 text-center text-sm font-extrabold text-slate-500 dark:text-white/40">No quest activity yet. Start your first lesson!</p>
+                  <p className="py-6 text-center text-sm font-extrabold text-slate-500 dark:text-white/40">
+                    No quest activity yet. Start your first lesson!
+                  </p>
                 ) : (
                   <div className="space-y-2.5">
                     {progress.slice(0, 4).map((p: any) => (
-                      <div key={p.id} className="flex items-center justify-between rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-4 transition-all hover:bg-slate-100 dark:hover:bg-white/10 shadow-sm dark:shadow-none">
+                      <div
+                        key={p.id}
+                        className="flex items-center justify-between rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-4 transition-all hover:bg-slate-100 dark:hover:bg-white/10 shadow-sm dark:shadow-none"
+                      >
                         <div>
-                          <p className="text-sm font-black text-slate-800 dark:text-white">{p.lessons?.topic || "Lesson"}</p>
-                          <p className="text-xs font-bold text-slate-500 dark:text-white/50 mt-0.5">{p.lessons?.subject || "Subject"}</p>
+                          <p className="text-sm font-black text-slate-800 dark:text-white">
+                            {p.lessons?.topic || "Lesson"}
+                          </p>
+                          <p className="text-xs font-bold text-slate-500 dark:text-white/50 mt-0.5">
+                            {p.lessons?.subject || "Subject"}
+                          </p>
                         </div>
                         <div className="text-right flex items-center gap-3">
                           <div>
-                            <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${p.completed ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30" : "bg-slate-200/60 dark:bg-white/10 text-slate-600 dark:text-white/60"}`}>
+                            <span
+                              className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${p.completed ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30" : "bg-slate-200/60 dark:bg-white/10 text-slate-600 dark:text-white/60"}`}
+                            >
                               {p.completed ? "Complete" : "Ongoing"}
                             </span>
-                            {p.score > 0 && <p className="mt-1 text-xs font-black text-indigo-600 dark:text-indigo-400">{p.score}% Accuracy</p>}
+                            {p.score > 0 && (
+                              <p className="mt-1 text-xs font-black text-indigo-600 dark:text-indigo-400">
+                                {p.score}% Accuracy
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -265,40 +343,52 @@ function DashboardPage() {
 
           {/* Gamified Leaderboard Side Panel (BYJU'S & Duolingo style) */}
           <div className="space-y-6">
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }} 
-              animate={{ opacity: 1, x: 0 }} 
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.25 }}
               className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-5 shadow-lg dark:shadow-none relative overflow-hidden"
             >
               <div className="absolute -left-12 -top-12 w-28 h-28 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-full opacity-10 blur-xl" />
               <div className="mb-4 flex items-center gap-2">
                 <Trophy className="h-5 w-5 text-yellow-400 animate-bounce" />
-                <h2 className="font-heading text-lg font-black text-slate-800 dark:text-white tracking-tight">Arena Leaderboard</h2>
+                <h2 className="font-heading text-lg font-black text-slate-800 dark:text-white tracking-tight">
+                  Arena Leaderboard
+                </h2>
               </div>
               <div className="space-y-2.5">
                 {syncedLeaderboard.map((student) => {
                   const isUser = student.name === "You";
                   return (
-                    <div 
-                      key={student.rank} 
+                    <div
+                      key={student.rank}
                       className={`flex items-center justify-between rounded-2xl p-3.5 transition-all duration-300 border ${
-                        isUser 
-                          ? "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-500/20 dark:to-purple-500/20 border-indigo-100 dark:border-indigo-500/30 shadow-md" 
+                        isUser
+                          ? "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-500/20 dark:to-purple-500/20 border-indigo-100 dark:border-indigo-500/30 shadow-md"
                           : "bg-slate-50 dark:bg-white/5 border-slate-100/50 dark:border-transparent shadow-sm dark:shadow-none"
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-base font-black text-slate-500 dark:text-white/80 w-6 text-center">{student.rank}</span>
+                        <span className="text-base font-black text-slate-500 dark:text-white/80 w-6 text-center">
+                          {student.rank}
+                        </span>
                         <span className="text-xl">{student.badge}</span>
                         <div>
-                          <p className={`text-xs font-black ${isUser ? "text-indigo-600 dark:text-indigo-400 font-black" : "text-slate-800 dark:text-white"}`}>
-                            {isUser ? `${profile?.name?.split(" ")[0] || "You"} (You)` : student.name}
+                          <p
+                            className={`text-xs font-black ${isUser ? "text-indigo-600 dark:text-indigo-400 font-black" : "text-slate-800 dark:text-white"}`}
+                          >
+                            {isUser
+                              ? `${profile?.name?.split(" ")[0] || "You"} (You)`
+                              : student.name}
                           </p>
-                          <p className="text-[10px] font-bold text-slate-500 dark:text-white/40">{student.xp} XP points</p>
+                          <p className="text-[10px] font-bold text-slate-500 dark:text-white/40">
+                            {student.xp} XP points
+                          </p>
                         </div>
                       </div>
-                      <span className="text-xs font-black text-slate-500 dark:text-white/50">#{student.rank}</span>
+                      <span className="text-xs font-black text-slate-500 dark:text-white/50">
+                        #{student.rank}
+                      </span>
                     </div>
                   );
                 })}
@@ -311,15 +401,31 @@ function DashboardPage() {
   );
 }
 
-function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string; color: string }) {
+function StatCard({
+  icon,
+  label,
+  value,
+  color,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  color: string;
+}) {
   return (
     <div className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-4 shadow-md dark:shadow-none flex items-center gap-3.5 transition-all hover:bg-slate-50 dark:hover:bg-white/10 duration-300">
-      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${color} text-white`}>
+      <div
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${color} text-white`}
+      >
         {icon}
       </div>
       <div>
-        <p className="font-heading text-xl font-black text-slate-800 dark:text-white leading-none">{value}</p>
-        <p className="text-[9px] font-extrabold text-slate-500 dark:text-white/40 uppercase tracking-widest mt-1">{label}</p>
+        <p className="font-heading text-xl font-black text-slate-800 dark:text-white leading-none">
+          {value}
+        </p>
+        <p className="text-[9px] font-extrabold text-slate-500 dark:text-white/40 uppercase tracking-widest mt-1">
+          {label}
+        </p>
       </div>
     </div>
   );

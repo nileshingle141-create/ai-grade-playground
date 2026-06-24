@@ -15,12 +15,14 @@ async function assertAdmin(supabase: any, userId: string) {
 export const generateContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { grade: number; subject: string; topic: string; duration: number }) =>
-    z.object({
-      grade: z.number().min(1).max(4),
-      subject: z.string().min(1).max(100),
-      topic: z.string().min(1).max(200),
-      duration: z.number().min(10).max(60),
-    }).parse(input)
+    z
+      .object({
+        grade: z.number().min(1).max(4),
+        subject: z.string().min(1).max(100),
+        topic: z.string().min(1).max(200),
+        duration: z.number().min(10).max(60),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -45,16 +47,27 @@ export const generateContent = createServerFn({ method: "POST" })
 
 export const saveLesson = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { grade: number; subject: string; topic: string; lessonContent: string; keyPoints: string[]; story: string; duration: number }) =>
-    z.object({
-      grade: z.number().min(1).max(4),
-      subject: z.string().min(1).max(100),
-      topic: z.string().min(1).max(200),
-      lessonContent: z.string().min(1).max(20000),
-      keyPoints: z.array(z.string().max(500)).max(50),
-      story: z.string().max(20000),
-      duration: z.number().min(10).max(60),
-    }).parse(input)
+  .inputValidator(
+    (input: {
+      grade: number;
+      subject: string;
+      topic: string;
+      lessonContent: string;
+      keyPoints: string[];
+      story: string;
+      duration: number;
+    }) =>
+      z
+        .object({
+          grade: z.number().min(1).max(4),
+          subject: z.string().min(1).max(100),
+          topic: z.string().min(1).max(200),
+          lessonContent: z.string().min(1).max(20000),
+          keyPoints: z.array(z.string().max(500)).max(50),
+          story: z.string().max(20000),
+          duration: z.number().min(10).max(60),
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -77,18 +90,35 @@ export const saveLesson = createServerFn({ method: "POST" })
 
 export const saveQuizzes = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { lessonId: string; quizzes: { question: string; optionA: string; optionB: string; optionC: string; optionD: string; correctAnswer: string }[] }) =>
-    z.object({
-      lessonId: z.string().uuid(),
-      quizzes: z.array(z.object({
-        question: z.string().min(1).max(2000),
-        optionA: z.string().min(1).max(500),
-        optionB: z.string().min(1).max(500),
-        optionC: z.string().min(1).max(500),
-        optionD: z.string().min(1).max(500),
-        correctAnswer: z.string().regex(/^[A-D]$/),
-      })).max(100),
-    }).parse(input)
+  .inputValidator(
+    (input: {
+      lessonId: string;
+      quizzes: {
+        question: string;
+        optionA: string;
+        optionB: string;
+        optionC: string;
+        optionD: string;
+        correctAnswer: string;
+      }[];
+    }) =>
+      z
+        .object({
+          lessonId: z.string().uuid(),
+          quizzes: z
+            .array(
+              z.object({
+                question: z.string().min(1).max(2000),
+                optionA: z.string().min(1).max(500),
+                optionB: z.string().min(1).max(500),
+                optionC: z.string().min(1).max(500),
+                optionD: z.string().min(1).max(500),
+                correctAnswer: z.string().regex(/^[A-D]$/),
+              }),
+            )
+            .max(100),
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -109,11 +139,13 @@ export const saveQuizzes = createServerFn({ method: "POST" })
 export const saveWorksheet = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { lessonId: string; worksheetContent: string; answerKey: string }) =>
-    z.object({
-      lessonId: z.string().uuid(),
-      worksheetContent: z.string().min(1).max(20000),
-      answerKey: z.string().max(20000),
-    }).parse(input)
+    z
+      .object({
+        lessonId: z.string().uuid(),
+        worksheetContent: z.string().min(1).max(20000),
+        answerKey: z.string().max(20000),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);

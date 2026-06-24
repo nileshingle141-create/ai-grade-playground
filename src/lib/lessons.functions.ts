@@ -17,7 +17,7 @@ export const getProfile = createServerFn({ method: "GET" })
 
 export const getSubjects = createServerFn({ method: "GET" })
   .inputValidator((input: { grade: number }) =>
-    z.object({ grade: z.number().min(1).max(4) }).parse(input)
+    z.object({ grade: z.number().min(1).max(4) }).parse(input),
   )
   .handler(async ({ data }) => {
     const { data: subjects, error } = await supabaseAdmin
@@ -31,7 +31,7 @@ export const getSubjects = createServerFn({ method: "GET" })
 
 export const getLessons = createServerFn({ method: "GET" })
   .inputValidator((input: { grade: number; subject: string }) =>
-    z.object({ grade: z.number().min(1).max(4), subject: z.string() }).parse(input)
+    z.object({ grade: z.number().min(1).max(4), subject: z.string() }).parse(input),
   )
   .handler(async ({ data }) => {
     const { data: lessons, error } = await supabaseAdmin
@@ -45,9 +45,7 @@ export const getLessons = createServerFn({ method: "GET" })
   });
 
 export const getLesson = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) =>
-    z.object({ id: z.string().uuid() }).parse(input)
-  )
+  .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
     const { data: lesson, error } = await supabaseAdmin
       .from("lessons")
@@ -62,7 +60,7 @@ export const getLesson = createServerFn({ method: "GET" })
 export const getQuizzes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { lessonId: string }) =>
-    z.object({ lessonId: z.string().uuid() }).parse(input)
+    z.object({ lessonId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data }) => {
     const { data: quizzes, error } = await supabaseAdmin
@@ -77,7 +75,7 @@ export const getQuizzes = createServerFn({ method: "GET" })
 export const getQuizzesWithAnswersServer = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { lessonId: string }) =>
-    z.object({ lessonId: z.string().uuid() }).parse(input)
+    z.object({ lessonId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data }) => {
     const { data: quizzes, error } = await supabaseAdmin
@@ -91,30 +89,33 @@ export const getQuizzesWithAnswersServer = createServerFn({ method: "GET" })
 // Seeds quizzes directly from the server using admin client (bypasses RLS)
 export const seedQuizzesServer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { 
-    lessonId: string;
-    quizzes: Array<{
-      question: string;
-      option_a: string;
-      option_b: string;
-      option_c: string;
-      option_d: string;
-      correct_answer: string;
-    }>;
-  }) =>
-    z.object({
-      lessonId: z.string().uuid(),
-      quizzes: z.array(
-        z.object({
-          question: z.string(),
-          option_a: z.string(),
-          option_b: z.string(),
-          option_c: z.string(),
-          option_d: z.string(),
-          correct_answer: z.string(),
+  .inputValidator(
+    (input: {
+      lessonId: string;
+      quizzes: Array<{
+        question: string;
+        option_a: string;
+        option_b: string;
+        option_c: string;
+        option_d: string;
+        correct_answer: string;
+      }>;
+    }) =>
+      z
+        .object({
+          lessonId: z.string().uuid(),
+          quizzes: z.array(
+            z.object({
+              question: z.string(),
+              option_a: z.string(),
+              option_b: z.string(),
+              option_c: z.string(),
+              option_d: z.string(),
+              correct_answer: z.string(),
+            }),
+          ),
         })
-      ),
-    }).parse(input)
+        .parse(input),
   )
   .handler(async ({ data }) => {
     const rows = data.quizzes.map((q) => ({
@@ -134,12 +135,15 @@ export const seedQuizzesServer = createServerFn({ method: "POST" })
 // Server-side quiz grading: takes user answers, returns score + per-question correctness + correct answers.
 export const submitQuiz = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { lessonId: string; answers: Record<string, string>; timeSpent: number }) =>
-    z.object({
-      lessonId: z.string().uuid(),
-      answers: z.record(z.string().uuid(), z.enum(["A", "B", "C", "D"])),
-      timeSpent: z.number().min(0).max(10000),
-    }).parse(input)
+  .inputValidator(
+    (input: { lessonId: string; answers: Record<string, string>; timeSpent: number }) =>
+      z
+        .object({
+          lessonId: z.string().uuid(),
+          answers: z.record(z.string().uuid(), z.enum(["A", "B", "C", "D"])),
+          timeSpent: z.number().min(0).max(10000),
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { data: quizzes, error } = await supabaseAdmin
@@ -160,15 +164,16 @@ export const submitQuiz = createServerFn({ method: "POST" })
 
     // Use admin client so the score guard trigger (which blocks
     // non-service-role writes to score/completed) allows this server-graded result through.
-    const { error: progErr } = await supabaseAdmin
-      .from("student_progress")
-      .upsert({
+    const { error: progErr } = await supabaseAdmin.from("student_progress").upsert(
+      {
         student_id: context.userId,
         lesson_id: data.lessonId,
         completed: true,
         score,
         time_spent_minutes: data.timeSpent,
-      }, { onConflict: "student_id,lesson_id" });
+      },
+      { onConflict: "student_id,lesson_id" },
+    );
     if (progErr) throw new Error(progErr.message);
 
     return { score, correct, total, results };
@@ -190,7 +195,7 @@ export const getStudentProgress = createServerFn({ method: "GET" })
 export const markLessonViewed = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { lessonId: string }) =>
-    z.object({ lessonId: z.string().uuid() }).parse(input)
+    z.object({ lessonId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const { data: existing } = await context.supabase
@@ -200,25 +205,22 @@ export const markLessonViewed = createServerFn({ method: "POST" })
       .eq("lesson_id", data.lessonId)
       .maybeSingle();
     if (existing) return { ok: true };
-    const { error } = await context.supabase
-      .from("student_progress")
-      .insert({
-        student_id: context.userId,
-        lesson_id: data.lessonId,
-        completed: false,
-        score: 0,
-        time_spent_minutes: 0,
-      });
+    const { error } = await context.supabase.from("student_progress").insert({
+      student_id: context.userId,
+      lesson_id: data.lessonId,
+      completed: false,
+      score: 0,
+      time_spent_minutes: 0,
+    });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
-
 
 // Admin-only: worksheets contain answer keys.
 export const getWorksheet = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { lessonId: string }) =>
-    z.object({ lessonId: z.string().uuid() }).parse(input)
+    z.object({ lessonId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const { data: isAdmin } = await context.supabase.rpc("has_role", {

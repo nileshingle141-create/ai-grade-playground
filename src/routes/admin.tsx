@@ -1,11 +1,26 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Save, BookOpen, PenLine, FileText, KeyRound, Loader2, ShieldAlert } from "lucide-react";
+import {
+  Sparkles,
+  Save,
+  BookOpen,
+  PenLine,
+  FileText,
+  KeyRound,
+  Loader2,
+  ShieldAlert,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -32,7 +47,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [generated, setGenerated] = useState<any>(null);
-  
+
   // Storing generated lesson text to make it fully editable
   const [lessonText, setLessonText] = useState("");
 
@@ -154,9 +169,12 @@ function AdminPage() {
           </div>
           <h1 className="font-heading text-xl font-bold">Admin access required</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Your account does not have admin privileges. Ask an existing admin to grant you the <code>admin</code> role.
+            Your account does not have admin privileges. Ask an existing admin to grant you the{" "}
+            <code>admin</code> role.
           </p>
-          <Button className="mt-4 rounded-xl" onClick={() => navigate({ to: "/dashboard" })}>Back to Dashboard</Button>
+          <Button className="mt-4 rounded-xl" onClick={() => navigate({ to: "/dashboard" })}>
+            Back to Dashboard
+          </Button>
         </div>
       </div>
     );
@@ -165,25 +183,33 @@ function AdminPage() {
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-4xl">
-
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-heading text-2xl font-bold text-foreground">AI Content Generator</h1>
-              <p className="text-sm text-muted-foreground">Generate lessons, quizzes, and worksheets with AI</p>
+              <h1 className="font-heading text-2xl font-bold text-foreground">
+                AI Content Generator
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Generate lessons, quizzes, and worksheets with AI
+              </p>
             </div>
           </div>
 
           {/* Generator Form */}
-          <form onSubmit={handleGenerate} className="mb-6 rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <form
+            onSubmit={handleGenerate}
+            className="mb-6 rounded-2xl border border-border bg-card p-5 shadow-sm"
+          >
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div>
                 <Label>Grade</Label>
                 <Select value={grade} onValueChange={setGrade}>
-                  <SelectTrigger className="mt-1 rounded-xl"><SelectValue placeholder="Select" /></SelectTrigger>
+                  <SelectTrigger className="mt-1 rounded-xl">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">Grade 1</SelectItem>
                     <SelectItem value="2">Grade 2</SelectItem>
@@ -195,7 +221,9 @@ function AdminPage() {
               <div>
                 <Label>Subject</Label>
                 <Select value={subject} onValueChange={setSubject}>
-                  <SelectTrigger className="mt-1 rounded-xl"><SelectValue placeholder="Select" /></SelectTrigger>
+                  <SelectTrigger className="mt-1 rounded-xl">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Mathematics">Mathematics</SelectItem>
                     <SelectItem value="English">English</SelectItem>
@@ -209,7 +237,9 @@ function AdminPage() {
               <div>
                 <Label>Duration (min)</Label>
                 <Select value={duration} onValueChange={setDuration}>
-                  <SelectTrigger className="mt-1 rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="mt-1 rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="15">15 min</SelectItem>
                     <SelectItem value="30">30 min</SelectItem>
@@ -220,11 +250,24 @@ function AdminPage() {
               </div>
               <div>
                 <Label>Topic</Label>
-                <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g. Counting 1-20" className="mt-1 rounded-xl" />
+                <Input
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  placeholder="e.g. Counting 1-20"
+                  className="mt-1 rounded-xl"
+                />
               </div>
             </div>
-            <Button type="submit" disabled={loading} className="mt-4 w-full rounded-xl py-5 font-bold">
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="mt-4 w-full rounded-xl py-5 font-bold"
+            >
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="mr-2 h-4 w-4" />
+              )}
               {loading ? "Generating..." : "Generate Content"}
             </Button>
           </form>
@@ -232,16 +275,37 @@ function AdminPage() {
           {/* Output Tabs */}
           {generated && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Tabs defaultValue="lesson" className="rounded-2xl border border-border bg-card shadow-sm">
+              <Tabs
+                defaultValue="lesson"
+                className="rounded-2xl border border-border bg-card shadow-sm"
+              >
                 <TabsList className="w-full rounded-t-2xl bg-muted/50 p-1">
-                  <TabsTrigger value="lesson" className="flex-1 rounded-xl font-bold"><BookOpen className="mr-2 h-4 w-4" />Lesson</TabsTrigger>
-                  <TabsTrigger value="quiz" className="flex-1 rounded-xl font-bold"><PenLine className="mr-2 h-4 w-4" />Quiz</TabsTrigger>
-                  <TabsTrigger value="worksheet" className="flex-1 rounded-xl font-bold"><FileText className="mr-2 h-4 w-4" />Worksheet</TabsTrigger>
-                  <TabsTrigger value="answers" className="flex-1 rounded-xl font-bold"><KeyRound className="mr-2 h-4 w-4" />Answer Key</TabsTrigger>
+                  <TabsTrigger value="lesson" className="flex-1 rounded-xl font-bold">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    Lesson
+                  </TabsTrigger>
+                  <TabsTrigger value="quiz" className="flex-1 rounded-xl font-bold">
+                    <PenLine className="mr-2 h-4 w-4" />
+                    Quiz
+                  </TabsTrigger>
+                  <TabsTrigger value="worksheet" className="flex-1 rounded-xl font-bold">
+                    <FileText className="mr-2 h-4 w-4" />
+                    Worksheet
+                  </TabsTrigger>
+                  <TabsTrigger value="answers" className="flex-1 rounded-xl font-bold">
+                    <KeyRound className="mr-2 h-4 w-4" />
+                    Answer Key
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="lesson" className="p-5">
-                  <h3 className="font-heading text-lg font-bold mb-3">{topic} (Review & Edit content)</h3>
-                  <Textarea value={lessonText} onChange={(e) => setLessonText(e.target.value)} className="min-h-[250px] rounded-xl font-sans text-sm leading-relaxed" />
+                  <h3 className="font-heading text-lg font-bold mb-3">
+                    {topic} (Review & Edit content)
+                  </h3>
+                  <Textarea
+                    value={lessonText}
+                    onChange={(e) => setLessonText(e.target.value)}
+                    className="min-h-[250px] rounded-xl font-sans text-sm leading-relaxed"
+                  />
                 </TabsContent>
                 <TabsContent value="quiz" className="p-5 space-y-3">
                   {generated.quiz.length === 0 && (
@@ -257,11 +321,20 @@ function AdminPage() {
                     };
                     return (
                       <div key={i} className="rounded-xl border border-border p-3">
-                        <p className="font-bold text-sm">{i + 1}. {q.question ?? q.q}</p>
+                        <p className="font-bold text-sm">
+                          {i + 1}. {q.question ?? q.q}
+                        </p>
                         <div className="mt-2 grid grid-cols-2 gap-2">
                           {(["A", "B", "C", "D"] as const).map((opt) => (
-                            <div key={opt} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold ${correct === opt ? "bg-science/10 text-science" : "bg-muted"}`}>
-                              <span className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] ${correct === opt ? "bg-science text-white" : "bg-background border border-border"}`}>{opt}</span>
+                            <div
+                              key={opt}
+                              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold ${correct === opt ? "bg-science/10 text-science" : "bg-muted"}`}
+                            >
+                              <span
+                                className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] ${correct === opt ? "bg-science text-white" : "bg-background border border-border"}`}
+                              >
+                                {opt}
+                              </span>
                               <span>{opts[opt]}</span>
                             </div>
                           ))}
@@ -271,15 +344,31 @@ function AdminPage() {
                   })}
                 </TabsContent>
                 <TabsContent value="worksheet" className="p-5">
-                  <Textarea value={generated.worksheet} readOnly className="min-h-[200px] rounded-xl font-mono text-sm" />
+                  <Textarea
+                    value={generated.worksheet}
+                    readOnly
+                    className="min-h-[200px] rounded-xl font-mono text-sm"
+                  />
                 </TabsContent>
                 <TabsContent value="answers" className="p-5">
-                  <Textarea value={generated.answer_key} readOnly className="min-h-[200px] rounded-xl font-mono text-sm" />
+                  <Textarea
+                    value={generated.answer_key}
+                    readOnly
+                    className="min-h-[200px] rounded-xl font-mono text-sm"
+                  />
                 </TabsContent>
               </Tabs>
 
-              <Button onClick={handleSave} disabled={saving} className="mt-4 w-full rounded-xl py-5 font-bold bg-accent text-accent-foreground hover:bg-accent/90">
-                {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                className="mt-4 w-full rounded-xl py-5 font-bold bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                {saving ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
                 {saving ? "Saving..." : "Save to Database"}
               </Button>
             </motion.div>

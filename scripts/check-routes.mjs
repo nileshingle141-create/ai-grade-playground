@@ -18,16 +18,16 @@ const REPORT_DIR = resolve(process.cwd(), "route-report");
  *   "authenticated" -> must be under /__authenticated/* (redirect to /login when signed out)
  */
 const ROUTES = [
-  { path: "/",                                       access: "public",        dynamic: false },
-  { path: "/login",                                  access: "public",        dynamic: false },
-  { path: "/signup",                                 access: "public",        dynamic: false },
-  { path: "/admin",                                  access: "public",        dynamic: false },
-  { path: "/__authenticated/dashboard",              access: "authenticated", dynamic: false },
-  { path: "/__authenticated/subjects",               access: "authenticated", dynamic: false },
-  { path: "/__authenticated/progress",               access: "authenticated", dynamic: false },
-  { path: "/__authenticated/subject/$subjectId",     access: "authenticated", dynamic: true  },
-  { path: "/__authenticated/lesson/$lessonId",       access: "authenticated", dynamic: true  },
-  { path: "/__authenticated/lesson/$lessonId/quiz",  access: "authenticated", dynamic: true  },
+  { path: "/", access: "public", dynamic: false },
+  { path: "/login", access: "public", dynamic: false },
+  { path: "/signup", access: "public", dynamic: false },
+  { path: "/admin", access: "public", dynamic: false },
+  { path: "/__authenticated/dashboard", access: "authenticated", dynamic: false },
+  { path: "/__authenticated/subjects", access: "authenticated", dynamic: false },
+  { path: "/__authenticated/progress", access: "authenticated", dynamic: false },
+  { path: "/__authenticated/subject/$subjectId", access: "authenticated", dynamic: true },
+  { path: "/__authenticated/lesson/$lessonId", access: "authenticated", dynamic: true },
+  { path: "/__authenticated/lesson/$lessonId/quiz", access: "authenticated", dynamic: true },
 ];
 
 const RED = "\u001b[31m";
@@ -36,7 +36,9 @@ const YELLOW = "\u001b[33m";
 const RESET = "\u001b[0m";
 
 if (!existsSync(ROUTE_TREE)) {
-  console.error(`\n${RED}✗ Route smoke test failed:${RESET} Missing ${ROUTE_TREE}. Run dev/build to regenerate.\n`);
+  console.error(
+    `\n${RED}✗ Route smoke test failed:${RESET} Missing ${ROUTE_TREE}. Run dev/build to regenerate.\n`,
+  );
   process.exit(1);
 }
 
@@ -60,7 +62,9 @@ const results = ROUTES.map((r) => {
   }
   if (r.access === "public" && underAuthLayout) {
     status = "fail";
-    issues.push("public route nested under /__authenticated/* — students would be redirected to /login");
+    issues.push(
+      "public route nested under /__authenticated/* — students would be redirected to /login",
+    );
   }
 
   return { ...r, registered, expectedRedirect, status, issues };
@@ -110,9 +114,7 @@ for (const r of results) {
 }
 
 const failures = results.filter((r) => r.status !== "ok");
-console.log(
-  `\nReport written to ${REPORT_DIR}/routes.json and ${REPORT_DIR}/routes.md`,
-);
+console.log(`\nReport written to ${REPORT_DIR}/routes.json and ${REPORT_DIR}/routes.md`);
 
 if (failures.length > 0) {
   console.error(

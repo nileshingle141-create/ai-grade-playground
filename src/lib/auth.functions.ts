@@ -4,12 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const signUp = createServerFn({ method: "POST" })
   .inputValidator((input: { email: string; password: string; name: string; grade: number }) =>
-    z.object({
-      email: z.string().email(),
-      password: z.string().min(6),
-      name: z.string().min(1),
-      grade: z.number().min(1).max(4),
-    }).parse(input)
+    z
+      .object({
+        email: z.string().email(),
+        password: z.string().min(6),
+        name: z.string().min(1),
+        grade: z.number().min(1).max(4),
+      })
+      .parse(input),
   )
   .handler(async ({ data }) => {
     const { error, data: authData } = await supabase.auth.signUp({
@@ -29,10 +31,12 @@ export const signUp = createServerFn({ method: "POST" })
 
 export const signIn = createServerFn({ method: "POST" })
   .inputValidator((input: { email: string; password: string }) =>
-    z.object({
-      email: z.string().email(),
-      password: z.string().min(1),
-    }).parse(input)
+    z
+      .object({
+        email: z.string().email(),
+        password: z.string().min(1),
+      })
+      .parse(input),
   )
   .handler(async ({ data }) => {
     const { error, data: authData } = await supabase.auth.signInWithPassword({

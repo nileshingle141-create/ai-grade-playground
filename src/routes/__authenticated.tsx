@@ -16,11 +16,19 @@ function AuthenticatedLayout() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  
+
   // Track active navigation to update AI Chat context dynamically
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
   const isLessonPage = currentPath.includes("/lesson/");
-  const activeLessonId = isLessonPage ? currentPath.split("/").find(part => part.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)) : null;
+  const activeLessonId = isLessonPage
+    ? currentPath
+        .split("/")
+        .find((part) =>
+          part.match(
+            /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
+          ),
+        )
+    : null;
 
   const [lessonContext, setLessonContext] = useState<any>(null);
 
@@ -102,10 +110,15 @@ function AuthenticatedLayout() {
         <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-[#0F172A]/80 backdrop-blur-md px-6 shadow-sm transition-all duration-300">
           <div className="flex items-center gap-3">
             <span className="font-heading text-lg font-black text-indigo-600 dark:text-indigo-400">
-              {currentPath === "/dashboard" ? "My Dashboard 🎯" :
-               currentPath.startsWith("/subjects") ? "Learning Subjects 📚" :
-               currentPath.startsWith("/progress") ? "My Progress Arena 🏆" :
-               currentPath.startsWith("/admin") ? "Super Admin Center ⚙️" : "Learning Quest 🚀"}
+              {currentPath === "/dashboard"
+                ? "My Dashboard 🎯"
+                : currentPath.startsWith("/subjects")
+                  ? "Learning Subjects 📚"
+                  : currentPath.startsWith("/progress")
+                    ? "My Progress Arena 🏆"
+                    : currentPath.startsWith("/admin")
+                      ? "Super Admin Center ⚙️"
+                      : "Learning Quest 🚀"}
             </span>
           </div>
 
@@ -134,7 +147,7 @@ function AuthenticatedLayout() {
       <MobileNav />
 
       {/* Global Context-Aware AI Tutor Chatbot */}
-      <AITutorChat 
+      <AITutorChat
         subject={lessonContext?.subject}
         topic={lessonContext?.topic}
         lessonContent={lessonContext?.lesson_content}

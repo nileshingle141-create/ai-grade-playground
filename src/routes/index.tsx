@@ -2,16 +2,50 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { BookOpen, Brain, Gamepad2, Trophy, Sparkles, ArrowRight, Star, Zap, Heart } from "lucide-react";
+import {
+  BookOpen,
+  Brain,
+  Gamepad2,
+  Trophy,
+  Sparkles,
+  ArrowRight,
+  Star,
+  Zap,
+  Heart,
+} from "lucide-react";
 import heroImg from "@/assets/hero-illustration.png";
 
 const features = [
-  { icon: Brain, title: "AI-Powered Lessons", desc: "Smart lessons that adapt to your child's learning pace with AI-generated content." },
-  { icon: Gamepad2, title: "Interactive Quizzes", desc: "Fun MCQ quizzes with instant feedback, timers, and celebration animations." },
-  { icon: BookOpen, title: "CBSE Curriculum", desc: "Aligned with CBSE standards for Grades 1-4 covering all core subjects." },
-  { icon: Trophy, title: "Track Progress", desc: "Visual progress bars, streak badges, and XP points to keep kids motivated." },
-  { icon: Sparkles, title: "Worksheets", desc: "Downloadable practice worksheets with answer keys for offline learning." },
-  { icon: Zap, title: "Story-Based Learning", desc: "Every lesson includes a fun story to make concepts memorable and engaging." },
+  {
+    icon: Brain,
+    title: "AI-Powered Lessons",
+    desc: "Smart lessons that adapt to your child's learning pace with AI-generated content.",
+  },
+  {
+    icon: Gamepad2,
+    title: "Interactive Quizzes",
+    desc: "Fun MCQ quizzes with instant feedback, timers, and celebration animations.",
+  },
+  {
+    icon: BookOpen,
+    title: "CBSE Curriculum",
+    desc: "Aligned with CBSE standards for Grades 1-4 covering all core subjects.",
+  },
+  {
+    icon: Trophy,
+    title: "Track Progress",
+    desc: "Visual progress bars, streak badges, and XP points to keep kids motivated.",
+  },
+  {
+    icon: Sparkles,
+    title: "Worksheets",
+    desc: "Downloadable practice worksheets with answer keys for offline learning.",
+  },
+  {
+    icon: Zap,
+    title: "Story-Based Learning",
+    desc: "Every lesson includes a fun story to make concepts memorable and engaging.",
+  },
 ];
 
 export const Route = createFileRoute("/")({
@@ -34,7 +68,9 @@ function LandingPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-heading text-xl font-bold text-foreground">AI Teaching Studio</span>
+            <span className="font-heading text-xl font-bold text-foreground">
+              AI Teaching Studio
+            </span>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -66,12 +102,11 @@ function LandingPage() {
               <Star className="h-4 w-4" /> CBSE Grades 1-4
             </div>
             <h1 className="font-heading text-4xl font-extrabold leading-tight text-foreground sm:text-5xl lg:text-6xl">
-              Learning Made{" "}
-              <span className="text-primary">Magical</span> with AI
+              Learning Made <span className="text-primary">Magical</span> with AI
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              Fun, interactive lessons, quizzes, and stories tailored for young minds. 
-              Your child's smartest study buddy!
+              Fun, interactive lessons, quizzes, and stories tailored for young minds. Your child's
+              smartest study buddy!
             </p>
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
               <Link
@@ -89,13 +124,18 @@ function LandingPage() {
             </div>
             <div className="mt-6 flex items-center justify-center gap-4 text-sm text-muted-foreground lg:justify-start">
               <div className="flex -space-x-2">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-accent text-xs font-bold text-accent-foreground">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-accent text-xs font-bold text-accent-foreground"
+                  >
                     {String.fromCharCode(64 + i)}
                   </div>
                 ))}
               </div>
-              <span>Join <span className="font-bold text-foreground">500+</span> happy learners</span>
+              <span>
+                Join <span className="font-bold text-foreground">500+</span> happy learners
+              </span>
             </div>
           </motion.div>
 
@@ -126,7 +166,9 @@ function LandingPage() {
             <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
               Why Kids <Heart className="inline h-6 w-6 text-accent" /> AI Teaching Studio
             </h2>
-            <p className="mt-3 text-lg text-muted-foreground">Everything your child needs to love learning</p>
+            <p className="mt-3 text-lg text-muted-foreground">
+              Everything your child needs to love learning
+            </p>
           </motion.div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((f, i) => (
@@ -176,10 +218,10 @@ function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-border px-4 py-8">
         <div className="mx-auto max-w-7xl text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} AI Teaching Studio. Made with <Heart className="inline h-3 w-3 text-accent" /> for young learners.
+          &copy; {new Date().getFullYear()} AI Teaching Studio. Made with{" "}
+          <Heart className="inline h-3 w-3 text-accent" /> for young learners.
         </div>
       </footer>
     </div>
   );
 }
-

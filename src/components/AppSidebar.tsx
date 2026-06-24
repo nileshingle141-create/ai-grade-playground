@@ -1,13 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import {
-  LayoutDashboard,
-  BookOpen,
-  Settings,
-  LogOut,
-  Sparkles,
-  BarChart3,
-} from "lucide-react";
+import { LayoutDashboard, BookOpen, Settings, LogOut, Sparkles, BarChart3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -53,14 +46,20 @@ export function AppSidebar() {
           <Sparkles className="h-5 w-5 text-white" />
         </div>
         <div>
-          <span className="font-heading text-lg font-extrabold text-white tracking-wide">AI Tutor Studio</span>
-          <span className="block text-xs text-indigo-400 font-bold uppercase tracking-widest">Super School</span>
+          <span className="font-heading text-lg font-extrabold text-white tracking-wide">
+            AI Tutor Studio
+          </span>
+          <span className="block text-xs text-indigo-400 font-bold uppercase tracking-widest">
+            Super School
+          </span>
         </div>
       </div>
 
       <div className="flex-1 px-4 py-4 space-y-6">
         <div>
-          <div className="mb-3 px-3 text-xs font-bold uppercase tracking-widest text-white/40">Learning Path</div>
+          <div className="mb-3 px-3 text-xs font-bold uppercase tracking-widest text-white/40">
+            Learning Path
+          </div>
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
               const isActive = currentPath === item.url || currentPath.startsWith(item.url + "/");
@@ -74,7 +73,9 @@ export function AppSidebar() {
                       : "text-white/60 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <item.icon className={`h-5 w-5 ${isActive ? "text-white" : "text-white/60 group-hover:text-white"}`} />
+                  <item.icon
+                    className={`h-5 w-5 ${isActive ? "text-white" : "text-white/60 group-hover:text-white"}`}
+                  />
                   {item.title}
                 </Link>
               );

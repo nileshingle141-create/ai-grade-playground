@@ -47,8 +47,8 @@ const FAKE_USER_ID = "11111111-1111-1111-1111-111111111111";
 
 const PROTECTED_ROUTES = [
   { name: "subject (unauth)", path: `/subject/Mathematics` },
-  { name: "lesson (unauth)",  path: `/lesson/${INVALID_LESSON_ID}` },
-  { name: "quiz (unauth)",    path: `/lesson/${INVALID_LESSON_ID}/quiz` },
+  { name: "lesson (unauth)", path: `/lesson/${INVALID_LESSON_ID}` },
+  { name: "quiz (unauth)", path: `/lesson/${INVALID_LESSON_ID}/quiz` },
 ];
 
 const FALLBACK_CASES = [
@@ -78,7 +78,11 @@ const FALLBACK_CASES = [
 async function stubSupabase(page, { authenticated }) {
   await page.route("**/auth/v1/user**", (route) => {
     if (!authenticated) {
-      return route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ msg: "unauthorized" }) });
+      return route.fulfill({
+        status: 401,
+        contentType: "application/json",
+        body: JSON.stringify({ msg: "unauthorized" }),
+      });
     }
     return route.fulfill({
       status: 200,
@@ -115,7 +119,7 @@ async function stubSupabase(page, { authenticated }) {
   });
 
   await page.route("**/rpc/**", (route) =>
-    route.fulfill({ status: 200, contentType: "application/json", body: "false" })
+    route.fulfill({ status: 200, contentType: "application/json", body: "false" }),
   );
 }
 
@@ -129,10 +133,30 @@ async function assertRedirect(browser, { name, path }) {
     // Auth gate redirects from a client-side useEffect — wait for URL to settle on /login.
     await page.waitForURL((u) => new URL(u).pathname === LOGIN_PATH, { timeout: 10000 });
     const finalPath = new URL(page.url()).pathname;
-    return { name, requested: path, finalPath, expected: LOGIN_PATH, status: finalPath === LOGIN_PATH ? "ok" : "fail", issue: finalPath === LOGIN_PATH ? null : `landed at ${finalPath}` };
+    return {
+      name,
+      requested: path,
+      finalPath,
+      expected: LOGIN_PATH,
+      status: finalPath === LOGIN_PATH ? "ok" : "fail",
+      issue: finalPath === LOGIN_PATH ? null : `landed at ${finalPath}`,
+    };
   } catch (err) {
-    const finalPath = (() => { try { return new URL(page.url()).pathname; } catch { return "(unknown)"; } })();
-    return { name, requested: path, finalPath, expected: LOGIN_PATH, status: "fail", issue: `did not redirect to ${LOGIN_PATH} (${err.message.split("\n")[0]})` };
+    const finalPath = (() => {
+      try {
+        return new URL(page.url()).pathname;
+      } catch {
+        return "(unknown)";
+      }
+    })();
+    return {
+      name,
+      requested: path,
+      finalPath,
+      expected: LOGIN_PATH,
+      status: "fail",
+      issue: `did not redirect to ${LOGIN_PATH} (${err.message.split("\n")[0]})`,
+    };
   } finally {
     await context.close();
   }
@@ -144,7 +168,8 @@ async function assertFallback(browser, { name, path, expectText }) {
   await stubSupabase(page, { authenticated: true });
   try {
     // Seed a fake Supabase session so the auth gate calls /auth/v1/user (which we intercept).
-    if (!STORAGE_KEY) throw new Error("VITE_SUPABASE_PROJECT_ID not found in env/.env — cannot seed fake session");
+    if (!STORAGE_KEY)
+      throw new Error("VITE_SUPABASE_PROJECT_ID not found in env/.env — cannot seed fake session");
     await page.goto(`${BASE_URL}/`, { waitUntil: "domcontentloaded", timeout: 15000 });
     const fakeSession = {
       access_token: "fake.fake.fake",
@@ -152,7 +177,12 @@ async function assertFallback(browser, { name, path, expectText }) {
       token_type: "bearer",
       expires_at: Math.floor(Date.now() / 1000) + 3600,
       expires_in: 3600,
-      user: { id: FAKE_USER_ID, email: "smoke@test.local", aud: "authenticated", role: "authenticated" },
+      user: {
+        id: FAKE_USER_ID,
+        email: "smoke@test.local",
+        aud: "authenticated",
+        role: "authenticated",
+      },
     };
     await page.evaluate(
       ([k, v]) => window.localStorage.setItem(k, v),
@@ -163,17 +193,30 @@ async function assertFallback(browser, { name, path, expectText }) {
     await page.waitForFunction(
       (ns) => !!document.body && ns.some((n) => document.body.innerText.includes(n)),
       needles,
-      { timeout: 10000 }
+      { timeout: 10000 },
     );
     const finalPath = new URL(page.url()).pathname;
-    return { name, requested: path, finalPath, expectedText: needles.join(" | "), status: "ok", issue: null };
+    return {
+      name,
+      requested: path,
+      finalPath,
+      expectedText: needles.join(" | "),
+      status: "ok",
+      issue: null,
+    };
   } catch (err) {
     const bodyText = await page.evaluate(() => document.body?.innerText?.slice(0, 200) || "");
     const needles = Array.isArray(expectText) ? expectText : [expectText];
     return {
       name,
       requested: path,
-      finalPath: (() => { try { return new URL(page.url()).pathname; } catch { return "(unknown)"; } })(),
+      finalPath: (() => {
+        try {
+          return new URL(page.url()).pathname;
+        } catch {
+          return "(unknown)";
+        }
+      })(),
       expectedText: needles.join(" | "),
       status: "fail",
       issue: `expected one of [${needles.map((n) => `"${n}"`).join(", ")}] not found. Body preview: ${bodyText.replace(/\s+/g, " ")}`,
@@ -195,13 +238,19 @@ async function assertFallback(browser, { name, path, expectText }) {
   const all = [...redirects, ...fallbacks];
   for (const r of all) {
     const tag = r.status === "ok" ? `${GREEN}✓${RESET}` : `${RED}✗${RESET}`;
-    console.log(`  ${tag} ${r.name.padEnd(38)} ${r.requested} → ${r.finalPath}${r.issue ? `  (${r.issue})` : ""}`);
+    console.log(
+      `  ${tag} ${r.name.padEnd(38)} ${r.requested} → ${r.finalPath}${r.issue ? `  (${r.issue})` : ""}`,
+    );
   }
 
   mkdirSync(REPORT_DIR, { recursive: true });
   writeFileSync(
     resolve(REPORT_DIR, "runtime-smoke.json"),
-    JSON.stringify({ generatedAt: new Date().toISOString(), baseUrl: BASE_URL, redirects, fallbacks }, null, 2),
+    JSON.stringify(
+      { generatedAt: new Date().toISOString(), baseUrl: BASE_URL, redirects, fallbacks },
+      null,
+      2,
+    ),
   );
   const md = [
     "# Runtime smoke report",
@@ -211,12 +260,18 @@ async function assertFallback(browser, { name, path, expectText }) {
     "## Unauthenticated redirect assertions",
     "| Case | Requested | Final | Expected | Status | Issue |",
     "| --- | --- | --- | --- | --- | --- |",
-    ...redirects.map((r) => `| ${r.name} | \`${r.requested}\` | \`${r.finalPath}\` | \`${r.expected}\` | ${r.status === "ok" ? "✅" : "❌"} | ${r.issue || "—"} |`),
+    ...redirects.map(
+      (r) =>
+        `| ${r.name} | \`${r.requested}\` | \`${r.finalPath}\` | \`${r.expected}\` | ${r.status === "ok" ? "✅" : "❌"} | ${r.issue || "—"} |`,
+    ),
     "",
     "## Invalid-ID friendly fallback assertions",
     "| Case | Requested | Expected text | Status | Issue |",
     "| --- | --- | --- | --- | --- |",
-    ...fallbacks.map((f) => `| ${f.name} | \`${f.requested}\` | "${f.expectedText}" | ${f.status === "ok" ? "✅" : "❌"} | ${f.issue || "—"} |`),
+    ...fallbacks.map(
+      (f) =>
+        `| ${f.name} | \`${f.requested}\` | "${f.expectedText}" | ${f.status === "ok" ? "✅" : "❌"} | ${f.issue || "—"} |`,
+    ),
     "",
   ].join("\n");
   writeFileSync(resolve(REPORT_DIR, "runtime-smoke.md"), md);
@@ -224,7 +279,9 @@ async function assertFallback(browser, { name, path, expectText }) {
 
   const failed = all.filter((r) => r.status !== "ok");
   if (failed.length) {
-    console.error(`\n${RED}✗ Runtime smoke failed:${RESET} ${failed.length} of ${all.length} assertions failed.\n`);
+    console.error(
+      `\n${RED}✗ Runtime smoke failed:${RESET} ${failed.length} of ${all.length} assertions failed.\n`,
+    );
     process.exit(1);
   }
   console.log(`\n${GREEN}✓ Runtime smoke passed${RESET} (${all.length} assertions)\n`);
