@@ -24,9 +24,11 @@ import { resolve } from "node:path";
 function readProjectRef() {
   if (process.env.VITE_SUPABASE_PROJECT_ID) return process.env.VITE_SUPABASE_PROJECT_ID;
   const envPath = resolve(process.cwd(), ".env");
-  if (!existsSync(envPath)) return null;
-  const m = readFileSync(envPath, "utf8").match(/^VITE_SUPABASE_PROJECT_ID=(.+)$/m);
-  return m ? m[1].trim() : null;
+  if (existsSync(envPath)) {
+    const m = readFileSync(envPath, "utf8").match(/^VITE_SUPABASE_PROJECT_ID=(.+)$/m);
+    if (m) return m[1].trim();
+  }
+  return "supabase"; // Safe fallback for CI/CD or local test runs
 }
 const PROJECT_REF = readProjectRef();
 const STORAGE_KEY = PROJECT_REF ? `sb-${PROJECT_REF}-auth-token` : null;
