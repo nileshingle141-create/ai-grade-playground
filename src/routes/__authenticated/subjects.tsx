@@ -68,7 +68,7 @@ function SubjectsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-linear-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
       <div className="mx-auto max-w-5xl">
         {/* Immersive Header Card */}
         <motion.div
@@ -115,7 +115,7 @@ function SubjectsPage() {
                     <div className="absolute right-0 top-0 w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-full blur-xl group-hover:bg-slate-100 dark:group-hover:bg-white/10" />
 
                     <div
-                      className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-bold bg-gradient-to-br ${subjectColors[s.subject_name] || "from-muted to-muted"} shadow-md`}
+                      className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-bold bg-linear-to-br ${subjectColors[s.subject_name] || "from-muted to-muted"} shadow-md`}
                     >
                       {subjectIcons[s.subject_name] || <BookOpen className="h-5 w-5" />}
                     </div>

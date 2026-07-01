@@ -95,7 +95,7 @@ function SubjectPage() {
   };
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-linear-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
       <div className="mx-auto max-w-4xl">
         <Link
           to="/dashboard"
@@ -167,7 +167,7 @@ function SubjectPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-6 flex flex-col items-center justify-center rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-10 text-center shadow-md"
           >
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg mb-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-500 to-purple-600 shadow-lg mb-4">
               <BookOpen className="h-7 w-7 text-white" />
             </div>
             <h2 className="font-heading text-xl font-black text-slate-800 dark:text-white">
@@ -180,7 +180,7 @@ function SubjectPage() {
             <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
               <Link
                 to="/subjects"
-                className="inline-flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-5 py-3 text-sm font-black text-white shadow-md hover:scale-105 transition-transform"
+                className="inline-flex items-center justify-center rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-5 py-3 text-sm font-black text-white shadow-md hover:scale-105 transition-transform"
               >
                 Browse all subjects
               </Link>
@@ -226,7 +226,7 @@ function SubjectPage() {
                     className={`flex items-center gap-4 rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-5 shadow-sm dark:shadow-none transition-all duration-300 hover:bg-slate-50 dark:hover:bg-white/10 ${i === selectedIndex ? "ring-2 ring-indigo-500/50 bg-indigo-50/50 dark:bg-indigo-500/10" : ""}`}
                   >
                     {/* Play Bubble Icon */}
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md group-hover:scale-105 transition-transform duration-300">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-500 to-purple-600 shadow-md group-hover:scale-105 transition-transform duration-300">
                       <Play className="h-5 w-5 fill-white text-white translate-x-0.5" />
                     </div>
 

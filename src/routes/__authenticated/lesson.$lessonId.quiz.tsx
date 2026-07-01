@@ -849,12 +849,12 @@ function QuizPage() {
 
   if (fetchError) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-linear-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
         <XCircle className="mx-auto h-16 w-16 text-rose-500 mb-4" />
         <h2 className="text-2xl font-heading font-black mb-2">Error Loading Quiz</h2>
         <p className="text-slate-500 dark:text-white/60 mb-6 max-w-md">{fetchError}</p>
         <Link to="/dashboard">
-          <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 cursor-pointer">
+          <Button className="rounded-2xl font-black bg-linear-to-r from-indigo-500 to-purple-600 text-white px-6 cursor-pointer">
             Back to Dashboard
           </Button>
         </Link>
@@ -866,7 +866,7 @@ function QuizPage() {
     const hasSampleQuiz = lessonTopic && SAMPLE_QUIZZES_BY_TOPIC[lessonTopic];
 
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center bg-linear-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
         <HelpCircle className="mx-auto h-16 w-16 text-indigo-500 dark:text-indigo-400 mb-4 animate-bounce" />
         <h2 className="text-2xl font-heading font-black mb-2">No Quiz Questions Found</h2>
         <p className="text-slate-500 dark:text-white/60 mb-4 max-w-md">
@@ -883,7 +883,7 @@ function QuizPage() {
             <Button
               onClick={handleAutoSeed}
               disabled={isSeeding}
-              className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white px-8 py-6 shadow-lg shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer"
+              className="rounded-2xl font-black bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white px-8 py-6 shadow-lg shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer"
             >
               {isSeeding ? (
                 <>
@@ -929,7 +929,7 @@ function QuizPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300 relative overflow-hidden">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-linear-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300 relative overflow-hidden">
       {/* Confetti Elements */}
       {confetti.map((c) => (
         <motion.div
@@ -969,7 +969,7 @@ function QuizPage() {
         <div className="mb-6 flex items-center gap-3">
           <div className="h-3 flex-1 rounded-full bg-slate-200 dark:bg-white/10 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-300"
+              className="h-full rounded-full bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-300"
               style={{ width: `${(currentQ / (total || 1)) * 100}%` }}
             />
           </div>
@@ -1103,7 +1103,7 @@ function QuizPage() {
               ) : (
                 <Button
                   onClick={handleNextQuestion}
-                  className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md px-6 cursor-pointer"
+                  className="rounded-2xl font-black bg-linear-to-r from-indigo-500 to-purple-600 text-white shadow-md px-6 cursor-pointer"
                 >
                   {currentQ < total - 1 ? "Continue" : "Submit Quest"}
                 </Button>
@@ -1137,7 +1137,7 @@ function QuizPage() {
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.15 }}
-                    className={`mx-auto mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-tr ${tier.color} shadow-2xl shadow-indigo-500/30`}
+                    className={`mx-auto mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-tr ${tier.color} shadow-2xl shadow-indigo-500/30`}
                   >
                     <Trophy className="h-12 w-12 text-white drop-shadow-md" />
                   </motion.div>
@@ -1151,7 +1151,7 @@ function QuizPage() {
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.4, type: "spring" }}
-                    className="font-heading text-6xl sm:text-7xl font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mt-3"
+                    className="font-heading text-6xl sm:text-7xl font-black bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mt-3"
                   >
                     {score}%
                   </motion.p>
@@ -1201,7 +1201,7 @@ function QuizPage() {
                       </Button>
                     </Link>
                     <Link to="/dashboard" className="inline-flex">
-                      <Button className="rounded-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 shadow-md cursor-pointer w-full">
+                      <Button className="rounded-2xl font-black bg-linear-to-r from-indigo-500 to-purple-600 text-white px-6 shadow-md cursor-pointer w-full">
                         Back to Dashboard
                       </Button>
                     </Link>

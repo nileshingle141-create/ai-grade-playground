@@ -119,13 +119,13 @@ function DashboardPage() {
     .map((item, idx) => ({ ...item, rank: idx + 1 }));
 
   return (
-    <div className="min-h-screen p-3 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen p-3 sm:p-6 lg:p-8 bg-linear-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
       <div className="mx-auto max-w-6xl">
         {/* Welcome Glowing Header Banner */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 sm:mb-8 p-5 sm:p-8 rounded-3xl border border-indigo-100 dark:border-white/10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-2xl relative overflow-hidden"
+          className="mb-6 sm:mb-8 p-5 sm:p-8 rounded-3xl border border-indigo-100 dark:border-white/10 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-2xl relative overflow-hidden"
         >
           <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -250,7 +250,7 @@ function DashboardPage() {
                           <div className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-5 shadow-md dark:shadow-none relative overflow-hidden transition-all duration-300">
                             <div className="absolute right-0 top-0 w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-full blur-xl group-hover:bg-slate-100 dark:group-hover:bg-white/10 transition-all duration-300" />
                             <div
-                              className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${subjectColors[subject.subject_name] || "from-muted to-muted"} shadow-md`}
+                              className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br ${subjectColors[subject.subject_name] || "from-muted to-muted"} shadow-md`}
                             >
                               {subjectIcons[subject.subject_name] || (
                                 <BookOpen className="h-5 w-5" />
@@ -273,7 +273,7 @@ function DashboardPage() {
                                   initial={{ width: 0 }}
                                   animate={{ width: `${progressPercentage}%` }}
                                   transition={{ duration: 0.8, delay: 0.1 * i, ease: "easeOut" }}
-                                  className="h-full rounded-full bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 shadow-sm shadow-indigo-500/30"
+                                  className="h-full rounded-full bg-linear-to-r from-indigo-400 via-purple-500 to-pink-500 shadow-sm shadow-indigo-500/30"
                                 />
                               </div>
                             </div>
@@ -349,7 +349,7 @@ function DashboardPage() {
               transition={{ delay: 0.25 }}
               className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-5 shadow-lg dark:shadow-none relative overflow-hidden"
             >
-              <div className="absolute -left-12 -top-12 w-28 h-28 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-full opacity-10 blur-xl" />
+              <div className="absolute -left-12 -top-12 w-28 h-28 bg-linear-to-br from-indigo-500 to-pink-500 rounded-full opacity-10 blur-xl" />
               <div className="mb-4 flex items-center gap-2">
                 <Trophy className="h-5 w-5 text-yellow-400 animate-bounce" />
                 <h2 className="font-heading text-lg font-black text-slate-800 dark:text-white tracking-tight">
@@ -364,7 +364,7 @@ function DashboardPage() {
                       key={student.rank}
                       className={`flex items-center justify-between rounded-2xl p-3.5 transition-all duration-300 border ${
                         isUser
-                          ? "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-500/20 dark:to-purple-500/20 border-indigo-100 dark:border-indigo-500/30 shadow-md"
+                          ? "bg-linear-to-r from-indigo-50 to-purple-50 dark:from-indigo-500/20 dark:to-purple-500/20 border-indigo-100 dark:border-indigo-500/30 shadow-md"
                           : "bg-slate-50 dark:bg-white/5 border-slate-100/50 dark:border-transparent shadow-sm dark:shadow-none"
                       }`}
                     >
