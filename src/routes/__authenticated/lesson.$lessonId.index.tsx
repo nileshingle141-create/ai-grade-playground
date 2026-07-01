@@ -144,7 +144,7 @@ function LessonPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-linear-to-tr from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#0F172A] dark:via-[#1E1B4B] dark:to-[#1E293B] text-slate-800 dark:text-white transition-colors duration-300">
       <div className="mx-auto max-w-4xl">
         <Link
           to="/dashboard"
@@ -165,9 +165,9 @@ function LessonPage() {
           >
             {/* Header Badge Card */}
             <div className="mb-6 rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md p-6 shadow-md dark:shadow-none relative overflow-hidden">
-              <div className="absolute -right-16 -top-16 w-36 h-36 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-full opacity-20 blur-2xl" />
+              <div className="absolute -right-16 -top-16 w-36 h-36 bg-linear-to-br from-indigo-500 to-pink-500 rounded-full opacity-20 blur-2xl" />
               <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-3.5 py-1.5 text-xs font-black text-white uppercase tracking-wider">
+                <span className="rounded-full bg-linear-to-r from-indigo-500 to-purple-500 px-3.5 py-1.5 text-xs font-black text-white uppercase tracking-wider">
                   {lesson.subject}
                 </span>
                 <span className="flex items-center gap-1 rounded-full bg-slate-100 dark:bg-white/10 px-3.5 py-1.5 text-xs font-extrabold text-slate-700 dark:text-white/80">
@@ -188,7 +188,7 @@ function LessonPage() {
                   window.speechSynthesis.cancel();
                   setIsSpeaking(false);
                 }}
-                className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "content" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white"}`}
+                className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "content" ? "bg-linear-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white"}`}
               >
                 <BookOpen className="h-4 w-4 inline mr-1.5" /> Study Material
               </button>
@@ -199,7 +199,7 @@ function LessonPage() {
                     window.speechSynthesis.cancel();
                     setIsSpeaking(false);
                   }}
-                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "story" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white"}`}
+                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "story" ? "bg-linear-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white"}`}
                 >
                   <Sparkles className="h-4 w-4 inline mr-1.5" /> Story Mode
                 </button>
@@ -211,7 +211,7 @@ function LessonPage() {
                     window.speechSynthesis.cancel();
                     setIsSpeaking(false);
                   }}
-                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "revision" ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white"}`}
+                  className={`flex-1 rounded-xl py-3 text-sm font-extrabold transition-all duration-300 ${activeTab === "revision" ? "bg-linear-to-r from-indigo-500 to-purple-500 text-white shadow-lg" : "text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white"}`}
                 >
                   <Lightbulb className="h-4 w-4 inline mr-1.5" /> Quick Revision
                 </button>
@@ -278,7 +278,7 @@ function LessonPage() {
                           transition={{ delay: i * 0.08 }}
                           className="flex items-start gap-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 p-4 shadow-sm"
                         >
-                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-xs font-black text-white shadow-md">
+                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-linear-to-r from-indigo-500 to-purple-500 text-xs font-black text-white shadow-md">
                             {i + 1}
                           </span>
                           <p className="text-sm font-semibold text-slate-700 dark:text-white/90 leading-relaxed">
@@ -293,7 +293,7 @@ function LessonPage() {
             </AnimatePresence>
 
             {/* Smart AI Tutor Floating Banner */}
-            <div className="mt-6 rounded-3xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-r from-indigo-50 dark:from-indigo-900/30 via-purple-50 dark:via-purple-900/20 to-pink-50 dark:to-pink-900/20 backdrop-blur-md p-5 flex items-center justify-between shadow-md dark:shadow-none">
+            <div className="mt-6 rounded-3xl border border-indigo-200 dark:border-indigo-500/20 bg-linear-to-r from-indigo-50 dark:from-indigo-900/30 via-purple-50 dark:via-purple-900/20 to-pink-50 dark:to-pink-900/20 backdrop-blur-md p-5 flex items-center justify-between shadow-md dark:shadow-none">
               <div className="flex items-center gap-3">
                 <span className="text-3xl animate-bounce">🤖</span>
                 <div>
@@ -311,7 +311,7 @@ function LessonPage() {
             {/* Actions Grid */}
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link to="/lesson/$lessonId/quiz" params={{ lessonId }} className="flex-1">
-                <Button className="w-full rounded-2xl py-6 text-base font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white shadow-lg shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer">
+                <Button className="w-full rounded-2xl py-6 text-base font-extrabold bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white shadow-lg shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer">
                   <PenLine className="mr-2 h-5 w-5 animate-pulse" /> Let's Take the Quiz!
                 </Button>
               </Link>

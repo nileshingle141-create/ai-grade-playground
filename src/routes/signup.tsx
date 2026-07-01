@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
@@ -73,7 +74,10 @@ function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 py-8">
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle />
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

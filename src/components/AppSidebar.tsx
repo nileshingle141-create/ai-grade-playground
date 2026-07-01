@@ -40,9 +40,9 @@ export function AppSidebar() {
   }
 
   return (
-    <div className="flex h-screen w-64 flex-col bg-navy-sidebar text-sidebar-foreground border-r border-white/10 shadow-xl bg-gradient-to-b from-[#1E293B] to-[#0F172A]">
+    <div className="flex h-screen w-64 flex-col bg-navy-sidebar text-sidebar-foreground border-r border-white/10 shadow-xl bg-linear-to-b from-[#1E293B] to-[#0F172A]">
       <div className="flex items-center gap-3 px-6 py-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 shadow-md">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-indigo-500 to-purple-500 shadow-md">
           <Sparkles className="h-5 w-5 text-white" />
         </div>
         <div>
@@ -69,7 +69,7 @@ export function AppSidebar() {
                   to={item.url}
                   className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-extrabold transition-all duration-300 ${
                     isActive
-                      ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20 scale-[1.02]"
+                      ? "bg-linear-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20 scale-[1.02]"
                       : "text-white/60 hover:bg-white/5 hover:text-white"
                   }`}
                 >

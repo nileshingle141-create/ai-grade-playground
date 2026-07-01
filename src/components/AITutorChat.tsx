@@ -126,7 +126,7 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
           onClick={() => setIsOpen(!isOpen)}
           whileHover={{ scale: 1.1, rotate: 5 }}
           whileTap={{ scale: 0.9 }}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xl shadow-indigo-500/30 hover:shadow-indigo-500/50"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xl shadow-indigo-500/30 hover:shadow-indigo-500/50"
         >
           <AnimatePresence mode="wait">
             {isOpen ? (
@@ -168,7 +168,7 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
             className="fixed bottom-24 right-6 z-[100] w-[calc(100vw-3rem)] max-w-[400px] h-[550px] rounded-3xl border border-white/10 bg-[#0F172A]/90 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="p-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-between text-white shadow-lg relative overflow-hidden">
+            <div className="p-4 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-between text-white shadow-lg relative overflow-hidden">
               <div className="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full blur-xl" />
               <div className="flex items-center gap-3 relative z-10">
                 <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
@@ -220,7 +220,7 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
                         className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                           isAI
                             ? "bg-white/5 border border-white/10 text-white/95 rounded-tl-none"
-                            : "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-tr-none shadow-md"
+                            : "bg-linear-to-r from-indigo-500 to-purple-600 text-white rounded-tr-none shadow-md"
                         }`}
                       >
                         <p className="whitespace-pre-line font-medium">{msg.text}</p>
@@ -291,7 +291,7 @@ export function AITutorChat({ subject, topic, lessonContent }: AITutorChatProps)
               <Button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="h-11 w-11 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md flex items-center justify-center p-0 shrink-0"
+                className="h-11 w-11 rounded-2xl bg-linear-to-r from-indigo-500 to-purple-600 text-white shadow-md flex items-center justify-center p-0 shrink-0"
               >
                 <Send className="h-4 w-4" />
               </Button>
