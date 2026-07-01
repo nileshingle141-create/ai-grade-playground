@@ -74,6 +74,7 @@ function LandingPage() {
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <Link
               to="/login"
               className="hidden rounded-xl px-4 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-flex"
