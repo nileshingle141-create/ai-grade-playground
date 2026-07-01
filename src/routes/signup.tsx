@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
