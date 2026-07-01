@@ -1,6 +1,6 @@
 # Route smoke test report
 
-Generated: 2026-07-01T15:36:29.067Z
+Generated: 2026-07-01T15:45:13.203Z
 
 | Route | Access | Dynamic | Registered | Expected behavior | Status | Issues |
 | --- | --- | --- | --- | --- | --- | --- |
