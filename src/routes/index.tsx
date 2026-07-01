@@ -14,6 +14,7 @@ import {
   Heart,
 } from "lucide-react";
 import heroImg from "@/assets/hero-illustration.png";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const features = [
   {
