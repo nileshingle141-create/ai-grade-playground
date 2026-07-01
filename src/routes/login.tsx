@@ -51,7 +51,10 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 py-8">
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle />
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
