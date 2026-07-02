@@ -41,8 +41,10 @@ jobs:
         run: bunx playwright install --with-deps chromium
 
       - name: Start preview server
+        env:
+          WRANGLER_SEND_METRICS: "false"
         run: |
-          bunx wrangler pages dev .output/public --port 8080 --ip 127.0.0.1 > /tmp/preview.log 2>&1 &
+          bun run wrangler dev --config .output/server/wrangler.json --port 8080 --ip 127.0.0.1 > /tmp/preview.log 2>&1 &
           echo $! > /tmp/preview.pid
           for i in $(seq 1 60); do
             if curl -fsS http://127.0.0.1:8080/ > /dev/null; then
@@ -71,13 +73,3 @@ jobs:
           name: route-report
           path: route-report/
           if-no-files-found: warn
-
-      - name: Commit failure logs
-        if: failure()
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          cp /tmp/preview.log ci-failure.log || true
-          git add ci-failure.log
-          git commit -m "ci: save preview server failure logs [skip ci]" || true
-          git push origin main || true
