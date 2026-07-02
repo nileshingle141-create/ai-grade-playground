@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -69,3 +71,13 @@ jobs:
           name: route-report
           path: route-report/
           if-no-files-found: warn
+
+      - name: Commit failure logs
+        if: failure()
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          cp /tmp/preview.log ci-failure.log || true
+          git add ci-failure.log
+          git commit -m "ci: save preview server failure logs [skip ci]" || true
+          git push origin main || true
