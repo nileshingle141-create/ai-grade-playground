@@ -27,20 +27,20 @@ An AI-powered CBSE education platform built for Grade 1–4 students. Features i
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | [TanStack Start v1](https://tanstack.com/start) — full-stack React with SSR, file-based routing, and server functions |
-| UI Library | React 19 + TypeScript |
-| Styling | Tailwind CSS v4 + custom semantic design tokens (`oklch`) |
-| Components | [shadcn/ui](https://ui.shadcn.com) (Radix UI primitives) |
-| Animation | Framer Motion |
-| Backend / Database | Supabase (PostgreSQL + Auth + RLS) |
-| Server Runtime | Cloudflare Workers (edge) via `@cloudflare/vite-plugin` |
-| Validation | Zod |
-| AI Integration | Make.com webhook for content generation |
-| Icons | Lucide React |
-| Charts | Recharts |
-| Carousel | Embla Carousel |
+| Layer              | Technology                                                                                                            |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Framework          | [TanStack Start v1](https://tanstack.com/start) — full-stack React with SSR, file-based routing, and server functions |
+| UI Library         | React 19 + TypeScript                                                                                                 |
+| Styling            | Tailwind CSS v4 + custom semantic design tokens (`oklch`)                                                             |
+| Components         | [shadcn/ui](https://ui.shadcn.com) (Radix UI primitives)                                                              |
+| Animation          | Framer Motion                                                                                                         |
+| Backend / Database | Supabase (PostgreSQL + Auth + RLS)                                                                                    |
+| Server Runtime     | Cloudflare Workers (edge) via `@cloudflare/vite-plugin`                                                               |
+| Validation         | Zod                                                                                                                   |
+| AI Integration     | Make.com webhook for content generation                                                                               |
+| Icons              | Lucide React                                                                                                          |
+| Charts             | Recharts                                                                                                              |
+| Carousel           | Embla Carousel                                                                                                        |
 
 ---
 
@@ -93,15 +93,15 @@ An AI-powered CBSE education platform built for Grade 1–4 students. Features i
 
 ## Database Schema (Supabase)
 
-| Table | Purpose |
-|-------|---------|
-| `profiles` | Extended user data (name, grade) |
-| `subjects` | CBSE subjects per grade (Math, English, Science, EVS, Hindi, Computer) |
-| `lessons` | AI-generated lesson content, stories, key points, duration |
-| `quizzes` | MCQ questions linked to lessons (options A–D + correct answer) |
-| `worksheets` | Practice worksheet content + answer key |
-| `student_progress` | Tracks completion, score, and time spent per student/lesson |
-| `user_roles` | Role-based access control (`admin`, `user`) |
+| Table              | Purpose                                                                |
+| ------------------ | ---------------------------------------------------------------------- |
+| `profiles`         | Extended user data (name, grade)                                       |
+| `subjects`         | CBSE subjects per grade (Math, English, Science, EVS, Hindi, Computer) |
+| `lessons`          | AI-generated lesson content, stories, key points, duration             |
+| `quizzes`          | MCQ questions linked to lessons (options A–D + correct answer)         |
+| `worksheets`       | Practice worksheet content + answer key                                |
+| `student_progress` | Tracks completion, score, and time spent per student/lesson            |
+| `user_roles`       | Role-based access control (`admin`, `user`)                            |
 
 All tables use Row Level Security (RLS) with policies scoped to `auth.uid()`. Admin functions bypass RLS via the service-role client.
 
@@ -187,13 +187,13 @@ This produces a Cloudflare Workers-compatible bundle.
 
 ## Scripts
 
-| Script | Command | Description |
-|--------|---------|-------------|
-| Dev | `bun dev` | Start Vite dev server with HMR |
-| Build | `bun run build` | Production build for Cloudflare Workers |
-| Preview | `bun run preview` | Preview production build locally |
-| Lint | `bun run lint` | ESLint check |
-| Format | `bun run format` | Prettier format all files |
+| Script  | Command           | Description                             |
+| ------- | ----------------- | --------------------------------------- |
+| Dev     | `bun dev`         | Start Vite dev server with HMR          |
+| Build   | `bun run build`   | Production build for Cloudflare Workers |
+| Preview | `bun run preview` | Preview production build locally        |
+| Lint    | `bun run lint`    | ESLint check                            |
+| Format  | `bun run format`  | Prettier format all files               |
 
 ---
 
